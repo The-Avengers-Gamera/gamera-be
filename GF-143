@@ -62,3 +62,17 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+const imageInput = document.getElementById('image-input');
+const yesButton = document.getElementById('yes-button');
+
+imageInput.addEventListener('change', function() {
+  if (imageInput.files.length > 0) {
+    yesButton.disabled = false;
+  } else {
+    yesButton.disabled = true;
+  }
+});
+
+yesButton.addEventListener('click', function() {
+  // do something when the user clicks on "Yes"
+});
