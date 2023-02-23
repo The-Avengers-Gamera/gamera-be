@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Social Button</title>
+	<style type="text/css">
+		#expansion-window {
+			width: 500px;
+			height: 300px;
+			border: 1px solid #ccc;
+			position: relative;
+		}
+
+
+        #social-btn {
+			position: absolute;
+			top: 0;
+			right: 0;
+			padding: 10px;
+			background-color: #3b5998;
+			color: #fff;
+			border: none;
+			cursor: pointer;
+			font-size: 16px;
+			font-weight: bold;
+			border-radius: 5px 0 0 0;
+		}
+
+    </style>
+</head>
+<body>
+	<div id="expansion-window">
+		<button id="social-btn">Social</button>
+		<!-- other content goes here -->
+	</div>
+</body>
+</html>
