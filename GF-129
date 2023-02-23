@@ -1,0 +1,42 @@
+<div class="social-buttons">
+    <a href="#" class="btn btn-social"><i class="fa fa-facebook"></i></a>
+    <a href="#" class="btn btn-social"><i class="fa fa-twitter"></i></a>
+    <a href="#" class="btn btn-social"><i class="fa fa-instagram"></i></a>
+    <a href="#" class="btn btn-social"><i class="fa fa-linkedin"></i></a>
+    <a href="#" class="btn btn-social"><i class="fa fa-youtube"></i></a>
+    <a href="#" class="btn btn-about-us">About Us</a>
+  </div>
+
+  .social-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    }
+    
+    .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+        color: #fff;
+        text-decoration: none;
+        }
+        
+        .btn-social {
+        background-color: #3b5998; /* Facebook blue */
+        margin-right: 10px;
+        }
+        
+        .btn-social:hover {
+            opacity: 0.8;
+            }
+            
+            .btn-about-us {
+            background-color: #000;
+            margin-left: 10px;
+            }
+            
+            .btn-about-us:hover {
+            opacity: 0.8;
+            }
