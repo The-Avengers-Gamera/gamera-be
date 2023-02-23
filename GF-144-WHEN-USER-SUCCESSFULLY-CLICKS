@@ -1,0 +1,32 @@
+<button id="yes-button">Yes</button>
+
+<div id="folder-window">Folder window content</div>
+CSS code:
+
+#folder-window {
+display: block;
+}
+
+#yes-button {
+background-color: green;
+color: white;
+padding: 10px 20px;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+}
+
+#yes-button:hover {
+    background-color: darkgreen;
+    }
+    
+    #folder-window.hidden {
+    display: none;
+    }
+
+    const yesButton = document.getElementById('yes-button');
+    const folderWindow = document.getElementById('folder-window');
+    
+    yesButton.addEventListener('click', () => {
+    folderWindow.classList.add('hidden');
+    });   
