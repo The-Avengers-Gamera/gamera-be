@@ -1,0 +1,39 @@
+<div id="image-selector">
+    <label for="image-input">Select an image:</label>
+    <input type="file" id="image-input">
+    <button id="yes-button" disabled>Yes</button>
+  </div>
+  #image-selector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  #yes-button {
+    margin-top: 1em;
+    padding: 0.5em 1em;
+    border-radius: 0.5em;
+    font-size: 1.2em;
+    color: white;
+    background-color: gray;
+    border: none;
+  }
+  #yes-button:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  const imageInput = document.getElementById('image-input');
+const yesButton = document.getElementById('yes-button');
+
+imageInput.addEventListener('change', function() {
+  if (imageInput.files.length > 0) {
+    yesButton.disabled = false;
+  } else {
+    yesButton.disabled = true;
+  }
+});
+
+yesButton.addEventListener('click', function() {
+  // do something when the user clicks on "Yes"
+});
+  
