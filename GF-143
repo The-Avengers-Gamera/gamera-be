@@ -1,0 +1,64 @@
+<div class="folder-window">
+  <h2>Select a Picture</h2>
+  <div class="picture-list">
+    <label>
+      <input type="radio" name="picture" value="picture1" />
+      <img src="picture1.jpg" alt="Picture 1" />
+    </label>
+    <label>
+      <input type="radio" name="picture" value="picture2" />
+      <img src="picture2.jpg" alt="Picture 2" />
+    </label>
+    <label>
+      <input type="radio" name="picture" value="picture3" />
+      <img src="picture3.jpg" alt="Picture 3" />
+    </label>
+  </div>
+  <div class="button-container">
+    <button class="yes-button" disabled>Yes</button>
+    <button class="cancel-button">Cancel</button>
+  </div>
+</div>
+.folder-window {
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
+.picture-list label {
+  display: inline-block;
+  margin: 10px;
+  cursor: pointer;
+}
+
+.picture-list img {
+  width: 100px;
+  height: 100px;
+}
+
+.button-container {
+  text-align: right;
+}
+
+.yes-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+.cancel-button {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.yes-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
