@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+	<title>My First Web Page</title>
+</head>
+<body>
+	<header>
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        p {
+            font-size: 18px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+		<h1>Welcome to my website</h1>
+	</header>
+	<p>This is my first web page.</p>
+	<img src="image.jpg" alt="My Image">
+</body>
+</html>
+
+
