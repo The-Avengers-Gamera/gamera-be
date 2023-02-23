@@ -1,0 +1,28 @@
+<button id="add-cover-image">Add a cover image</button>
+<input type="file" id="cover-image-input" style="display:none;">
+#add-cover-image {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  #add-cover-image:hover {
+    background-color: #3e8e41;
+  }
+  
+  #cover-image-input {
+    display: none;
+  }
+  const addCoverImageBtn = document.getElementById('add-cover-image');
+  const coverImageInput = document.getElementById('cover-image-input');
+  
+  addCoverImageBtn.addEventListener('click', function() {
+    coverImageInput.click();
+  });
+  
+  coverImageInput.addEventListener('change', function() {
+    // handle uploaded image here
+  });
+    
