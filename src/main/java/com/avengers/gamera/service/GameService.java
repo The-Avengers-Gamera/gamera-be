@@ -47,9 +47,9 @@ public class GameService {
 
     @Transactional
     public List<Genre> handleFrontendGenreList(List<Genre> genreList) {
-        Map<Boolean, List<Genre>> checkGenres = genreList.stream().collect(Collectors.partitioningBy(item -> isGenreExist(item.getName())));
-        List<Genre> newGetDto = checkGenres.get(false);
-        List<Genre> existGetDto = checkGenres.get(true);
+        Map<Boolean, List<Genre>> checkGenres = genreList.stream().collect(Collectors.partitioningBy(item -> item.getId()==null));
+        List<Genre> newGetDto = checkGenres.get(true);
+        List<Genre> existGetDto = checkGenres.get(false);
         List<Genre> existGenre = genreService.getAllGenre(existGetDto);
         List<Genre> updatedGenreList = new ArrayList<>(existGenre);
 
@@ -68,14 +68,6 @@ public class GameService {
             throw new ResourceExistException("Game already existed!");
         }
         return isExist;
-    }
-
-    public boolean isGenreExist(String name) {
-        return genreRepository.existsGenresByName(name);
-    }
-
-    public GameGetDto getGame(Long id) {
-        return gameMapper.GameToGameGetDto(findActiveGame(id));
     }
 
     public GameGetDto updateGame(GameUpdateDto gameUpdateDto, Long id) {
@@ -102,5 +94,10 @@ public class GameService {
 
     public Game findActiveGame(Long id) {
         return gameRepository.findGameByIdAndIsDeletedFalse(id).orElseThrow(() -> new ResourceNotFoundException("game"));
+    }
+
+    public GameGetDto getGame(Long id) {
+        Game game=findActiveGame(id);
+        return gameMapper.GameToGameGetDto(game);
     }
 }

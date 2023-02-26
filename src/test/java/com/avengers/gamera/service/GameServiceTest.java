@@ -50,13 +50,14 @@ public class GameServiceTest {
             .isDeleted(false)
             .createdTime(OffsetDateTime.now())
             .updatedTime(OffsetDateTime.now())
-            .genreList(List.of(mockGenre1, mockGenre2))
+            .genreList(updatedGenreList)
             .build();
+    private final Long mockGameId=mockGame.getId();
 
     private final GameGetDto mockGameGetDto = GameGetDto.builder()
             .id(1L)
-            .name("Game2")
-            .description("very good game")
+            .name("Game1")
+            .description("Excellent game")
             .createdTime(OffsetDateTime.now())
             .updatedTime(OffsetDateTime.now())
             .genreList(updatedGenreList)
@@ -92,11 +93,10 @@ public class GameServiceTest {
 
     @Test
     void shouldGetGameGetDtoWhenGetGame() {
-        Long id = 1L;
-        when(gameRepository.findGameByIdAndIsDeletedFalse(id)).thenReturn(Optional.ofNullable(mockGame));
+        when(gameRepository.findGameByIdAndIsDeletedFalse(mockGameId)).thenReturn(Optional.ofNullable(mockGame));
         when(gameMapper.GameToGameGetDto(mockGame)).thenReturn(mockGameGetDto);
 
-        GameGetDto gameGetDto = gameService.getGame(id);
+        GameGetDto gameGetDto = gameService.getGame(mockGameId);
         assertEquals(gameGetDto, mockGameGetDto);
     }
 
@@ -104,8 +104,6 @@ public class GameServiceTest {
     void shouldUpdateGameWhenUpdate() {
         Long id = 1L;
         when(gameRepository.findGameByIdAndIsDeletedFalse(id)).thenReturn(Optional.ofNullable(mockGame));
-        when(genreService.getAllGenre(any())).thenReturn(updatedGenreList);
-        when(genreService.saveAllGenre(any())).thenReturn(updatedGenreList1);
         when(gameMapper.GameUpdateDtoToGame(mockGameUpdateDto)).thenReturn(mockUpdateGame);
         when(gameMapper.GameToGameGetDto(gameRepository.save(mockUpdateGame))).thenReturn(mockGameGetDto);
 
