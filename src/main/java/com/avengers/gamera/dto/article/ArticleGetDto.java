@@ -19,8 +19,10 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 public class ArticleGetDto {
     private Long id;
-    private Game game;
-    private User user;
+    private Long gameId;
+    private String gameName;
+    private Long userId;
+    private String userName;
     private String coverImgUrl;
     private String title;
     private String text;

@@ -39,24 +39,19 @@ public class ArticleService {
             article.setCoverImgUrl("https://spicsum.photos/800/400");
         }
         Game game = gameRepository.findById(articlePostDto.getGameId()).orElseThrow(()->
-                new ResourceNotFoundException("Related game")
+                new ResourceNotFoundException("Related game with ID("+ articlePostDto.getGameId() +")" )
         );
         article.setGame(game);
         User user = userRepository.findById(articlePostDto.getAuthorId()).orElseThrow(() ->
                 new ResourceNotFoundException("Related Author(user)")
         );
         article.setUser(user);
-        log.info("==========Saving new article to database==============");
+        log.info("Saving new article: "+article.toString()+" ======>>to database");
         return articleMapper.articleToArticleGetDto(articleRepository.save(article));
     }
 
     public List<MiniArticleGetDto> getMiniArticles(int pageNumber, int pageSize){
-        log.info("Try to get some articles that has not been deleted .....");
         List<Article> articles = articleRepository.findArticleByIsDeletedFalse((Pageable) PageRequest.of(pageNumber,pageSize));
-
-        if(articles.size()==0) {
-            return null;
-        }
         return articleMapper.articleToMiniArticleGetDto(articles);
 
     }
@@ -64,9 +59,6 @@ public class ArticleService {
     public List<MiniArticleGetDto> getMiniArticlesByType(ArticleType articleType, int pageNumber, int pageSize) {
         log.info("Try to get some articles that has not been deleted .....");
         List<Article> articles = articleRepository.findArticlesByTypeAndIsDeletedFalse(articleType, (Pageable) PageRequest.of(pageNumber, pageSize));
-        if(articles.size()==0) {
-            return null;
-        }
         return articleMapper.articleToMiniArticleGetDto(articles);
     }
 
@@ -81,17 +73,18 @@ public class ArticleService {
         Article article = articleRepository.findById(articleId).orElseThrow(() ->
                 new ResourceNotFoundException("Related Article with the ID(" + articleId + ")")
         );
-        articleRepository.delete(article);
+       article.setDeleted(true);
     }
 
-    public ArticleGetDto updateArticle(Long id, ArticlePatchDto articlePatchDto){
-        Article article = articleRepository.findById(id).orElseThrow(() -> (new ResourceNotFoundException("Article")));
+    public ArticleGetDto updateArticle( ArticlePatchDto articlePatchDto){
+        Long ArticleId = articlePatchDto.getId();
+        Article article = articleRepository.findById(ArticleId).orElseThrow(() -> (new ResourceNotFoundException("Article with id("+ ArticleId +")")));
 
         article.setTitle(articlePatchDto.getTitle());
         article.setText(articlePatchDto.getText());
         article.setType(articlePatchDto.getType());
 
-        log.info("Updating article by article id");
+        log.info("Updating article ==>>" + article.toString());
 
         return articleMapper.articleToArticleGetDto(articleRepository.save(article));
     }

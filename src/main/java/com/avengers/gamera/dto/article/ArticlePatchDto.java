@@ -11,6 +11,7 @@ import javax.validation.constraints.Size;
 @Getter
 @AllArgsConstructor
 public class ArticlePatchDto {
+    private Long id;
 
     @Size(max = 255, message = "Article title can not be more than 255 characters.")
     private String title;

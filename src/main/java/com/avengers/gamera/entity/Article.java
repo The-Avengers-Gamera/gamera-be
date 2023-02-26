@@ -1,11 +1,7 @@
 package com.avengers.gamera.entity;
 
 import com.avengers.gamera.constant.ArticleType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -19,6 +15,7 @@ import java.time.OffsetDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 public class Article {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
