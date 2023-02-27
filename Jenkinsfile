@@ -14,7 +14,7 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'sudo make app_local_compose_up'
-                sh 'sudo app_local_build'
+                sh 'sudo make app_local_build'
             }
         }
 
