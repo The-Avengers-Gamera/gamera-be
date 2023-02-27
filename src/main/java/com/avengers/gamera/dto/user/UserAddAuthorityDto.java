@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UserAddRoleDto {
+public class UserAddAuthorityDto {
     private  String email;
     private  String name;
 

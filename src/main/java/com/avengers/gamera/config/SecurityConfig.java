@@ -8,9 +8,11 @@ import com.avengers.gamera.jwt.JwtUsernameAndPasswordAuthFilter;
 import com.avengers.gamera.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -35,12 +37,13 @@ public class SecurityConfig {
     private List<String> allowedMethods;
     private List<String> allowedHeaders;
 
-
     private final GameraUserDetailService gameraUserDetailService;
     private final SecretKey secretKey;
     private final JwtConfig jwtConfig;
     private final JwtTokenVerifyFilter jwtTokenVerifyFilter;
-    private final UserService userService;
+    @Lazy
+    @Autowired
+    UserService userService;
 
 
     @Bean
