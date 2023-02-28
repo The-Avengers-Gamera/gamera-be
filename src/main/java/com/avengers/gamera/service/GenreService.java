@@ -1,6 +1,5 @@
 package com.avengers.gamera.service;
 
-import com.avengers.gamera.dto.genre.GenreGetDto;
 import com.avengers.gamera.dto.genre.GenrePostDto;
 import com.avengers.gamera.dto.genre.GenreUpdateDto;
 import com.avengers.gamera.entity.Genre;
@@ -10,6 +9,9 @@ import com.avengers.gamera.repository.GenreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
+
 
 @Service
 @RequiredArgsConstructor
@@ -17,22 +19,35 @@ public class GenreService {
     private final GenreRepository genreRepository;
     private final GenreMapper genreMapper;
 
-    public GenreGetDto createGenre(GenrePostDto genrePostDto) {
+    public Genre createGenre(GenrePostDto genrePostDto) {
         Genre genre = genreMapper.GenrePostDtoToGenre(genrePostDto);
-        return genreMapper.GenreToGenreGetDto(genreRepository.save(genre));
+        return genreRepository.save(genre);
     }
 
-    public GenreGetDto getGenre(Long id) {
-        Genre genre = findGenre(id);
-        return genreMapper.GenreToGenreGetDto(genre);
+    public List<Genre> createMultipleGenre(List<GenrePostDto> genrePostDtoList) {
+        List<Genre> genreList = genrePostDtoList.stream().map(genreMapper::GenrePostDtoToGenre).toList();
+        return genreRepository.saveAll(genreList);
     }
 
-    public GenreGetDto updateGe(GenreUpdateDto genreUpdateDto, Long id) {
+    public Genre getGenre(Long id) {
+        return findGenre(id);
+    }
+
+    public List<Genre> saveAllGenre(List<Genre> genreNames){
+        List<GenrePostDto> genrePostDtoList=genreNames.stream().map(genreMapper::GenreToGenrePostDto).toList();
+        return createMultipleGenre(genrePostDtoList);
+    }
+
+    public List<Genre> getAllGenre(List<Genre> genreNames){
+        List<Long> genreIdList = genreNames.stream().map(Genre::getId).toList();
+        return genreRepository.findAllById(genreIdList);
+    }
+
+    public Genre updateGe(GenreUpdateDto genreUpdateDto, Long id) {
         Genre genre = findGenre(id);
         genre.setName(genreUpdateDto.getName());
-        genreRepository.save(genre);
+        return genreRepository.save(genre);
 
-        return genreMapper.GenreToGenreGetDto(genre);
     }
 
     public Genre findGenre(Long id) {
