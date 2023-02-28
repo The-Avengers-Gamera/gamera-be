@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.awt.print.Pageable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -52,14 +53,25 @@ public class ArticleService {
 
     public List<MiniArticleGetDto> getMiniArticles(int pageNumber, int pageSize){
         List<Article> articles = articleRepository.findArticleByIsDeletedFalse((Pageable) PageRequest.of(pageNumber,pageSize));
-        return articleMapper.articleToMiniArticleGetDto(articles);
+        List<MiniArticleGetDto> listMiniArticles = new ArrayList<>();
+        for (Article article : articles) {
+            MiniArticleGetDto miniArticle = articleMapper.articleToMiniArticleGetDto(article);
+            log.info("miniArticle got by page ==> " + article.toString());
+            listMiniArticles.add(miniArticle);
+        }
+        return listMiniArticles;
 
     }
 
     public List<MiniArticleGetDto> getMiniArticlesByType(ArticleType articleType, int pageNumber, int pageSize) {
-        log.info("Try to get some articles that has not been deleted .....");
         List<Article> articles = articleRepository.findArticlesByTypeAndIsDeletedFalse(articleType, (Pageable) PageRequest.of(pageNumber, pageSize));
-        return articleMapper.articleToMiniArticleGetDto(articles);
+        List<MiniArticleGetDto> listMiniArticles = new ArrayList<>();
+        for (Article article : articles) {
+            MiniArticleGetDto miniArticle = articleMapper.articleToMiniArticleGetDto(article);
+            log.info("miniArticle got by type ==> " + article.toString());
+            listMiniArticles.add(miniArticle);
+        }
+        return listMiniArticles;
     }
 
     public ArticleGetDto getArticleById(Long articleId) {

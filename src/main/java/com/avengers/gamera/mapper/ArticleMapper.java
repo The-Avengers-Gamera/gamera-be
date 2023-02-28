@@ -5,7 +5,11 @@ import com.avengers.gamera.dto.article.ArticlePostDto;
 import com.avengers.gamera.dto.article.MiniArticleGetDto;
 import com.avengers.gamera.entity.Article;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
 import org.mapstruct.ReportingPolicy;
+
+
 
 import java.util.List;
 
@@ -13,8 +17,18 @@ import java.util.List;
 public interface ArticleMapper {
     Article articlePostDtoToArticle(ArticlePostDto articlePostDto);
 
+
+    @Mapping(target = "gameId",source = "game.id")
+    @Mapping(target = "gameName",source = "game.name")
+    @Mapping(target = "userId",source = "user.id")
+    @Mapping(target = "userName",source = "user.name")
     ArticleGetDto articleToArticleGetDto(Article article);
 
-    List<MiniArticleGetDto> articleToMiniArticleGetDto(List<Article> articles);
+
+    @Mapping(target = "gameId",source = "game.id")
+    @Mapping(target = "gameName",source = "game.name")
+    @Mapping(target = "userId",source = "user.id")
+    @Mapping(target = "userName",source = "user.name")
+    MiniArticleGetDto articleToMiniArticleGetDto(Article articles);
 
 }
