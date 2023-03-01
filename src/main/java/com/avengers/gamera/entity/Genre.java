@@ -1,17 +1,14 @@
 package com.avengers.gamera.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.GenerationType;
-import javax.persistence.Column;
+import javax.persistence.*;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 
 @Entity
@@ -37,5 +34,9 @@ public class Genre {
     @Column(nullable = false, name = "updated_time")
     @UpdateTimestamp
     private OffsetDateTime updatedTime;
+
+    @ManyToMany(mappedBy = "genreList")
+    @JsonBackReference
+    private List<Game> gameList;
 
 }
