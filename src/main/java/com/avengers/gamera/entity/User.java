@@ -49,7 +49,7 @@ public class User {
     )
     private Set<Authority> authorities;
 
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
     private List<Article> articles;
 }

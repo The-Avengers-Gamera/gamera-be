@@ -2,7 +2,6 @@ package com.avengers.gamera.service;
 
 import com.avengers.gamera.constant.ArticleType;
 import com.avengers.gamera.dto.article.ArticleGetDto;
-import com.avengers.gamera.dto.article.ArticlePatchDto;
 import com.avengers.gamera.dto.article.ArticlePostDto;
 import com.avengers.gamera.dto.article.MiniArticleGetDto;
 import com.avengers.gamera.entity.Article;
@@ -16,12 +15,13 @@ import com.avengers.gamera.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.awt.print.Pageable;
-import java.util.ArrayList;
+import java.time.OffsetDateTime;
+
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,8 +32,15 @@ public class ArticleService {
     private final UserRepository userRepository;
     private final ArticleMapper articleMapper;
 
-    public ArticleGetDto createArticle(ArticlePostDto articlePostDto) {
 
+
+    public ArticleGetDto createArticle(ArticlePostDto articlePostDto) {
+        Article article = articlePostDtoToArticle(articlePostDto);
+        log.info("Saving the article with title:  "+article.getTitle()+"  to database");
+        return articleMapper.articleToArticleGetDto(articleRepository.save(article));
+    }
+
+    public Article articlePostDtoToArticle(ArticlePostDto articlePostDto){
         Article article = articleMapper.articlePostDtoToArticle(articlePostDto);
         String img = article.getCoverImgUrl();
         if (StringUtils.isBlank(img)) {
@@ -44,60 +51,53 @@ public class ArticleService {
         );
         article.setGame(game);
         User user = userRepository.findById(articlePostDto.getAuthorId()).orElseThrow(() ->
-                new ResourceNotFoundException("Related Author(user)")
+                new ResourceNotFoundException("Related Author(userId: "+ articlePostDto.getAuthorId() +")")
         );
         article.setUser(user);
-        log.info("Saving new article: "+article.toString()+" ======>>to database");
-        return articleMapper.articleToArticleGetDto(articleRepository.save(article));
+        return article;
     }
 
-    public List<MiniArticleGetDto> getMiniArticles(int pageNumber, int pageSize){
-        List<Article> articles = articleRepository.findArticleByIsDeletedFalse((Pageable) PageRequest.of(pageNumber,pageSize));
-        List<MiniArticleGetDto> listMiniArticles = new ArrayList<>();
-        for (Article article : articles) {
-            MiniArticleGetDto miniArticle = articleMapper.articleToMiniArticleGetDto(article);
-            log.info("miniArticle got by page ==> " + article.toString());
-            listMiniArticles.add(miniArticle);
-        }
-        return listMiniArticles;
-
+    public List<MiniArticleGetDto> getMiniArticles(Pageable pageable){
+        return articleRepository.findArticleByIsDeletedFalse(pageable)
+                .stream()
+                .map(articleMapper::articleToMiniArticleGetDto)
+                .collect(Collectors.toList());
     }
 
-    public List<MiniArticleGetDto> getMiniArticlesByType(ArticleType articleType, int pageNumber, int pageSize) {
-        List<Article> articles = articleRepository.findArticlesByTypeAndIsDeletedFalse(articleType, (Pageable) PageRequest.of(pageNumber, pageSize));
-        List<MiniArticleGetDto> listMiniArticles = new ArrayList<>();
-        for (Article article : articles) {
-            MiniArticleGetDto miniArticle = articleMapper.articleToMiniArticleGetDto(article);
-            log.info("miniArticle got by type ==> " + article.toString());
-            listMiniArticles.add(miniArticle);
-        }
-        return listMiniArticles;
+    public List<MiniArticleGetDto> getMiniArticlesByType(ArticleType articleType, Pageable pageable) {
+        return articleRepository.findArticlesByTypeAndIsDeletedFalse(articleType, pageable)
+                .stream()
+                .map(articleMapper::articleToMiniArticleGetDto)
+                .collect(Collectors.toList());
     }
+
 
     public ArticleGetDto getArticleById(Long articleId) {
-        Article article = articleRepository.findById(articleId).orElseThrow(() ->
+        Article article = articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(() ->
                 new ResourceNotFoundException("Related Article with the ID(" + articleId + ")")
         );
         return articleMapper.articleToArticleGetDto(article);
     }
 
-    public void deleteArticleById(Long articleId) {
-        Article article = articleRepository.findById(articleId).orElseThrow(() ->
+    public String deleteArticleById(Long articleId) {
+        Article article = articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(() ->
                 new ResourceNotFoundException("Related Article with the ID(" + articleId + ")")
         );
-       article.setDeleted(true);
+        log.info("Article with ID("+ articleId +") title("+ article.getTitle() +") is being deleted");
+        article.setDeleted(true);
+        articleRepository.save(article);
+       return "The article with ID("+ articleId +") has been deleted";
     }
 
-    public ArticleGetDto updateArticle( ArticlePatchDto articlePatchDto){
-        Long ArticleId = articlePatchDto.getId();
-        Article article = articleRepository.findById(ArticleId).orElseThrow(() -> (new ResourceNotFoundException("Article with id("+ ArticleId +")")));
+    public ArticleGetDto updateArticle( Long articleId,ArticlePostDto articlePostDto){
 
-        article.setTitle(articlePatchDto.getTitle());
-        article.setText(articlePatchDto.getText());
-        article.setType(articlePatchDto.getType());
-
-        log.info("Updating article ==>>" + article.toString());
-
+        Article findArticle = articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(() -> (new ResourceNotFoundException("Article with id("+ articleId +")")));
+        Article article = articlePostDtoToArticle(articlePostDto);
+        article.setId(articleId);
+        article.setCreatedTime(findArticle.getCreatedTime());
+        article.setUpdatedTime(OffsetDateTime.now());
+        log.info("Updating article ==>> ID: " + articleId +"title: "+ articlePostDto.getTitle()+"update time: "+OffsetDateTime.now());
         return articleMapper.articleToArticleGetDto(articleRepository.save(article));
     }
+
 }

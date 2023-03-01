@@ -11,17 +11,17 @@ import org.mapstruct.ReportingPolicy;
 
 
 
-import java.util.List;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ArticleMapper {
-    Article articlePostDtoToArticle(ArticlePostDto articlePostDto);
 
+    Article articlePostDtoToArticle(ArticlePostDto articlePostDto);
 
     @Mapping(target = "gameId",source = "game.id")
     @Mapping(target = "gameName",source = "game.name")
     @Mapping(target = "userId",source = "user.id")
     @Mapping(target = "userName",source = "user.name")
+//    @Mapping(target = "text",expression = "java(article.getText.substring(0, article.getText.length() > 30 ? 30 : article.getText.length()))")
     ArticleGetDto articleToArticleGetDto(Article article);
 
 
@@ -30,5 +30,8 @@ public interface ArticleMapper {
     @Mapping(target = "userId",source = "user.id")
     @Mapping(target = "userName",source = "user.name")
     MiniArticleGetDto articleToMiniArticleGetDto(Article articles);
+
+
+
 
 }

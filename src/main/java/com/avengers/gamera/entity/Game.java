@@ -65,7 +65,7 @@ public class Game {
     @UpdateTimestamp
     private OffsetDateTime updatedTime;
 
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id")
     private List<Article> articles;
 }

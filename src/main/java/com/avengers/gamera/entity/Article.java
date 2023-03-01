@@ -15,7 +15,6 @@ import java.time.OffsetDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 public class Article {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,10 +31,10 @@ public class Article {
     @Column(name = "cover_img_url")
     private String coverImgUrl;
 
-    @Column(nullable = false)
+    @Column
     private String title;
 
-    @Column(nullable = false)
+    @Column
     private String text;
 
     @Enumerated(EnumType.STRING)

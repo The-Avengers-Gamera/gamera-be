@@ -14,7 +14,7 @@ import javax.validation.constraints.Size;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ArticlePostDto {
+public class ArticlePostDto{
 
     private String coverImgUrl;
 
