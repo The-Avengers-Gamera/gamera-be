@@ -1,0 +1,30 @@
+pipeline {
+    agent any
+
+    environment {
+
+    }
+
+    stages {
+        stage('building image') {
+            steps {
+                echo 'docker building images'
+                sh 'aws cli login'
+                sh 'docker build -t '
+            }
+        }
+        stage('pushing to ECR') {
+            steps {
+                echo 'pushing image to ECR'
+                sh 'docker tag '
+                sh 'docker push'
+            }
+        }
+        stage('deploying to ECS') {
+            steps {
+                echo 'deploying image to ECS cluster service'
+                sh 'aws cli'
+            }
+        }
+    }
+}
