@@ -44,13 +44,15 @@ pipeline {
                     Deploy the project to cloud infrastruce
                     First, generate docker image from Dockerfile
                     Then, push the Dockerfile to ECR
-		    After the docker is uploaded, delete the local docker image
+		            After the docker is uploaded, delete the local docker image
                     Last, user ECS to pull the image and run the service
                 */
                 echo 'Deploying...'
-                sh 'sudo docker build -t gamera-service .'
-		//upload to ecr
-		sh 'sudo docker image rm gamera-service'
+                sh 'sudo docker build --build-arg DB_URL=${DB_URL} \
+                    --build-arg DB_USERNAME=${DB_USERNAME} \
+                    --build-arg DB_PASSWORD=${DB_PASSWORD} -t gamera-service .'
+		        //upload to ecr
+		        sh 'sudo docker image rm gamera-service'
             }
         }
     }
