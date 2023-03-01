@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . /app
 
 # Build the application
-RUN ./gradlew clean build
+RUN ./gradlew clean build --info
 
 # Use a smaller runtime image for the application
 FROM eclipse-temurin:17-jdk-jammy
