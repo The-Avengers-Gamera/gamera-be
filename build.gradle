@@ -30,7 +30,6 @@ dependencies {
 	implementation 'org.springdoc:springdoc-openapi-ui:1.6.11'
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
-
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.2.Final'
 	testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.5.2.Final'
 

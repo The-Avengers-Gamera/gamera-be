@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -33,18 +35,16 @@ public class UserService {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    private String defaultAuthority = "ROLE_USER";
+
     public UserGetDto createUser(UserPostDto userPostDto) {
-        String encodedPwd =  passwordEncoder.encode(userPostDto.getPassword());
         String email = userPostDto.getEmail();
-        // verify if the email exists
         emailExists(email);
-        // save encoded password
+        String encodedPwd =  passwordEncoder.encode(userPostDto.getPassword());
         User user = userMapper.userPostDtoToUser(userPostDto);
         user.setPassword(encodedPwd);
-        // add authority to user
-        // one user can hava many authorities
         Set<Authority> authorities = new HashSet<>();
-        Authority authority = authorityService.getByAuthorityName("Role_User");
+        Authority authority = authorityService.getByAuthorityName(defaultAuthority);
         authorities.add(authority);
         user.setAuthorities(authorities);
         log.info("Saving new user {} to database, with pwd: {}", user.getEmail(), user.getPassword());
@@ -96,6 +96,7 @@ public class UserService {
 
     public void deleteUser(Long userId) {
         userRepository.deleteById(userId);
+        log.info(" User id {} was deleted", userId);
     }
 
 

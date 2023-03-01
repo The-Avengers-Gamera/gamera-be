@@ -13,7 +13,6 @@ import java.util.Set;
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class GameraUserDetails implements UserDetails {
-
     private Long id;
     private String username;
     private String password;
@@ -58,7 +57,7 @@ public class GameraUserDetails implements UserDetails {
         return isEnabled;
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 }

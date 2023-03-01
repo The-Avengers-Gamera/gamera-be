@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -26,12 +27,14 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(userPostDto));
     }
 
+
     @PostMapping("/add-authority")
     public ResponseEntity<UserAddAuthorityDto> addAuthorityToUser(@RequestBody UserAddAuthorityDto userAddAuthority) {
         userService.addAuthorityToUser(userAddAuthority.getEmail(), userAddAuthority.getName());
         return ResponseEntity.ok().build();
     }
 
+//    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping
     public List<UserGetDto> getAllUsers() {
         return userService.getAllUsers();
@@ -42,7 +45,7 @@ public class UserController {
         return userService.getUser(userId);
     }
 
-    @PostMapping("{userId}")
+    @PutMapping("{userId}")
     public UserGetDto updateUser(@Valid @RequestBody UserPutDto userPutDto, @PathVariable Long userId){
         return userService.updateUser(userPutDto, userId);
     }
@@ -53,7 +56,8 @@ public class UserController {
         userService.deleteUser(userId);
     }
 
-    // user get authority
+    // 201 - log info
+
 
 
 

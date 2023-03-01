@@ -27,6 +27,7 @@ public class AuthorityController {
 
         return authorityService.getAuthorityById(authorityId);
     }
+    
 
 
 
