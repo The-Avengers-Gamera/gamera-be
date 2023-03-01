@@ -16,4 +16,5 @@ FROM eclipse-temurin:17-jdk-jammy
 # Copy the application JAR file from the build stage
 COPY --from=build /app/build/libs/my-app.jar .
 EXPOSE 8080
+
 ENTRYPOINT ["java -jar", "my-app.jar"]
