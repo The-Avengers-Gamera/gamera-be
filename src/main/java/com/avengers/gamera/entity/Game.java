@@ -1,5 +1,6 @@
 package com.avengers.gamera.entity;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,14 +9,10 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Table;
-import javax.persistence.Column;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table
@@ -68,5 +65,12 @@ public class Game {
     @Column(name = "updated_time")
     @UpdateTimestamp
     private OffsetDateTime updatedTime;
+
+    @ManyToMany(cascade = {CascadeType.MERGE})
+    @JoinTable(
+            name = "game_genre",
+            joinColumns = {@JoinColumn(name = "game_id")},
+            inverseJoinColumns = {@JoinColumn(name = "genre_id")})
+    private List<Genre> genreList;
 
 }
