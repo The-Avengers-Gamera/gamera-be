@@ -17,4 +17,4 @@ FROM eclipse-temurin:17-jdk-jammy
 COPY --from=build /app/build/libs/my-app.jar .
 EXPOSE 8080
 
-ENTRYPOINT ["java -jar", "my-app.jar"]
+ENTRYPOINT ["bin/sh","-c","java","-jar", "my-app.jar"]
