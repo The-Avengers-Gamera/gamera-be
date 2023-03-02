@@ -28,7 +28,7 @@ public class UserController {
     @PostMapping("/add-authority")
     @ResponseStatus(HttpStatus.CREATED)
     public String addAuthorityToUser(@RequestBody UserAddAuthorityDto userAddAuthority) {
-         return  userService.addAuthorityToUser(userAddAuthority.getEmail(), userAddAuthority.getName());
+        return userService.addAuthorityToUser(userAddAuthority.getEmail(), userAddAuthority.getName());
     }
 
     //    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
