@@ -51,9 +51,6 @@ pipeline {
                 //push the Dockerfile to ECR
                 sh 'docker tag gamera_be:latest ${ECR_PASSWORD_STDIN}'
                 sh 'docker push ${ECR_PASSWORD_STDIN}'
-
-                //After the docker is uploaded, delete the local docker image
-                sh 'docker images -qa | xargs docker image rm'
                 
                 /*    
                     Last, user ECS to pull the image and run the service
