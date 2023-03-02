@@ -14,13 +14,13 @@ pipeline {
             steps {
                 echo 'Building docker images'
                 sh 'aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com'
-                sh 'docker build -t ${REPO_IMAGE_NAME}:$BUILD_NUMBER'
+                sh 'docker build -t ${REPO_IMAGE_NAME}:${REPO_IMAGE_TAG}'
             }
         }
         stage('Pushing to ECR') {
             steps {
                 echo 'pushing image to ECR'
-                sh 'docker tag ${REPO_IMAGE_NAME}:$BUILD_NUMBER ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${REPO_IMAGE_NAME}:${REPO_IMAGE_TAG}'
+                sh 'docker tag ${REPO_IMAGE_NAME}:${REPO_IMAGE_TAG} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${REPO_IMAGE_NAME}:${REPO_IMAGE_TAG}'
                 sh 'docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${REPO_IMAGE_NAME}:${REPO_IMAGE_TAG}'
             }
         }
