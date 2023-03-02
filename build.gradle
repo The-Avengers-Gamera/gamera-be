@@ -48,13 +48,6 @@ dependencies {
 	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 }
 
-flyway {
-	url = 'jdbc:postgresql://localhost:5432/postgres?currentSchema=gamera'
-	user = 'postgres'
-	password = 'admin'
-	locations = ['classpath:db/migration']
-}
-
 tasks.named('test') {
 	useJUnitPlatform()
 }
