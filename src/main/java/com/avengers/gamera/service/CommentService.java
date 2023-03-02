@@ -39,8 +39,14 @@ public class CommentService {
         return commentMapper.commentToCommentGetDto(commentRepository.save(comment));
     }
 
-    public CommentGetDto getCommentByCommentId(Long commentId) {
-        return commentMapper.commentToCommentGetDto(find(commentId));
+    public Map<String, Object> getCommentByCommentId(Long commentId) {
+        Comment comment = find(commentId);
+        Map<String, Object> commentResponse = new HashMap<>();
+        commentResponse.put("id", commentId);
+        commentResponse.put("text", comment.getText());
+        commentResponse.put("createdTime", comment.getCreatedTime());
+        commentResponse.put("updatedTime", comment.getUpdatedTime());
+        return commentResponse;
 
     }
 

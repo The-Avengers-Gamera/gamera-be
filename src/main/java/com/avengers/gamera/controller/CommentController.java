@@ -31,7 +31,7 @@ public class CommentController {
     }
 
     @GetMapping("/{commentId}")
-    public CommentGetDto get(@PathVariable Long commentId) {
+    public Map<String, Object> get(@PathVariable Long commentId) {
         return commentService.getCommentByCommentId(commentId);
     }
 
