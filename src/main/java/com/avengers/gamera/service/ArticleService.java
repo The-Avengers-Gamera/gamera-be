@@ -4,6 +4,7 @@ import com.avengers.gamera.constant.ArticleType;
 import com.avengers.gamera.dto.article.ArticleGetDto;
 import com.avengers.gamera.dto.article.ArticlePostDto;
 import com.avengers.gamera.dto.article.MiniArticleGetDto;
+import com.avengers.gamera.dto.article.ArticlePutDto;
 import com.avengers.gamera.entity.Article;
 import com.avengers.gamera.entity.Game;
 import com.avengers.gamera.entity.User;
@@ -104,4 +105,15 @@ public class ArticleService {
         return articleMapper.articleToArticleGetDto(articleRepository.save(article));
     }
 
+    public ArticleGetDto updateArticle (ArticlePutDto articlePutDto){
+        Long articleId = articlePutDto.getArticleId();
+        Article article = articleRepository.findById(articleId).orElseThrow(() -> new ResourceNotFoundException("Article",articleId));
+
+        article.setTitle(articlePutDto.getTitle());
+        article.setText(articlePutDto.getText());
+        article.setType(articlePutDto.getType());
+
+        log.info("Updated article with id "+articleId+" in the database.");
+        return articleMapper.articleToArticleGetDto(articleRepository.save(article));
+    }
 }

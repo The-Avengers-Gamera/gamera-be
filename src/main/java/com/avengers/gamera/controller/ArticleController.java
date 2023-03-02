@@ -4,6 +4,7 @@ import com.avengers.gamera.constant.ArticleType;
 import com.avengers.gamera.dto.article.ArticleGetDto;
 import com.avengers.gamera.dto.article.ArticlePostDto;
 import com.avengers.gamera.dto.article.MiniArticleGetDto;
+import com.avengers.gamera.dto.article.ArticlePutDto;
 import com.avengers.gamera.service.ArticleService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -31,12 +32,6 @@ public class ArticleController {
         return articleService.createArticle(articlePostDto);
     }
 
-    @PutMapping("/update/{articleId}")
-    @Operation(summary = "Update article by article id")
-    @ResponseStatus(HttpStatus.OK)
-    public ArticleGetDto updateArticle(@PathVariable Long articleId,@RequestBody ArticlePostDto articlePostDto){
-        return articleService.updateArticle(articleId,articlePostDto);
-    }
     @GetMapping("/pages")
     @ResponseStatus(HttpStatus.OK)
     public Page<MiniArticleGetDto> getMiniArticles(@PageableDefault(size = 10) Pageable pageable){
@@ -60,4 +55,13 @@ public class ArticleController {
     public String deleteArticleById(@PathVariable Long articleId) {
         return articleService.deleteArticleById(articleId);
     }
+
+    @PutMapping
+    @Operation(summary = "Update article by article id")
+    @ResponseStatus(HttpStatus.OK)
+    public ArticleGetDto updateArticle(@RequestBody ArticlePutDto articlePutDto){
+        return articleService.updateArticle(articlePutDto);
+    }
+
+
 }
