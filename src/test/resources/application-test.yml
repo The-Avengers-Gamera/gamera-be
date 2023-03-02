@@ -7,6 +7,7 @@ spring:
     properties:
       hibernate:
         default_schema: PUBLIC
+    show-sql: false
   flyway:
     enabled: false
   cors:
