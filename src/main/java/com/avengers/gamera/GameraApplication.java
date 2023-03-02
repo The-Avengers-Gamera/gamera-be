@@ -8,13 +8,14 @@ import java.util.TimeZone;
 
 @SpringBootApplication
 public class GameraApplication {
-	private static final String TIME_ZONE = "UTC";
-	public static void main(String[] args) {
-		SpringApplication.run(GameraApplication.class, args);
-	}
+    private static final String TIME_ZONE = "UTC";
 
-	@PostConstruct
-	public void init() {
-		TimeZone.setDefault(TimeZone.getTimeZone(TIME_ZONE));
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(GameraApplication.class, args);
+    }
+
+    @PostConstruct
+    public void init() {
+        TimeZone.setDefault(TimeZone.getTimeZone(TIME_ZONE));
+    }
 }

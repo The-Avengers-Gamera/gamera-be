@@ -1,6 +1,7 @@
 package com.avengers.gamera.entity;
 
 
+import com.avengers.gamera.dto.authority.AuthorityGetDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -56,4 +57,8 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "authority_id")
     )
     private Set<Authority> authorities;
+
+    @Builder.Default
+    private Boolean isDeleted = false;
+
 }

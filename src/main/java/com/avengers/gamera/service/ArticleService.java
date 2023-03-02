@@ -24,7 +24,7 @@ public class ArticleService {
 
         //TODO after image upload function implemented, this url should from user
         if (StringUtils.isBlank(img)) {
-            article.setCoverImgUrl("https://spicsum.photos/800/400");
+            article.setCoverImgUrl("https://picsum.photos/800/400");
         }
         log.info("Saving new article to database");
         return articleMapper.articleToArticleGetDto(articleRepository.save(article));
