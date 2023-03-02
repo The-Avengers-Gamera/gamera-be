@@ -21,7 +21,6 @@ public interface ArticleMapper {
     @Mapping(target = "gameName",source = "game.name")
     @Mapping(target = "userId",source = "user.id")
     @Mapping(target = "userName",source = "user.name")
-//    @Mapping(target = "text",expression = "java(article.getText.substring(0, article.getText.length() > 30 ? 30 : article.getText.length()))")
     ArticleGetDto articleToArticleGetDto(Article article);
 
 
@@ -29,9 +28,6 @@ public interface ArticleMapper {
     @Mapping(target = "gameName",source = "game.name")
     @Mapping(target = "userId",source = "user.id")
     @Mapping(target = "userName",source = "user.name")
+    @Mapping(target = "text",expression = "java(articles.getText().substring(0, articles.getText().length()> 30? 30 : articles.getText().length()))")
     MiniArticleGetDto articleToMiniArticleGetDto(Article articles);
-
-
-
-
 }

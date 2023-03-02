@@ -25,7 +25,6 @@ public class MiniArticleGetDto {
     private Long userId;
     private String userName;
     private String title;
-    private String text;
     private ArticleType type;
 //    private Long like;
 //    private Long numberOfComments;

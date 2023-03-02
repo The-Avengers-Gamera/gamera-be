@@ -50,7 +50,7 @@ public class ArticleController {
 
     @GetMapping("/{articleId}")
     @ResponseStatus(HttpStatus.OK)
-    public ArticleGetDto createArticle(@PathVariable Long articleId) {
+    public ArticleGetDto getArticleById(@PathVariable Long articleId) {
         return articleService.getArticleById(articleId);
     }
 
