@@ -11,20 +11,20 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("genres")
-public record GenreController (GenreService genreService){
+public record GenreController(GenreService genreService) {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public GenreGetDto createGenre (@Valid @RequestBody GenrePostDto genrePostDto){
+    public GenreGetDto createGenre(@Valid @RequestBody GenrePostDto genrePostDto) {
         return genreService.createGenre(genrePostDto);
     }
 
     @GetMapping("/{id}")
-    public GenreGetDto getGenre(@PathVariable Long id){
+    public GenreGetDto getGenre(@PathVariable Long id) {
         return genreService.getGenre(id);
     }
 
     @PutMapping("/{id}")
-    public GenreGetDto updateGe(@Valid @RequestBody GenreUpdateDto genreUpdateDto, @PathVariable Long id){
+    public GenreGetDto updateGe(@Valid @RequestBody GenreUpdateDto genreUpdateDto, @PathVariable Long id) {
         return genreService.updateGe(genreUpdateDto, id);
     }
 

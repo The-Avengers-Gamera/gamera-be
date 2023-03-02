@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -22,24 +23,16 @@ public class AuthorityService {
 
     public Authority getByAuthorityName(String authorityName) {
         return authorityRepository.findByName(authorityName).orElseThrow(() -> new ResourceNotFoundException("Authority", authorityName));
-
     }
 
-    public List<Authority> getAllAuthorities() {
-        return  authorityRepository.findAll();
+    public List<AuthorityGetDto> getAllAuthorities() {
+        List<AuthorityGetDto> authorityGetDtoList = authorityRepository.findAll().stream().map(authorityMapper::authorityToAuthorityGetDto).toList();
+        return authorityGetDtoList;
     }
 
     public AuthorityGetDto getAuthorityById(Long authorityId) {
         return authorityMapper.authorityToAuthorityGetDto(authorityRepository.findById(authorityId)
                 .orElseThrow(() -> new ResourceNotFoundException("Authority", authorityId)));
     }
-
-    public Authority createAuthority(Authority authority) {
-        return authorityRepository.save(authority);
-    }
-
-
-
-
 
 }

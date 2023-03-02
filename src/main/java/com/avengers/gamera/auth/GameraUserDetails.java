@@ -23,7 +23,7 @@ public class GameraUserDetails implements UserDetails {
     private final boolean isEnabled;
 
     @Override
-    public String getUsername(){
+    public String getUsername() {
         return username;
     }
 
@@ -33,7 +33,7 @@ public class GameraUserDetails implements UserDetails {
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities(){
+    public Collection<? extends GrantedAuthority> getAuthorities() {
         return grantedAuthorities;
     }
 

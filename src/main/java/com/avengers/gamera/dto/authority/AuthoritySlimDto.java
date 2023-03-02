@@ -7,6 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class AuthoritySlimDto {
+public class AuthoritySlimDto{
     private String name;
 }

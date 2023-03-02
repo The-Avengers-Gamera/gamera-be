@@ -13,8 +13,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
 import java.time.Instant;
 import java.util.Date;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -47,7 +49,7 @@ public class GameControllerTest {
         mockGamePostDto = GamePostDto.builder()
                 .name("Au")
                 .build();
-        Date releaseDate = Date.from(Instant.ofEpochSecond(2022-3-29));
+        Date releaseDate = Date.from(Instant.ofEpochSecond(2022 - 3 - 29));
 
         mockGameUpdateDto = GameUpdateDto.builder().name("Cn").country("d").description("ss").platform("DD")
                 .publishers("dd").scores(2.3).releaseDate(releaseDate).introduction("sdd").developers("hh").build();

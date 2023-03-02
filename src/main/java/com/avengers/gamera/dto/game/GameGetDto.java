@@ -1,4 +1,5 @@
 package com.avengers.gamera.dto.game;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

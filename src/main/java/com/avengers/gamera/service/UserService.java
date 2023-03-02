@@ -1,5 +1,7 @@
 package com.avengers.gamera.service;
 
+import com.avengers.gamera.dto.authority.AuthorityGetDto;
+import com.avengers.gamera.dto.authority.AuthoritySlimDto;
 import com.avengers.gamera.dto.user.UserGetDto;
 import com.avengers.gamera.dto.user.UserInfoDto;
 import com.avengers.gamera.dto.user.UserPostDto;
@@ -10,6 +12,7 @@ import com.avengers.gamera.exception.ResourceExistException;
 import com.avengers.gamera.exception.ResourceNotFoundException;
 import com.avengers.gamera.mapper.UserMapper;
 import com.avengers.gamera.repository.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,14 +43,14 @@ public class UserService {
     public UserGetDto createUser(UserPostDto userPostDto) {
         String email = userPostDto.getEmail();
         emailExists(email);
-        String encodedPwd =  passwordEncoder.encode(userPostDto.getPassword());
+        String encodedPwd = passwordEncoder.encode(userPostDto.getPassword());
         User user = userMapper.userPostDtoToUser(userPostDto);
         user.setPassword(encodedPwd);
         Set<Authority> authorities = new HashSet<>();
         Authority authority = authorityService.getByAuthorityName(defaultAuthority);
         authorities.add(authority);
         user.setAuthorities(authorities);
-        log.info("Saving new user {} to database, with pwd: {}", user.getEmail(), user.getPassword());
+        log.info("Saving new user {} to database", user.getEmail());
         return userMapper.userToUserGetDto(userRepository.save(user));
     }
 
@@ -67,15 +70,16 @@ public class UserService {
         return userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User", email));
     }
 
-    public void addAuthorityToUser(String email, String name) {
+    public String addAuthorityToUser(String email, String name) {
         User user = getByEmail(email);
         Authority authority = authorityService.getByAuthorityName(name);
-        log.info("Adding authority {} to user {}", email, name);
+        log.info("Adding authority {} to user {}", name, email);
         user.getAuthorities().add(authority);
+        return "Successfully added authority-" + name + " to user-" + email;
     }
 
     public List<UserGetDto> getAllUsers() {
-        return userRepository.findAll().stream().map(userMapper::userToUserGetDto).collect(Collectors.toList());
+        return userRepository.findAllByIsDeletedFalse().stream().map(userMapper::userToUserGetDto).collect(Collectors.toList());
     }
 
     public UserGetDto getUser(Long userId) {
@@ -83,7 +87,7 @@ public class UserService {
     }
 
     private User findUser(Long userId) {
-        return userRepository.findById(userId).orElseThrow(()-> new ResourceNotFoundException("User", userId));
+        return userRepository.findUserByIdAndIsDeletedFalse(userId).orElseThrow(() -> new ResourceNotFoundException("User", userId));
     }
 
     public UserGetDto updateUser(UserPutDto userPutDto, Long userId) {
@@ -91,13 +95,14 @@ public class UserService {
         user.setName(userPutDto.getName());
         user.setEmail(userPutDto.getEmail());
         user.setPassword(userPutDto.getPassword());
+        log.info(" User id {} was updated", userId);
         return userMapper.userToUserGetDto(userRepository.save(user));
     }
 
     public void deleteUser(Long userId) {
-        userRepository.deleteById(userId);
+        User user = findUser(userId);
+        user.setIsDeleted(true);
         log.info(" User id {} was deleted", userId);
     }
-
 
 }

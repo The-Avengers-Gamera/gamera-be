@@ -18,7 +18,7 @@ public class AuthorityController {
     private final AuthorityService authorityService;
 
     @GetMapping
-    public List<Authority> getAuthorityList(){
+    public List<AuthorityGetDto> getAuthorityList() {
         return authorityService.getAllAuthorities();
     }
 
@@ -27,8 +27,4 @@ public class AuthorityController {
 
         return authorityService.getAuthorityById(authorityId);
     }
-    
-
-
-
 }
