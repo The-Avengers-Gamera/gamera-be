@@ -18,7 +18,7 @@ public class CommentPostDto {
     @Size(max = 800, message = "Comment text must be less than 800 characters.")
     private String text;
 
-    private long parentId;
+    private Long parentId;
 
     @NotNull(message = "Article must be provided.")
     private Long articleId;

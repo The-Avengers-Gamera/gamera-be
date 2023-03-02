@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CommentGetDto {
-    private long id;
+    private Long id;
     private String text;
     private CommentSlimDto parentComment;
     private List<CommentSlimDto> childComment;

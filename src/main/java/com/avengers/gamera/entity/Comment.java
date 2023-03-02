@@ -43,5 +43,4 @@ public class Comment {
     @UpdateTimestamp
     private OffsetDateTime updatedTime;
 
-
 }

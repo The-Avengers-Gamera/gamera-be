@@ -56,13 +56,14 @@ public class CommentService {
         List<Comment> allChildComments = allResults.stream().filter(comment -> !Objects.isNull(comment.getParentComment())).toList();
         allParentComments.forEach(parent -> {
             parent.setChildComment(allChildComments.stream().filter(child -> Objects.equals(child.getParentComment().getId(), parent.getId())).map((childComments) -> {
-                CommentSlimDto comment = new CommentSlimDto();
-                comment.setId(childComments.getId());
-                comment.setUpdatedTime(childComments.getUpdatedTime());
-                comment.setCreatedTime(childComments.getCreatedTime());
-                comment.setText(childComments.getText());
-                comment.setUser(userMapper.userToUserSlimGetDto(childComments.getUser()));
-                return comment;
+                CommentSlimDto commentSlimDto = new CommentSlimDto();
+                commentSlimDto.setId(childComments.getId());
+                commentSlimDto.setParentComment(commentMapper.commentToCommentSlimGetDto(childComments.getParentComment()));
+                commentSlimDto.setUpdatedTime(childComments.getUpdatedTime());
+                commentSlimDto.setCreatedTime(childComments.getCreatedTime());
+                commentSlimDto.setText(childComments.getText());
+                commentSlimDto.setUser(userMapper.userToUserSlimGetDto(childComments.getUser()));
+                return commentSlimDto;
             }).toList());
         });
         Map<String, Object> commentResponse = new HashMap<>();
