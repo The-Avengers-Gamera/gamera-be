@@ -17,17 +17,9 @@ public interface ArticleMapper {
 
     Article articlePostDtoToArticle(ArticlePostDto articlePostDto);
 
-    @Mapping(target = "gameId",source = "game.id")
-    @Mapping(target = "gameName",source = "game.name")
-    @Mapping(target = "userId",source = "user.id")
-    @Mapping(target = "userName",source = "user.name")
     ArticleGetDto articleToArticleGetDto(Article article);
 
 
-    @Mapping(target = "gameId",source = "game.id")
-    @Mapping(target = "gameName",source = "game.name")
-    @Mapping(target = "userId",source = "user.id")
-    @Mapping(target = "userName",source = "user.name")
-    @Mapping(target = "text",expression = "java(articles.getText().substring(0, articles.getText().length()> 30? 30 : articles.getText().length()))")
+
     MiniArticleGetDto articleToMiniArticleGetDto(Article articles);
 }

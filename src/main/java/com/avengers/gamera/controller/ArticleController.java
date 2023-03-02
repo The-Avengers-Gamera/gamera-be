@@ -7,6 +7,7 @@ import com.avengers.gamera.dto.article.MiniArticleGetDto;
 import com.avengers.gamera.service.ArticleService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -38,13 +39,13 @@ public class ArticleController {
     }
     @GetMapping("/pages")
     @ResponseStatus(HttpStatus.OK)
-    public List<MiniArticleGetDto> getMiniArticles(@PageableDefault(size = 10) Pageable pageable){
+    public Page<MiniArticleGetDto> getMiniArticles(@PageableDefault(size = 10) Pageable pageable){
         return articleService.getMiniArticles(pageable);
     }
 
     @GetMapping("/types/{articleType}")
     @ResponseStatus(HttpStatus.OK)
-    public List<MiniArticleGetDto> getMiniArticlesByType(@PathVariable ArticleType articleType, @PageableDefault(size = 10) Pageable pageable){
+    public Page<MiniArticleGetDto> getMiniArticlesByType(@PathVariable ArticleType articleType, @PageableDefault(size = 10) Pageable pageable){
         return articleService.getMiniArticlesByType(articleType,pageable);
     }
 

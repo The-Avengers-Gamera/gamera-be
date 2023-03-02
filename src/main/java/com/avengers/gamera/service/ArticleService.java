@@ -15,6 +15,8 @@ import com.avengers.gamera.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -57,18 +59,20 @@ public class ArticleService {
         return article;
     }
 
-    public List<MiniArticleGetDto> getMiniArticles(Pageable pageable){
-        return articleRepository.findArticleByIsDeletedFalse(pageable)
+    public Page<MiniArticleGetDto> getMiniArticles(Pageable pageable){
+        List<MiniArticleGetDto> getMiniArticles = articleRepository.findArticleByIsDeletedFalse(pageable)
                 .stream()
                 .map(articleMapper::articleToMiniArticleGetDto)
                 .collect(Collectors.toList());
+        return new PageImpl<>(getMiniArticles, pageable, getMiniArticles.size());
     }
 
-    public List<MiniArticleGetDto> getMiniArticlesByType(ArticleType articleType, Pageable pageable) {
-        return articleRepository.findArticlesByTypeAndIsDeletedFalse(articleType, pageable)
+    public Page<MiniArticleGetDto> getMiniArticlesByType(ArticleType articleType, Pageable pageable) {
+        List<MiniArticleGetDto> getMiniArticles=articleRepository.findArticlesByTypeAndIsDeletedFalse(articleType, pageable)
                 .stream()
                 .map(articleMapper::articleToMiniArticleGetDto)
                 .collect(Collectors.toList());
+        return new PageImpl<>(getMiniArticles, pageable, getMiniArticles.size());
     }
 
 
