@@ -1,7 +1,6 @@
 package com.avengers.gamera.entity;
 
 
-import com.avengers.gamera.dto.authority.AuthorityGetDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 
-
 @Service
 @RequiredArgsConstructor
 public class GenreService {
@@ -33,12 +32,12 @@ public class GenreService {
         return findGenre(id);
     }
 
-    public List<Genre> saveAllGenre(List<Genre> genreNames){
-        List<GenrePostDto> genrePostDtoList=genreNames.stream().map(genreMapper::GenreToGenrePostDto).toList();
+    public List<Genre> saveAllGenre(List<Genre> genreNames) {
+        List<GenrePostDto> genrePostDtoList = genreNames.stream().map(genreMapper::GenreToGenrePostDto).toList();
         return createMultipleGenre(genrePostDtoList);
     }
 
-    public List<Genre> getAllGenre(List<Genre> genreNames){
+    public List<Genre> getAllGenre(List<Genre> genreNames) {
         List<Long> genreIdList = genreNames.stream().map(Genre::getId).toList();
         return genreRepository.findAllById(genreIdList);
     }
