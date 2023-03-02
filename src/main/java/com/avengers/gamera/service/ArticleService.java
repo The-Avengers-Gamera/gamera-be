@@ -38,7 +38,6 @@ public class ArticleService {
 
         article.setTitle(articlePutDto.getTitle());
         article.setText(articlePutDto.getText());
-        article.setType(articlePutDto.getType());
 
         log.info("Updated article with id "+articleId+" in the database.");
         return articleMapper.articleToArticleGetDto(articleRepository.save(article));
