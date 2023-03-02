@@ -37,7 +37,6 @@ public class SecurityConfig {
     private List<String> allowedMethods;
     private List<String> allowedHeaders;
 
-
     private final GameraUserDetailService gameraUserDetailService;
     private final SecretKey secretKey;
     private final JwtConfig jwtConfig;
@@ -63,7 +62,8 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests(authorize ->
-                        authorize.antMatchers("/**").permitAll()
+                        authorize
+                                .antMatchers("/**").permitAll()
                                 .anyRequest().authenticated())
                 .addFilter(new JwtUsernameAndPasswordAuthFilter(authenticationManager(), secretKey, jwtConfig, userService))
                 .addFilterAfter(jwtTokenVerifyFilter, JwtUsernameAndPasswordAuthFilter.class)
@@ -77,7 +77,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(){
+    public AuthenticationManager authenticationManager() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setUserDetailsService(gameraUserDetailService);
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());

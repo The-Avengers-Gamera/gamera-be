@@ -18,22 +18,22 @@ public class GameController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public GameGetDto createGame (@Valid @RequestBody GamePostDto gamePostDto){
+    public GameGetDto createGame(@Valid @RequestBody GamePostDto gamePostDto) {
         return gameService.createGame(gamePostDto);
     }
 
     @GetMapping("/{id}")
-    public  GameGetDto getGame(@PathVariable Long id){
+    public GameGetDto getGame(@PathVariable Long id) {
         return gameService.getGame(id);
     }
 
     @PutMapping("/{id}")
-    public GameGetDto updateGame(@Valid @RequestBody GameUpdateDto gameUpdateDto, @PathVariable Long id){
+    public GameGetDto updateGame(@Valid @RequestBody GameUpdateDto gameUpdateDto, @PathVariable Long id) {
         return gameService.updateGame(gameUpdateDto, id);
     }
 
     @DeleteMapping("/{id}")
-    public String deleteGame(@PathVariable Long id){
+    public String deleteGame(@PathVariable Long id) {
         return gameService.deleteGame(id);
     }
 }
