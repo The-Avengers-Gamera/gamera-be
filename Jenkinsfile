@@ -10,6 +10,7 @@ pipeline {
         DB_URL = credentials('DB_URL')
         DB_USERNAME = credentials('DB_USERNAME')
         DB_PASSWORD = credentials('DB_PASSWORD')
+        ECR_PASSWORD_STDIN = credentials('ECR_PASSWORD_STDIN')
     }
 
     stages {
