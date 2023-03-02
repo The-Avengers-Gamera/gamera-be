@@ -2,29 +2,40 @@ pipeline {
     agent any
 
     environment {
-
+        AWS_ACCOUNT_ID='738917964840'
+        AWS_DEFAULT_REGION='ap-southeast-2'
+        REPO_IMAGE_NAME='gamera_be'
+        REPO_IMAGE_TAG='latest'
+        AWS_CREDENTIALS="AWS_CREDENTIAL_JENKINS_CICD"
     }
 
     stages {
         stage('building image') {
             steps {
-                echo 'docker building images'
-                sh 'aws cli login'
-                sh 'docker build -t '
+                echo 'Building docker images'
+                sh 'aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com'
+                sh 'docker build -t ${REPO_IMAGE_NAME}:$BUILD_NUMBER'
             }
         }
-        stage('pushing to ECR') {
+        stage('Pushing to ECR') {
             steps {
                 echo 'pushing image to ECR'
-                sh 'docker tag '
-                sh 'docker push'
+                sh 'docker tag ${REPO_IMAGE_NAME}:$BUILD_NUMBER ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${REPO_IMAGE_NAME}:${REPO_IMAGE_TAG}'
+                sh 'docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${REPO_IMAGE_NAME}:${REPO_IMAGE_TAG}'
             }
         }
-        stage('deploying to ECS') {
+        stage('Deploying to ECS') {
             steps {
                 echo 'deploying image to ECS cluster service'
-                sh 'aws cli'
+                sh 'aws ecs update-service --cluster gamera_be_cluster --service gamera_be_service --force-new-deployment'
             }
         }
+        // stage('Clean old Image') {
+        //     steps {
+        //         sh 'docker image ls'
+        //         sh 'docker image prune --force --filter "until=2h"'
+        //         echo "No image to delete..." 
+        //     }
+        // }
     }
 }
