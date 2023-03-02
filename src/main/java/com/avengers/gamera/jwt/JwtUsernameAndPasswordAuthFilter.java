@@ -75,9 +75,7 @@ public class JwtUsernameAndPasswordAuthFilter extends UsernamePasswordAuthentica
                 .signWith(secretKey)
                 .compact();
 
-
         UserInfoDto userInfo = userService.getUserInfo(email);
-
         ObjectMapper objectMapper = new ObjectMapper();
         String userInfoJson = objectMapper.writeValueAsString(userInfo);
 

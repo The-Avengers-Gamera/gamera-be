@@ -46,7 +46,7 @@ public class ArticleService {
         Article article = articleMapper.articlePostDtoToArticle(articlePostDto);
         String img = article.getCoverImgUrl();
         if (StringUtils.isBlank(img)) {
-            article.setCoverImgUrl("https://spicsum.photos/800/400");
+            article.setCoverImgUrl("https://picsum.photos/800/400");
         }
         Game game = gameRepository.findById(articlePostDto.getGameId()).orElseThrow(()->
                 new ResourceNotFoundException("Related game with ID("+ articlePostDto.getGameId() +")" )

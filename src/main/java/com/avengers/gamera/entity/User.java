@@ -1,6 +1,7 @@
 package com.avengers.gamera.entity;
 
 
+import com.avengers.gamera.dto.authority.AuthorityGetDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -52,4 +53,7 @@ public class User {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
     private List<Article> articles;
+
+    @Builder.Default
+    private Boolean isDeleted = false;
 }

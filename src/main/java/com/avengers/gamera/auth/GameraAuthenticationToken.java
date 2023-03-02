@@ -13,13 +13,13 @@ import java.util.Map;
 public class GameraAuthenticationToken extends UsernamePasswordAuthenticationToken {
     private final Long userId;
 
-    public GameraAuthenticationToken(Long userId, Object principal, Object credential, Collection<? extends GrantedAuthority> authorities){
-        super(principal,credential,authorities);
-        this.userId=userId;
+    public GameraAuthenticationToken(Long userId, Object principal, Object credential, Collection<? extends GrantedAuthority> authorities) {
+        super(principal, credential, authorities);
+        this.userId = userId;
     }
 
     @Override
-    public Map<String,Long> getDetails(){
+    public Map<String, Long> getDetails() {
         return Map.of("UserId", userId);
     }
 }

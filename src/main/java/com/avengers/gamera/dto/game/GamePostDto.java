@@ -1,12 +1,15 @@
 package com.avengers.gamera.dto.game;
 
+import com.avengers.gamera.entity.Genre;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -29,9 +32,11 @@ public class GamePostDto {
     private String developers;
 
     private String publishers;
-    
+
     private String introduction;
 
     private String description;
+
+    private List<Genre> genreList;
 
 }

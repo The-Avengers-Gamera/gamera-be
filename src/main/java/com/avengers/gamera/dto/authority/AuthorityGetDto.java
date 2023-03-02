@@ -4,9 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
 @Setter
+@Getter
 @AllArgsConstructor
-public class AuthoritySlimDto{
+public class AuthorityGetDto {
+    private long id;
+
     private String name;
 }
