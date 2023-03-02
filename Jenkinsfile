@@ -48,8 +48,8 @@ pipeline {
                     --build-arg DB_PASSWORD=${DB_PASSWORD} -t gamera_be .'
 
                 //push the Dockerfile to ECR
-                sh 'docker tag gamera_be:latest ${ECR_PASSWORD_STDIN}/gamera_be:latest'
-                sh 'docker push ${ECR_PASSWORD_STDIN}/gamera_be:latest'
+                sh 'docker tag gamera_be:latest ${ECR_PASSWORD_STDIN}'
+                sh 'docker push ${ECR_PASSWORD_STDIN}'
 
                 //After the docker is uploaded, delete the local docker image
                 sh 'docker images -qa | xargs docker image rm'
