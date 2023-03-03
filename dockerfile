@@ -12,7 +12,7 @@ ENV DB_PASSWORD=${DB_PASSWORD}
 
 WORKDIR /app
 
-COPY build/libs/*.jar app.jar
+COPY . .
 
 EXPOSE 8080
 
