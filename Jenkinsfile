@@ -57,9 +57,10 @@ pipeline {
 
                 //Remove the image built to release jenkins node's storage
                 sh 'docker images gamera-service -q | xargs docker image rm -f'
-                /*    
-                    Last, user ECS to pull the image and run the service
-                */
+
+                //Redeploy the service to ECS cluster with new task defination
+                sh 'aws ecs update-service --cluster DevGameraCluster \
+                    --service dev-gamera-service --force-new-deployment'
             }
         }
     }
