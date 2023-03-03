@@ -32,7 +32,7 @@ pipeline{
                 --build-arg DB_PASSWORD=${DB_PASSWORD} -t gamera-image .'
             }
         }
-        stage('Push generated image to ECR')
+        stage('Push generated image to ECR'){
             steps{
                 sh """
                 # !bin/sh
@@ -42,7 +42,7 @@ pipeline{
                 docker push ${REPOSITORY_URI}:latest
                 """
             }
-
+        }
         /*stage('Deploy image to ECS')
             when {branch 'main'}
             steps{
@@ -54,6 +54,6 @@ pipeline{
                 
                 """
             }*/
-        }
     }
+}
 
