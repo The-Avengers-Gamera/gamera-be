@@ -21,9 +21,7 @@ pipeline {
             steps {
                 echo 'Building docker images'
                 // sh 'aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${ECR_PASSWORD_STDIN}'
-                sh 'sudo docker build --build-arg SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL} \ 
-                --build-arg SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME} \
-                --build-arg SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD} -t ${REPO_IMAGE_NAME}:${REPO_IMAGE_TAG} --no-cache .'
+                sh 'sudo docker build --build-arg SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL} --build-arg SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME} --build-arg SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD} -t ${REPO_IMAGE_NAME}:${REPO_IMAGE_TAG} --no-cache .'
             }
         }
         stage('Pushing to ECR') {
