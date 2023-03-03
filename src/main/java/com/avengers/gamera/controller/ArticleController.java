@@ -30,11 +30,11 @@ public class ArticleController {
         return articleService.createArticle(articlePostDto);
     }
 
-    @PutMapping
+    @PutMapping("/{articleId}")
     @Operation(summary = "Update article by article id")
     @ResponseStatus(HttpStatus.OK)
-    public ArticleGetDto updateArticle(@RequestBody ArticlePutDto articlePutDto){
-        return articleService.updateArticle(articlePutDto);
+    public ArticleGetDto updateArticleById(@RequestBody ArticlePutDto articlePutDto,@PathVariable Long articleId){
+        return articleService.updateArticle(articlePutDto,articleId);
     }
 
     @GetMapping("/pages")

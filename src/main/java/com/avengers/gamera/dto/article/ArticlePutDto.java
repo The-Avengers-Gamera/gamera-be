@@ -9,8 +9,6 @@ import javax.validation.constraints.Size;
 @Getter
 @Setter
 public class ArticlePutDto {
-    private Long articleId;
-
     @NotBlank(message = "Article title must be provided")
     @Size(max = 255, message = "Article title can not be more than 255 characters.")
     private String title;
