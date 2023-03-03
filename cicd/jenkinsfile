@@ -16,6 +16,18 @@ pipeline {
     }
 
     stages {
+        stage('build') {
+            steps {
+                echo 'starts build...'
+                sh './gredlew clean build'
+            }
+        }
+        stage('test') {
+            steps {
+                echo 'starts test....'
+                sh './gradlew clean test'
+            }
+        }
         stage('building image') {
             steps {
                 echo 'Building docker images'
@@ -30,18 +42,18 @@ pipeline {
                 sh 'docker push ${aws_ecr_docker_password_stdin}/${REPO_IMAGE_NAME}:${REPO_IMAGE_TAG}'
             }
         }
-        // stage('Deploying to ECS') {
-        //     steps {
-        //         echo 'deploying image to ECS cluster service'
-        //         sh 'aws ecs update-service --cluster gamera_be_cluster --service gamera_be_service --force-new-deployment'
-        //     }
-        // }
-        // stage('Clean old Image') {
-        //     steps {
-        //         sh 'docker image ls'
-        //         sh 'docker image prune --force --filter "until=2h"'
-        //         echo "No image to delete..." 
-        //     }
-        // }
+        stage('Deploying to ECS') {
+            steps {
+                echo 'deploying image to ECS cluster service'
+                sh 'aws ecs update-service --cluster gamera_be_cluster --service gamera_be_service --force-new-deployment'
+            }
+        }
+        stage('Clean old Image') {
+            steps {
+                sh 'docker image ls'
+                sh 'docker image prune --force --filter "until=2h"'
+                echo "No image to delete..." 
+            }
+        }
     }
 }
