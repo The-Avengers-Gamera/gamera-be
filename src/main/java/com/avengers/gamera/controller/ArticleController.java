@@ -3,6 +3,7 @@ package com.avengers.gamera.controller;
 import com.avengers.gamera.constant.ArticleType;
 import com.avengers.gamera.dto.article.ArticleGetDto;
 import com.avengers.gamera.dto.article.ArticlePostDto;
+import com.avengers.gamera.dto.article.ArticlePutDto;
 import com.avengers.gamera.dto.article.MiniArticleGetDto;
 import com.avengers.gamera.service.ArticleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,8 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-
-import java.util.List;
 
 @RestController
 @RequestMapping("articles")
@@ -31,12 +30,13 @@ public class ArticleController {
         return articleService.createArticle(articlePostDto);
     }
 
-    @PutMapping("/update/{articleId}")
+    @PutMapping
     @Operation(summary = "Update article by article id")
     @ResponseStatus(HttpStatus.OK)
-    public ArticleGetDto updateArticle(@PathVariable Long articleId,@RequestBody ArticlePostDto articlePostDto){
-        return articleService.updateArticle(articleId,articlePostDto);
+    public ArticleGetDto updateArticle(@RequestBody ArticlePutDto articlePutDto){
+        return articleService.updateArticle(articlePutDto);
     }
+
     @GetMapping("/pages")
     @ResponseStatus(HttpStatus.OK)
     public Page<MiniArticleGetDto> getMiniArticles(@PageableDefault(size = 10) Pageable pageable){

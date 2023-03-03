@@ -4,6 +4,7 @@ import com.avengers.gamera.constant.ArticleType;
 import com.avengers.gamera.dto.article.ArticleGetDto;
 import com.avengers.gamera.dto.article.ArticlePostDto;
 import com.avengers.gamera.dto.article.MiniArticleGetDto;
+import com.avengers.gamera.dto.article.ArticlePutDto;
 import com.avengers.gamera.entity.Article;
 import com.avengers.gamera.entity.Game;
 import com.avengers.gamera.entity.User;
@@ -19,8 +20,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.time.OffsetDateTime;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -93,15 +92,14 @@ public class ArticleService {
        return "The article with ID("+ articleId +") has been deleted";
     }
 
-    public ArticleGetDto updateArticle( Long articleId,ArticlePostDto articlePostDto){
+    public ArticleGetDto updateArticle (ArticlePutDto articlePutDto){
+        Long articleId = articlePutDto.getArticleId();
+        Article article = articleRepository.findById(articleId).orElseThrow(() -> new ResourceNotFoundException("Article",articleId));
 
-        Article findArticle = articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(() -> (new ResourceNotFoundException("Article with id("+ articleId +")")));
-        Article article = articlePostDtoToArticle(articlePostDto);
-        article.setId(articleId);
-        article.setCreatedTime(findArticle.getCreatedTime());
-        article.setUpdatedTime(OffsetDateTime.now());
-        log.info("Updating article ==>> ID: " + articleId +"title: "+ articlePostDto.getTitle()+"update time: "+OffsetDateTime.now());
+        article.setTitle(articlePutDto.getTitle());
+        article.setText(articlePutDto.getText());
+
+        log.info("Updated article with id "+articleId+" in the database.");
         return articleMapper.articleToArticleGetDto(articleRepository.save(article));
     }
-
 }
