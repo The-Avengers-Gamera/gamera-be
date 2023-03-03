@@ -1,11 +1,9 @@
 # syntax=docker/dockerfile:1
 
 # get the base image
-FROM eclipse-temurin:17-jdk-jammy AS build
-WORKDIR /app
+FROM openjdk:17-alpine
 
 # copy everything to app and build
-COPY . .
 
 ARG SPRING_DATASOURCE_URL
 ARG SPRING_DATASOURCE_USERNAME
@@ -16,12 +14,9 @@ ENV SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
 ENV SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
 ENV SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
 
-RUN ./gradlew clean build
+WORKDIR /app
 
-RUN ./gradlew clean test
+COPY . .
 
-# build image
-# FROM eclipse-temurin:17-jdk-jammy
-# COPY --from=build /app/build/libs/my-app.jar .
 EXPOSE 8080
 ENTRYPOINT ["./gradlew", "bootRun"]
