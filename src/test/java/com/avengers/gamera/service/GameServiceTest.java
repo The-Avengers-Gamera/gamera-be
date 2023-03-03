@@ -52,7 +52,7 @@ public class GameServiceTest {
             .updatedTime(OffsetDateTime.now())
             .genreList(updatedGenreList)
             .build();
-    private final Long mockGameId=mockGame.getId();
+    private final Long mockGameId = mockGame.getId();
 
     private final GameGetDto mockGameGetDto = GameGetDto.builder()
             .id(1L)

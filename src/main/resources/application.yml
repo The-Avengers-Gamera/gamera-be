@@ -12,6 +12,9 @@ spring:
   flyway:
     enabled: true
     schemas: gamera
+    url: ${spring.datasource.url}
+    user: ${spring.datasource.username}
+    password: ${spring.datasource.password}
   jpa:
     properties:
       hibernate:

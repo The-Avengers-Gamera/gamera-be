@@ -1,7 +1,5 @@
 package com.avengers.gamera.service;
 
-import com.avengers.gamera.dto.authority.AuthorityGetDto;
-import com.avengers.gamera.dto.authority.AuthoritySlimDto;
 import com.avengers.gamera.dto.user.UserGetDto;
 import com.avengers.gamera.dto.user.UserInfoDto;
 import com.avengers.gamera.dto.user.UserPostDto;
@@ -12,7 +10,6 @@ import com.avengers.gamera.exception.ResourceExistException;
 import com.avengers.gamera.exception.ResourceNotFoundException;
 import com.avengers.gamera.mapper.UserMapper;
 import com.avengers.gamera.repository.UserRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,7 +83,7 @@ public class UserService {
         return userMapper.userToUserGetDto(findUser(userId));
     }
 
-    private User findUser(Long userId) {
+    public User findUser(Long userId) {
         return userRepository.findUserByIdAndIsDeletedFalse(userId).orElseThrow(() -> new ResourceNotFoundException("User", userId));
     }
 
