@@ -55,13 +55,24 @@ pipeline {
                 sh 'docker push ${ECR_PASSWORD_STDIN}:${BUILD_NUMBER}'
                 sh 'docker push ${ECR_PASSWORD_STDIN}:latest'
 
-                //Remove the image built to release jenkins node's storage
-                sh 'docker images gamera-service -q | xargs docker image rm -f'
-
                 //Redeploy the service to ECS cluster with new task defination
                 sh 'aws ecs update-service --cluster DevGameraCluster \
                     --service dev-gamera-service --force-new-deployment'
             }
+        }
+    }
+
+    post {
+        always {
+            //Clean the workspace after every pipeline build process
+            echo 'Cleaning workspace'
+            sh 'docker images gamera-service -q | xargs docker image rm -f'
+            cleanWs()
+        }
+
+        failure {
+            //Send error messages to developer to debug
+            echo 'Build fail, sending error message to developer'
         }
     }
 }
