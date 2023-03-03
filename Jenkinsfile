@@ -43,15 +43,20 @@ pipeline {
             steps {
                 echo 'Deploying...'
                 //Generate docker image from Dockerfile
-                //Use jenkins credentials as input args
                 sh 'sudo docker build --build-arg DB_URL=${DB_URL} \
                     --build-arg DB_USERNAME=${DB_USERNAME} \
-                    --build-arg DB_PASSWORD=${DB_PASSWORD} -t gamera_be .'
+                    --build-arg DB_PASSWORD=${DB_PASSWORD} -t gamera-service .'
+
+                //Tag the docker built, one for version tag, one for latest tag
+                sh 'docker tag gamera-service ${ECR_PASSWORD_STDIN}:${BUILD_NUMBER}'
+                sh 'docker tag gamera-service ${ECR_PASSWORD_STDIN}:latest'
 
                 //push the Dockerfile to ECR
-                sh 'docker tag gamera_be:latest ${ECR_PASSWORD_STDIN}'
-                sh 'docker push ${ECR_PASSWORD_STDIN}'
-                
+                sh 'docker push ${ECR_PASSWORD_STDIN}:${BUILD_NUMBER}'
+                sh 'docker push ${ECR_PASSWORD_STDIN}:latest'
+
+                //Remove the image built to release jenkins node's storage
+                sh 'docker images gamera-service -q | xargs docker image rm -f'
                 /*    
                     Last, user ECS to pull the image and run the service
                 */
