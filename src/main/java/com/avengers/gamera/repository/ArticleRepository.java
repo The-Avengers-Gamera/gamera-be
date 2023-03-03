@@ -14,4 +14,8 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     Page<Article> findArticlesByTypeAndIsDeletedFalse(EArticleType EArticleType, Pageable pageable);
 
     Optional<Article> findArticleByIdAndIsDeletedFalse(Long id);
+
+    List<Article> findArticleByGamePlatformAndTypeAndIsDeletedFalse (String platform, ArticleType articleType, Pageable pageable);
+
+    List<Article> findArticleByGamePlatformAndIsDeletedFalse(String platform, Pageable pageable);
 }
