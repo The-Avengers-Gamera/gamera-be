@@ -13,9 +13,10 @@ ARG SPRING_DATASOURCE_PASSWORD
 RUN echo "build datasourse info"
 RUN echo ${SPRING_DATASOURCE_URL} ${SPRING_DATASOURCE_USERNAME} ${SPRING_DATASOURCE_PASSWORD}
 
+RUN ./gradlew clean test
+
 RUN ./gradlew clean build
 
-RUN ./gradlew clean test
 # build image
 # FROM eclipse-temurin:17-jdk-jammy
 # COPY --from=build /app/build/libs/my-app.jar .
