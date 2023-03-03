@@ -1,0 +1,45 @@
+pipeline{
+
+    environment{
+        REPOSITORY_URI = '738917964840.dkr.ecr.ap-southeast-2.amazonaws.com/gamera_be'
+        DB_URL = credentials('DB_URL')
+        DB_USERNAME = credentials('DB_USERNAME')
+        DB_PASSWORD = credentials('DB_PASSWORD')
+        REGION = 'ap-southeast-2'
+    }
+    
+    agent any
+    
+    stages{
+        stage('Build'){
+            steps{
+                echo 'Building...'
+                sh './gradlew build'
+            }
+        }
+        stage('Test'){
+            steps{
+                echo 'Testing...'
+                sh './gradlew clean test'
+            }
+        stage('Build image'){
+            steps{
+                echo 'Building Docker image...'
+                sh 'docker build --build-arg DB_URL=${DB_URL} \ 
+                --build-arg DB_USERNAME=${DB_USERNAME} \
+                --build-arg DB_PASSWORD=${DB_PASSWORD} -t gamera-image .'
+            }
+        }
+        stage('Push generated image to ECR')
+            steps{
+                sh """
+                # !bin/sh
+                echo 'Login into ECR and push the image...'
+                aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${REPOSITORY_URI}
+                docker tag gamera_image:latest ${REPOSITORY_URI}:latest
+                docker push ${REPOSITORY_URI}:latest
+                """
+            }
+        }
+    }
+}
