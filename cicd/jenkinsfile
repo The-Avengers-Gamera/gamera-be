@@ -16,7 +16,7 @@ pipeline {
     }
 
     stages {
-        stage(git clone) {
+        stage('git clone') {
             steps {
                 echo 'git clone branch'
                 checkout([
