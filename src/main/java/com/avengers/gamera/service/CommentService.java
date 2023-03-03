@@ -32,7 +32,7 @@ public class CommentService {
     public CommentGetDto createNewComment(CommentPostDto commentPostDto) {
         Comment comment = commentMapper.commentPostDtoToComment(commentPostDto);
         comment.setUser(userService.findUser(commentPostDto.getAuthorId()));
-        if (commentPostDto.getParentId() != 0L) {
+        if (commentPostDto.getParentId() != null) {
             comment.setParentComment(find(commentPostDto.getParentId()));
         }
         comment.setArticle(findArticleById(commentPostDto.getArticleId()));
