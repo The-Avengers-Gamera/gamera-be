@@ -26,12 +26,12 @@ pipeline {
                 sh 'docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${REPO_IMAGE_NAME}:${REPO_IMAGE_TAG}'
             }
         }
-        stage('Deploying to ECS') {
-            steps {
-                echo 'deploying image to ECS cluster service'
-                sh 'aws ecs update-service --cluster gamera_be_cluster --service gamera_be_service --force-new-deployment'
-            }
-        }
+        // stage('Deploying to ECS') {
+        //     steps {
+        //         echo 'deploying image to ECS cluster service'
+        //         sh 'aws ecs update-service --cluster gamera_be_cluster --service gamera_be_service --force-new-deployment'
+        //     }
+        // }
         // stage('Clean old Image') {
         //     steps {
         //         sh 'docker image ls'
