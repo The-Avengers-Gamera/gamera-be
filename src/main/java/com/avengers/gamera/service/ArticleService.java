@@ -21,6 +21,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -92,12 +93,12 @@ public class ArticleService {
        return "The article with ID("+ articleId +") has been deleted";
     }
 
-    public ArticleGetDto updateArticle (ArticlePutDto articlePutDto){
-        Long articleId = articlePutDto.getArticleId();
+    public ArticleGetDto updateArticle (ArticlePutDto articlePutDto, Long articleId){
         Article article = articleRepository.findById(articleId).orElseThrow(() -> new ResourceNotFoundException("Article",articleId));
 
         article.setTitle(articlePutDto.getTitle());
         article.setText(articlePutDto.getText());
+        article.setUpdatedTime(OffsetDateTime.now());
 
         log.info("Updated article with id "+articleId+" in the database.");
         return articleMapper.articleToArticleGetDto(articleRepository.save(article));
