@@ -16,6 +16,19 @@ pipeline {
     }
 
     stages {
+        stage(git clone) {
+            steps {
+                echo 'git clone branch'
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: 'GF-267-DevOps/Ron-backend-ECS-ECR']],
+                    doGenerateSubmoduleConfigurations: false,
+                    extensions: [],
+                    submoduleCfg: [],
+                    userRemoteConfigs: [[url: 'https://github.com/The-Avengers-Gamera/gamera-be']]
+                ])
+            }
+        }
         stage('build') {
             steps {
                 echo 'starts build...'
