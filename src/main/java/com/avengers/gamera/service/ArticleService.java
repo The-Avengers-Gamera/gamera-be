@@ -103,4 +103,22 @@ public class ArticleService {
         log.info("Updated article with id "+articleId+" in the database.");
         return articleMapper.articleToArticleGetDto(articleRepository.save(article));
     }
+    public Page<MiniArticleGetDto> getMiniArticlesByPlatform(Pageable pageable, String platform){
+        List<MiniArticleGetDto> miniArticleGetDtoList=articleRepository.findArticleByGamePlatformAndIsDeletedFalse(platform,pageable)
+                .stream()
+                .map(articleMapper::articleToMiniArticleGetDto)
+                .toList();
+    return new PageImpl<>(miniArticleGetDtoList,pageable,miniArticleGetDtoList.size());
+    }
+
+    public Page<MiniArticleGetDto> getMiniArticlesByPlatformAndType(ArticleType articleType, Pageable pageable, String platform) {
+        List<MiniArticleGetDto> miniArticleGetDtoList=articleRepository.findArticleByGamePlatformAndTypeAndIsDeletedFalse(platform,articleType,pageable)
+                .stream()
+                .map(articleMapper::articleToMiniArticleGetDto)
+                .toList();
+        return new PageImpl<>(miniArticleGetDtoList,pageable,miniArticleGetDtoList.size());
+
+
+
+    }
 }

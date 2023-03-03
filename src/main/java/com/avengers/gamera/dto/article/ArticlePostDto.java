@@ -2,6 +2,7 @@ package com.avengers.gamera.dto.article;
 
 import com.avengers.gamera.constant.ArticleType;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +15,7 @@ import javax.validation.constraints.Size;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class ArticlePostDto{
 
     private String coverImgUrl;

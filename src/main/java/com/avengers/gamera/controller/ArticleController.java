@@ -55,6 +55,18 @@ public class ArticleController {
         return articleService.getArticleById(articleId);
     }
 
+    @GetMapping("/types/{articleType}/platforms/{platform}")
+    @ResponseStatus(HttpStatus.OK)
+    public Page<MiniArticleGetDto> getMiniArticlesByTypeAndPlatform(@PathVariable String platform,@PathVariable ArticleType articleType, @PageableDefault(size = 10) Pageable pageable) {
+            return articleService.getMiniArticlesByPlatformAndType(articleType,pageable,platform);
+    }
+
+    @GetMapping("/platforms/{platform}")
+    @ResponseStatus(HttpStatus.OK)
+    public Page<MiniArticleGetDto> getMiniArticlesByPlatform(@PathVariable String platform, @PageableDefault(size = 10) Pageable pageable) {
+        return articleService.getMiniArticlesByPlatform(pageable,platform);
+    }
+
     @DeleteMapping("/{articleId}")
     @ResponseStatus(HttpStatus.OK)
     public String deleteArticleById(@PathVariable Long articleId) {
