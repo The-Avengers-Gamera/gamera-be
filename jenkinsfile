@@ -23,6 +23,7 @@ pipeline{
                 echo 'Testing...'
                 sh './gradlew clean test'
             }
+        }
         stage('Build image'){
             steps{
                 echo 'Building Docker image...'
