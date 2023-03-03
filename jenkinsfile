@@ -6,6 +6,7 @@ pipeline{
         DB_USERNAME = credentials('DB_USERNAME')
         DB_PASSWORD = credentials('DB_PASSWORD')
         REGION = 'ap-southeast-2'
+        FAMILY = 'DevGameraCluster'
     }
     
     agent any
@@ -40,6 +41,18 @@ pipeline{
                 docker push ${REPOSITORY_URI}:latest
                 """
             }
+
+        /*stage('Deploy image to ECS')
+            when {branch 'main'}
+            steps{
+                sh """
+                #!bin/sh
+
+                echo 'Registering the ECS task definition'
+                aws ecs register-task-definition --family ${FAMILY} --container-definitions '[{"name": "gamera-be", "image": "gamera-image"}]' 
+                
+                """
+            }*/
         }
     }
 }
