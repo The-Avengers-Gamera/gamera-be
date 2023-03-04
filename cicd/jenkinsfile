@@ -9,7 +9,7 @@ pipeline {
         REPO_IMAGE_NAME='gamera_be'
         REPO_IMAGE_TAG='latest'
         AWS_CREDENTIALS="AWS_CREDENTIAL_JENKINS_CICD"
-        aws_ecr_docker_password_stdin='aws_ecr_docker_password_stdin'
+        aws_ecr_docker_password_stdin='AWS_DOCKER_PUSH_ECR_STDIN'
         SPRING_DATASOURCE_URL= 'SPRING_DATASOURCE_URL'
         SPRING_DATASOURCE_USERNAME= 'SPRING_DATASOURCE_USERNAME'
         SPRING_DATASOURCE_PASSWORD= 'SPRING_DATASOURCE_PASSWORD'
@@ -44,15 +44,15 @@ pipeline {
         stage('building image') {
             steps {
                 echo 'Building docker images'
-                sh 'aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${aws_ecr_docker_password_stdin}'
+                sh 'aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_DOCKER_PUSH_ECR_STDIN}'
                 sh 'sudo docker build --build-arg SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL} --build-arg SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME} --build-arg SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD} -t ${REPO_IMAGE_NAME}:${REPO_IMAGE_TAG} --no-cache .'
             }
         }
         stage('Pushing to ECR') {
             steps {
                 echo 'pushing image to ECR'
-                sh 'docker tag ${REPO_IMAGE_NAME}:${REPO_IMAGE_TAG} ${aws_ecr_docker_password_stdin}/${REPO_IMAGE_NAME}:${REPO_IMAGE_TAG}'
-                sh 'docker push ${aws_ecr_docker_password_stdin}/${REPO_IMAGE_NAME}:${REPO_IMAGE_TAG}'
+                sh 'docker tag ${REPO_IMAGE_NAME}:${REPO_IMAGE_TAG} ${AWS_DOCKER_PUSH_ECR_STDIN}/${REPO_IMAGE_NAME}:${REPO_IMAGE_TAG}'
+                sh 'docker push ${AWS_DOCKER_PUSH_ECR_STDIN}/${REPO_IMAGE_NAME}:${REPO_IMAGE_TAG}'
             }
         }
         // stage('Deploying to ECS') {
