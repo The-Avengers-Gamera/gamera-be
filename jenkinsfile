@@ -38,22 +38,19 @@ pipeline{
                 # !bin/sh
                 echo 'Login into ECR and push the image...'
                 aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${REPOSITORY_URI}
-                docker tag gamera_image:latest ${REPOSITORY_URI}:latest
+                docker tag gamera-image:latest ${REPOSITORY_URI}:latest
                 docker push ${REPOSITORY_URI}:latest
                 """
             }
         }
-        /*stage('Deploy image to ECS')
-            when {branch 'main'}
+        stage('Deploy image to ECS')
             steps{
                 sh """
                 #!bin/sh
-
-                echo 'Registering the ECS task definition'
                 aws ecs register-task-definition --family ${FAMILY} --container-definitions '[{"name": "gamera-be", "image": "gamera-image"}]' 
                 
                 """
-            }*/
+            }
     }
 }
 
