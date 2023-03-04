@@ -19,11 +19,6 @@ import java.util.Map;
 public class CommentController {
     private final CommentService commentService;
 
-    @GetMapping("/articles/{articleId}")
-    public Map<String, Object> getCommentsByArticleId(@PathVariable Long articleId) {
-        return commentService.getCommentByArticleId(articleId);
-    }
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CommentGetDto createComment(@Valid @RequestBody CommentPostDto commentPostDto) {
@@ -41,8 +36,8 @@ public class CommentController {
     }
 
     @DeleteMapping("/{commentId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long commentId) {
-        commentService.deleteComment(commentId);
+    @ResponseStatus(HttpStatus.OK)
+    public String delete(@PathVariable Long commentId) {
+        return commentService.deleteComment(commentId);
     }
 }

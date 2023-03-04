@@ -3,16 +3,15 @@ package com.avengers.gamera.service;
 import com.avengers.gamera.dto.comment.CommentGetDto;
 import com.avengers.gamera.dto.comment.CommentPostDto;
 import com.avengers.gamera.dto.comment.CommentPutDto;
-import com.avengers.gamera.dto.comment.CommentSlimDto;
 import com.avengers.gamera.entity.Article;
 import com.avengers.gamera.entity.Comment;
 import com.avengers.gamera.exception.ResourceNotFoundException;
 import com.avengers.gamera.mapper.CommentMapper;
-import com.avengers.gamera.mapper.UserMapper;
 import com.avengers.gamera.repository.ArticleRepository;
 import com.avengers.gamera.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -27,7 +26,6 @@ public class CommentService {
     private final CommentMapper commentMapper;
     private final UserService userService;
     private final ArticleRepository articleRepository;
-    private final UserMapper userMapper;
 
     public CommentGetDto createNewComment(CommentPostDto commentPostDto) {
         Comment comment = commentMapper.commentPostDtoToComment(commentPostDto);
@@ -40,35 +38,12 @@ public class CommentService {
     }
 
     public Map<String, Object> getCommentByCommentId(Long commentId) {
-        Comment comment = find(commentId);
+        Comment comment = commentRepository.findCommentByIdAndIsDeletedFalse(commentId).orElseThrow(() -> new ResourceNotFoundException("Comment", commentId));
         Map<String, Object> commentResponse = new HashMap<>();
         commentResponse.put("id", commentId);
         commentResponse.put("text", comment.getText());
         commentResponse.put("createdTime", comment.getCreatedTime());
         commentResponse.put("updatedTime", comment.getUpdatedTime());
-        return commentResponse;
-
-    }
-
-    public Map<String, Object> getCommentByArticleId(Long articleId) {
-        List<Comment> allResults = commentRepository.findByArticleIdAndIsDeletedFalse(articleId);
-        List<CommentGetDto> allParentComments = allResults.stream().filter(comment -> Objects.isNull(comment.getParentComment())).sorted(Comparator.comparingLong(Comment::getId)).map(commentMapper::commentToCommentGetDto).toList();
-        List<Comment> allChildComments = allResults.stream().filter(comment -> !Objects.isNull(comment.getParentComment())).toList();
-        allParentComments.forEach(parent -> {
-            parent.setChildComment(allChildComments.stream().filter(child -> Objects.equals(child.getParentComment().getId(), parent.getId())).map((childComments) -> {
-                CommentSlimDto commentSlimDto = new CommentSlimDto();
-                commentSlimDto.setId(childComments.getId());
-                commentSlimDto.setParentComment(commentMapper.commentToCommentSlimGetDto(childComments.getParentComment()));
-                commentSlimDto.setUpdatedTime(childComments.getUpdatedTime());
-                commentSlimDto.setCreatedTime(childComments.getCreatedTime());
-                commentSlimDto.setText(childComments.getText());
-                commentSlimDto.setUser(userMapper.userToUserSlimGetDto(childComments.getUser()));
-                return commentSlimDto;
-            }).toList());
-        });
-        Map<String, Object> commentResponse = new HashMap<>();
-        commentResponse.put("articleId", articleId);
-        commentResponse.put("commentList", allParentComments);
         return commentResponse;
     }
 
@@ -78,10 +53,13 @@ public class CommentService {
         return commentMapper.commentToCommentGetDto(commentRepository.save(comment));
     }
 
-    public void deleteComment(Long commentId) {
-        Comment comment = find(commentId);
-        comment.setIsDeleted(true);
-        log.info(" Comment id {} was deleted", commentId);
+    @Modifying
+    public String deleteComment(Long commentId) {
+        int deleteResponse = commentRepository.deleteCommentById(commentId);
+        if(deleteResponse==1L){
+            return " Comment id { "+ commentId + " } was deleted";
+        }
+        return (" Comment id { "+ commentId + " } does not exist!");
     }
 
     public Comment find(Long commentId) {
