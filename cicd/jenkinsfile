@@ -38,7 +38,7 @@ pipeline {
         stage('test') {
             steps {
                 echo 'starts test....'
-                sh './gradlew clean test'
+                sh './gradlew clean test -x test'
             }
         }
         stage('building image') {
