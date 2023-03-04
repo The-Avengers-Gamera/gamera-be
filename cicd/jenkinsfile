@@ -13,6 +13,7 @@ pipeline {
         SPRING_DATASOURCE_URL= 'SPRING_DATASOURCE_URL'
         SPRING_DATASOURCE_USERNAME= 'SPRING_DATASOURCE_USERNAME'
         SPRING_DATASOURCE_PASSWORD= 'SPRING_DATASOURCE_PASSWORD'
+        ECR_REPO= '738917964840.dkr.ecr.ap-southeast-2.amazonaws.com'
     }
 
     stages {
@@ -44,15 +45,15 @@ pipeline {
         stage('building image') {
             steps {
                 echo 'Building docker images'
-                sh 'aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username aws --password-stdin ${AWS_DOCKER_PUSH_ECR_STDIN}'
+                sh 'aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username aws --password-stdin ${ECR_REPO}'
                 sh 'sudo docker build --build-arg SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL} --build-arg SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME} --build-arg SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD} -t ${REPO_IMAGE_NAME}:${REPO_IMAGE_TAG} --no-cache .'
             }
         }
         stage('Pushing to ECR') {
             steps {
                 echo 'pushing image to ECR'
-                sh 'docker tag ${REPO_IMAGE_NAME}:${REPO_IMAGE_TAG} ${AWS_DOCKER_PUSH_ECR_STDIN}/${REPO_IMAGE_NAME}:${REPO_IMAGE_TAG}'
-                sh 'docker push ${AWS_DOCKER_PUSH_ECR_STDIN}/${REPO_IMAGE_NAME}:${REPO_IMAGE_TAG}'
+                sh 'docker tag ${REPO_IMAGE_NAME}:${REPO_IMAGE_TAG} ${ECR_REPO}/${REPO_IMAGE_NAME}:${REPO_IMAGE_TAG}'
+                sh 'docker push ${ECR_REPO}/${REPO_IMAGE_NAME}:${REPO_IMAGE_TAG}'
             }
         }
         // stage('Deploying to ECS') {
