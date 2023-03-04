@@ -43,14 +43,15 @@ pipeline{
                 """
             }
         }
-        stage('Deploy image to ECS')
+        stage('Deploy image to ECS'){
             steps{
                 sh """
                 #!bin/sh 
                 sh "aws ecs update-service --cluster ${ECS_CLUSTER} --service ${ECS_SERVICE} --force-new-deployment --task-definition ${ECS_FAMILY}:${IMAGE_TAG}"
                 """
             }
-        }
+        }    
+    }
     post {
         always {
             echo 'cleaning works space...'
