@@ -54,12 +54,11 @@ public class CommentService {
     }
 
     @Modifying
-    public String deleteComment(Long commentId) {
+    public void deleteComment(Long commentId) {
         int deleteResponse = commentRepository.deleteCommentById(commentId);
-        if(deleteResponse==1L){
-            return " Comment id { "+ commentId + " } was deleted";
+        if(deleteResponse!=1L){
+            throw new ResourceNotFoundException("Comment", commentId);
         }
-        return (" Comment id { "+ commentId + " } does not exist!");
     }
 
     public Comment find(Long commentId) {
