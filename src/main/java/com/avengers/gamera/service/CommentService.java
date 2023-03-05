@@ -56,7 +56,7 @@ public class CommentService {
     @Modifying
     public void deleteComment(Long commentId) {
         int deleteResponse = commentRepository.deleteCommentById(commentId);
-        if(deleteResponse!=1L){
+        if (deleteResponse != 1L) {
             throw new ResourceNotFoundException("Comment", commentId);
         }
     }
