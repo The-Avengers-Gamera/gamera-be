@@ -1,5 +1,6 @@
 package com.avengers.gamera.service;
 
+import com.avengers.gamera.dto.genre.GenreGetDto;
 import com.avengers.gamera.dto.genre.GenrePostDto;
 import com.avengers.gamera.dto.genre.GenreUpdateDto;
 import com.avengers.gamera.entity.Genre;
@@ -18,9 +19,9 @@ public class GenreService {
     private final GenreRepository genreRepository;
     private final GenreMapper genreMapper;
 
-    public Genre createGenre(GenrePostDto genrePostDto) {
+    public GenreGetDto createGenre(GenrePostDto genrePostDto) {
         Genre genre = genreMapper.GenrePostDtoToGenre(genrePostDto);
-        return genreRepository.save(genre);
+        return genreMapper.GenreToGenreGetDto(genreRepository.save(genre));
     }
 
     public List<Genre> createMultipleGenre(List<GenrePostDto> genrePostDtoList) {

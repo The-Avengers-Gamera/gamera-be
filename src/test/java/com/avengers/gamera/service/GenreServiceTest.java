@@ -1,6 +1,7 @@
 package com.avengers.gamera.service;
 
 
+import com.avengers.gamera.dto.genre.GenreGetDto;
 import com.avengers.gamera.dto.genre.GenrePostDto;
 import com.avengers.gamera.dto.genre.GenreUpdateDto;
 import com.avengers.gamera.entity.Genre;
@@ -31,6 +32,7 @@ public class GenreServiceTest {
     private GenreService genreService;
 
     Genre mockGenre = Genre.builder().id(1L).name("Avenger").createdTime(OffsetDateTime.now()).updatedTime(OffsetDateTime.now()).build();
+    GenreGetDto mockGenreGetDto=GenreGetDto.builder().id(1L).name("Avenger").createdTime(OffsetDateTime.now()).updatedTime(OffsetDateTime.now()).build();
     Genre mockGenre3 = Genre.builder().id(1L).name("Avenger1").createdTime(OffsetDateTime.now()).updatedTime(OffsetDateTime.now()).build();
     Genre mockGenre4 = Genre.builder().id(1L).name("Avenger2").createdTime(OffsetDateTime.now()).updatedTime(OffsetDateTime.now()).build();
     GenrePostDto mockGenrePostDto = GenrePostDto.builder().name("Avenger").build();
@@ -47,10 +49,11 @@ public class GenreServiceTest {
     void shouldSaveNewGenreInGenreRepoWhenCreateGenre() {
         when(genreMapper.GenrePostDtoToGenre(mockGenrePostDto)).thenReturn(mockGenre);
         when(genreRepository.save(mockGenre)).thenReturn(mockGenre);
+        when(genreMapper.GenreToGenreGetDto(mockGenre)).thenReturn(mockGenreGetDto);
 
-        Genre genreDto = genreService.createGenre(mockGenrePostDto);
+        GenreGetDto genreDto = genreService.createGenre(mockGenrePostDto);
         verify(genreRepository).save(mockGenre);
-        assertEquals(mockGenre, genreDto);
+        assertEquals(mockGenreGetDto, genreDto);
     }
 
     @Test
