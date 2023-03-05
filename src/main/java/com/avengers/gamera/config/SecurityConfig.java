@@ -36,6 +36,7 @@ public class SecurityConfig {
     private List<String> allowedOrigins;
     private List<String> allowedMethods;
     private List<String> allowedHeaders;
+    private List<String> exposedHeaders;
 
     private final GameraUserDetailService gameraUserDetailService;
     private final SecretKey secretKey;
@@ -55,6 +56,7 @@ public class SecurityConfig {
                     cors.setAllowedOrigins(allowedOrigins);
                     cors.setAllowedMethods(allowedMethods);
                     cors.setAllowedHeaders(allowedHeaders);
+                    cors.setExposedHeaders(exposedHeaders);
                     return cors;
                 })
                 .and()
