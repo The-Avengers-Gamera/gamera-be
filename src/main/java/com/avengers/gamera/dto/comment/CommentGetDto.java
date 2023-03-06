@@ -1,5 +1,6 @@
 package com.avengers.gamera.dto.comment;
 
+import com.avengers.gamera.dto.user.UserSlimGetDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,7 @@ import java.util.List;
 public class CommentGetDto {
     private Long id;
     private String text;
+    private UserSlimGetDto user;
     private CommentSlimDto parentComment;
     private List<CommentSlimDto> childComment;
     private OffsetDateTime createdTime;

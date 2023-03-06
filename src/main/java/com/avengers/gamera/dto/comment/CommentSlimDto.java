@@ -14,7 +14,6 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 public class CommentSlimDto {
     private Long id;
-    private CommentSlimDto parentComment;
     private String text;
     private UserSlimGetDto user;
     private OffsetDateTime createdTime;

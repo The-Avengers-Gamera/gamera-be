@@ -5,11 +5,16 @@ import com.avengers.gamera.dto.article.ArticleGetDto;
 import com.avengers.gamera.dto.article.ArticlePostDto;
 import com.avengers.gamera.dto.article.MiniArticleGetDto;
 import com.avengers.gamera.dto.article.ArticlePutDto;
+import com.avengers.gamera.dto.comment.CommentGetDto;
+import com.avengers.gamera.dto.comment.CommentSlimDto;
 import com.avengers.gamera.entity.Article;
+import com.avengers.gamera.entity.Comment;
 import com.avengers.gamera.entity.Game;
 import com.avengers.gamera.entity.User;
 import com.avengers.gamera.exception.ResourceNotFoundException;
 import com.avengers.gamera.mapper.ArticleMapper;
+import com.avengers.gamera.mapper.CommentMapper;
+import com.avengers.gamera.mapper.UserMapper;
 import com.avengers.gamera.repository.ArticleRepository;
 import com.avengers.gamera.repository.GameRepository;
 import com.avengers.gamera.repository.UserRepository;
@@ -22,7 +27,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,6 +40,8 @@ public class ArticleService {
     private final GameRepository gameRepository;
     private final UserRepository userRepository;
     private final ArticleMapper articleMapper;
+    private final CommentMapper commentMapper;
+    private final UserMapper userMapper;
 
 
 
@@ -80,7 +89,29 @@ public class ArticleService {
         Article article = articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(() ->
                 new ResourceNotFoundException("Related Article with the ID(" + articleId + ")")
         );
-        return articleMapper.articleToArticleGetDto(article);
+        List<Comment> allResults = article.getCommentList().stream().filter(item -> !item.getIsDeleted()).toList();
+        List<CommentGetDto> allParentComments = allResults.stream()
+                .filter(comment -> Objects.isNull(comment.getParentComment()))
+                .sorted(Comparator.comparingLong(Comment::getId))
+                .map(commentMapper::commentToCommentGetDto).toList();
+        List<Comment> allChildComments = allResults.stream()
+                .filter(comment -> !Objects.isNull(comment.getParentComment())).toList();
+        allParentComments.forEach(parent -> {
+            parent.setChildComment(allChildComments.stream()
+                    .filter(child -> Objects.equals(child.getParentComment().getId(), parent.getId()))
+                    .map((childComments) -> {
+                        CommentSlimDto commentSlimDto = new CommentSlimDto();
+                        commentSlimDto.setId(childComments.getId());
+                        commentSlimDto.setUpdatedTime(childComments.getUpdatedTime());
+                        commentSlimDto.setCreatedTime(childComments.getCreatedTime());
+                        commentSlimDto.setText(childComments.getText());
+                        commentSlimDto.setUser(userMapper.userToUserSlimGetDto(childComments.getUser()));
+                        return commentSlimDto;
+                    }).toList());
+        });
+        ArticleGetDto articleGetDto = articleMapper.articleToArticleGetDto(article);
+        articleGetDto.setCommentList(allParentComments);
+        return articleGetDto;
     }
 
     public String deleteArticleById(Long articleId) {

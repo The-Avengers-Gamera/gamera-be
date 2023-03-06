@@ -7,6 +7,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "article")
@@ -40,6 +41,9 @@ public class Article {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ArticleType type;
+
+    @OneToMany(mappedBy = "article")
+    private List<Comment> commentList;
 
     @Column(name = "is_deleted")
     @Builder.Default
