@@ -45,7 +45,7 @@ pipeline {
         stage('building image') {
             steps {
                 echo 'Building docker images'
-                sh 'aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username aws --password-stdin ${ECR_REPO}'
+                sh 'aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 738917964840.dkr.ecr.ap-southeast-2.amazonaws.com'
                 sh 'sudo docker build --build-arg DB_URL=${DB_URL} --build-arg DB_USERNAME=${DB_USERNAME} --build-arg DB_PASSWORD=${DB_PASSWORD} -t ${REPO_IMAGE_NAME}:${REPO_IMAGE_TAG} .'
             }
         }
