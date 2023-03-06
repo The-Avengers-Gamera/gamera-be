@@ -26,4 +26,5 @@ public class ArticleGetDto {
     private ArticleType type;
     private OffsetDateTime createdTime;
     private OffsetDateTime updatedTime;
+    private Long likeNum;
 }
