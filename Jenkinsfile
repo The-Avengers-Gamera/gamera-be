@@ -4,9 +4,6 @@ pipeline {
       label 'master'
     }
   }
-  environment {
-
-  }
   
 	//Get code
   stages {
