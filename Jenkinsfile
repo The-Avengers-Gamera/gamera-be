@@ -27,11 +27,12 @@ pipeline {
     }
   }
   post {
-    always{
-      echo 'Success'
+     	always {
+    		echo 'Pipeline completed'
+  	}
+  	failure {
+    		echo 'Pipeline failed'
+  	}
     }
   }
-    failure {
-      echo 'Mission Fail'
-    }
 }
