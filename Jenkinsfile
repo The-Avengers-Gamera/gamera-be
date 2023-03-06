@@ -13,12 +13,15 @@ pipeline {
     
     stage('build') {
       steps {
-	      sh "apt install make"
-	      sh "make app_local_build "
         sh "./gradlew clean build"
     	}
     }
-    
+    stage('Test'){
+       steps{
+         echo 'Testing...'
+         sh './gradlew clean test'
+       }
+    }
     stage('deploy') {
       steps {
         echo 'deploy stage'
