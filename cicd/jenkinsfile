@@ -10,9 +10,9 @@ pipeline {
         REPO_IMAGE_TAG='latest'
         AWS_CREDENTIALS="AWS_CREDENTIAL_JENKINS_CICD"
         AWS_DOCKER_PUSH_ECR_STDIN='AWS_DOCKER_PUSH_ECR_STDIN'
-        SPRING_DATASOURCE_URL= 'SPRING_DATASOURCE_URL'
-        SPRING_DATASOURCE_USERNAME= 'SPRING_DATASOURCE_USERNAME'
-        SPRING_DATASOURCE_PASSWORD= 'SPRING_DATASOURCE_PASSWORD'
+        DB_URL = credentials('DB_URL')
+        DB_USERNAME = credentials('DB_USERNAME')
+        DB_PASSWORD = credentials('DB_PASSWORD')
         ECR_REPO= '738917964840.dkr.ecr.ap-southeast-2.amazonaws.com'
     }
 
@@ -46,7 +46,7 @@ pipeline {
             steps {
                 echo 'Building docker images'
                 sh 'aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username aws --password-stdin ${ECR_REPO}'
-                sh 'sudo docker build --build-arg SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL} --build-arg SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME} --build-arg SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD} -t ${REPO_IMAGE_NAME}:${REPO_IMAGE_TAG} .'
+                sh 'sudo docker build --build-arg DB_URL=${DB_URL} --build-arg DB_USERNAME=${DB_USERNAME} --build-arg DB_PASSWORD=${DB_PASSWORD} -t ${REPO_IMAGE_NAME}:${REPO_IMAGE_TAG} .'
             }
         }
         stage('Pushing to ECR') {
