@@ -42,7 +42,7 @@ public class ArticleService {
     private final ArticleMapper articleMapper;
     private final CommentMapper commentMapper;
     private final UserMapper userMapper;
-
+    private final LikeService likeService;
 
 
     public ArticleGetDto createArticle(ArticlePostDto articlePostDto) {
@@ -73,6 +73,8 @@ public class ArticleService {
                 .stream()
                 .map(articleMapper::articleToMiniArticleGetDto)
                 .collect(Collectors.toList());
+        //For likeNum
+        getMiniArticles.stream().forEach(miniArticleGetDto -> miniArticleGetDto.setLikeNum(likeService.getLikeNumByArticleId(miniArticleGetDto.getId())));
         return new PageImpl<>(getMiniArticles, pageable, getMiniArticles.size());
     }
 
@@ -81,6 +83,8 @@ public class ArticleService {
                 .stream()
                 .map(articleMapper::articleToMiniArticleGetDto)
                 .collect(Collectors.toList());
+        //For likeNum
+        getMiniArticles.stream().forEach(miniArticleGetDto -> miniArticleGetDto.setLikeNum(likeService.getLikeNumByArticleId(miniArticleGetDto.getId())));
         return new PageImpl<>(getMiniArticles, pageable, getMiniArticles.size());
     }
 
@@ -111,6 +115,8 @@ public class ArticleService {
         });
         ArticleGetDto articleGetDto = articleMapper.articleToArticleGetDto(article);
         articleGetDto.setCommentList(allParentComments);
+        //For LikeNum
+        articleGetDto.setLikeNum(likeService.getLikeNumByArticleId(articleId));
         return articleGetDto;
     }
 

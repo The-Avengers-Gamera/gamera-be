@@ -5,10 +5,7 @@ import com.avengers.gamera.dto.game.GameGetDto;
 import com.avengers.gamera.dto.user.UserGetDto;
 import com.avengers.gamera.entity.Game;
 import com.avengers.gamera.entity.User;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.CascadeType;
 import javax.persistence.JoinColumn;
@@ -17,6 +14,7 @@ import java.time.OffsetDateTime;
 
 @Getter
 @Builder
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class MiniArticleGetDto {
@@ -28,4 +26,5 @@ public class MiniArticleGetDto {
     private ArticleType type;
     private OffsetDateTime createdTime;
     private OffsetDateTime updatedTime;
+    private Long likeNum;
 }

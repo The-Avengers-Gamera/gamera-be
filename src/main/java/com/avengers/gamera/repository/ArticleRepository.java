@@ -4,6 +4,7 @@ import com.avengers.gamera.constant.ArticleType;
 import com.avengers.gamera.entity.Article;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,4 +17,7 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     List<Article> findArticlesByTypeAndIsDeletedFalse(ArticleType articleType,Pageable pageable);
 
     Optional<Article> findArticleByIdAndIsDeletedFalse(Long id);
+
+    @Query(value = "select a.title from Article a where a.id=?1")
+    String findTitleByIdAndIsDeletedFalse(Long id);
 }
