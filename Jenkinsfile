@@ -1,7 +1,6 @@
 pipeline {
-  agent {
-    any
-  }
+	
+  agent any
   
 	//Get code
   stages {
