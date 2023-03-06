@@ -33,20 +33,20 @@ pipeline {
         stage('build') {
             steps {
                 echo 'starts build...'
-                sh './gradlew clean build -x test'
+                sh './gradlew build'
             }
         }
-        stage('test') {
-            steps {
-                echo 'starts test....'
-                sh './gradlew clean test -x test'
-            }
-        }
+        // stage('test') {
+        //     steps {
+        //         echo 'starts test....'
+        //         sh './gradlew clean test -x test'
+        //     }
+        // }
         stage('building image') {
             steps {
                 echo 'Building docker images'
                 sh 'aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username aws --password-stdin ${ECR_REPO}'
-                sh 'sudo docker build --build-arg SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL} --build-arg SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME} --build-arg SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD} -t ${REPO_IMAGE_NAME}:${REPO_IMAGE_TAG} --no-cache .'
+                sh 'sudo docker build --build-arg SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL} --build-arg SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME} --build-arg SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD} -t ${REPO_IMAGE_NAME}:${REPO_IMAGE_TAG} .'
             }
         }
         stage('Pushing to ECR') {
