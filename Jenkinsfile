@@ -76,7 +76,7 @@ pipeline {
 
         failure {
             //Send error messages to developer to debug
-            echo 'Build fail, sending error message to developer'
+            echo 'Build failed, sending error message to developer'
         }
     }
 }
