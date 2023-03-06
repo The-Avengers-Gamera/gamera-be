@@ -7,7 +7,7 @@ pipeline {
   stages {
     stage('Checkout code') {
       steps {
-        git branch: 'devops-richard',
+        git branch: 'devops-ronald',
         url: 'https://github.com/The-Avengers-Gamera/gamera-be.git'
       }
     }
