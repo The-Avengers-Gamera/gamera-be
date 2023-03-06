@@ -36,16 +36,16 @@ pipeline {
                 sh './gradlew build'
             }
         }
-        // stage('test') {
-        //     steps {
-        //         echo 'starts test....'
-        //         sh './gradlew clean test -x test'
-        //     }
-        // }
+        stage('test') {
+            steps {
+                echo 'starts test....'
+                sh './gradlew clean test -x test'
+            }
+        }
         stage('building image') {
             steps {
                 echo 'Building docker images'
-                // sh 'aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username aws --password-stdin ${ECR_REPO}'
+                sh 'aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username aws --password-stdin ${ECR_REPO}'
                 sh 'sudo docker build --build-arg DB_URL=${DB_URL} --build-arg DB_USERNAME=${DB_USERNAME} --build-arg DB_PASSWORD=${DB_PASSWORD} -t ${REPO_IMAGE_NAME}:${REPO_IMAGE_TAG} .'
             }
         }
@@ -56,12 +56,12 @@ pipeline {
                 sh 'docker push ${ECR_REPO}/${REPO_IMAGE_NAME}:${REPO_IMAGE_TAG}'
             }
         }
-        // stage('Deploying to ECS') {
-        //     steps {
-        //         echo 'deploying image to ECS cluster service'
-        //         sh 'aws ecs update-service --cluster gamera_be_cluster --service gamera_be_service --force-new-deployment'
-        //     }
-        // }
+        stage('Deploying to ECS') {
+            steps {
+                echo 'deploying image to ECS cluster service'
+                sh 'aws ecs update-service --cluster gamera_be_cluster --service gamera_be_service --force-new-deployment'
+            }
+        }
         stage('Clean old Image') {
             steps {
                 sh 'docker image ls'
