@@ -19,15 +19,24 @@ pipeline {
     
     stage('build') {
       steps {
-        steps {
-        	sh "./gradlew clean build"
-      	}
+	      sh "apt install make"
+	      sh "make app_local_build "
+        sh "./gradlew clean build"
+    	}
     }
     
     stage('deploy') {
       steps {
-        
+        echo 'deploy stage'
       }
     }
   }
+  post {
+    always{
+      echo 'Success'
+    }
+  }
+    failure {
+      echo 'Mission Fail'
+    }
 }
