@@ -3,6 +3,7 @@ package com.avengers.gamera.mapper;
 import com.avengers.gamera.dto.user.UserGetDto;
 import com.avengers.gamera.dto.user.UserInfoDto;
 import com.avengers.gamera.dto.user.UserPostDto;
+import com.avengers.gamera.dto.user.UserSlimGetDto;
 import com.avengers.gamera.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
@@ -14,5 +15,7 @@ public interface UserMapper {
     UserGetDto userToUserGetDto(User user);
 
     UserInfoDto userToUserInfoDto(User user);
+
+    UserSlimGetDto userToUserSlimGetDto(User user);
 
 }

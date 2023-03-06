@@ -14,9 +14,15 @@ import javax.validation.constraints.Size;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ArticlePostDto {
+public class ArticlePostDto{
 
     private String coverImgUrl;
+
+    @NotBlank()
+    private Long gameId;
+
+    @NotBlank()
+    private Long authorId;
 
     @NotBlank(message = "Article title must be provided.")
     @Size(max = 255, message = "Article title can not be more than 255 characters.")

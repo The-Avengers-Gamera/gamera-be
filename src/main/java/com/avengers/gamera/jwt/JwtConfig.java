@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.crypto.SecretKey;
+
 import io.jsonwebtoken.security.Keys;
 import org.springframework.http.HttpHeaders;
 
@@ -16,12 +17,12 @@ import org.springframework.http.HttpHeaders;
 public class JwtConfig {
     private String secretKey;
 
-    public String getAuthorization(){
+    public String getAuthorization() {
         return HttpHeaders.AUTHORIZATION;
     }
 
     @Bean
-    public SecretKey secretKey(){
+    public SecretKey secretKey() {
         return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 }

@@ -2,18 +2,16 @@ package com.avengers.gamera.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
-@Getter
 @Setter
+@Getter
 @AllArgsConstructor
-public class UserPostDto {
+@NoArgsConstructor
+public class UserPutDto {
     @NotBlank
     @Size(max = 255, message = "Username can not be more than 255 characters.")
     private String name;
@@ -28,4 +26,3 @@ public class UserPostDto {
             message = "Your password must be at least 8 character long and contains at least one non-letter character.")
     private String password;
 }
-

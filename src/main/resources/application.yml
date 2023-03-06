@@ -12,6 +12,9 @@ spring:
   flyway:
     enabled: true
     schemas: gamera
+    url: ${spring.datasource.url}
+    user: ${spring.datasource.username}
+    password: ${spring.datasource.password}
   jpa:
     properties:
       hibernate:
@@ -25,6 +28,7 @@ cors:
   allowed-origins: "*"
   allowed-methods: "*"
   allowed-headers: "*"
+  exposed-headers: "*"
 
 jwt:
   secretKey: "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDZ5QIeI0ioHDYGU0RMwGti6Z9/2SReCeFnYZJY5xsbFWRiU"

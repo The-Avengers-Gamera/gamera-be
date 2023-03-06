@@ -66,6 +66,11 @@ public class Game {
     @UpdateTimestamp
     private OffsetDateTime updatedTime;
 
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "game_id")
+    private List<Article> articles;
+
     @ManyToMany(cascade = {CascadeType.MERGE})
     @JoinTable(
             name = "game_genre",

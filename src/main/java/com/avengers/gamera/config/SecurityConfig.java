@@ -36,7 +36,7 @@ public class SecurityConfig {
     private List<String> allowedOrigins;
     private List<String> allowedMethods;
     private List<String> allowedHeaders;
-
+    private List<String> exposedHeaders;
 
     private final GameraUserDetailService gameraUserDetailService;
     private final SecretKey secretKey;
@@ -56,6 +56,7 @@ public class SecurityConfig {
                     cors.setAllowedOrigins(allowedOrigins);
                     cors.setAllowedMethods(allowedMethods);
                     cors.setAllowedHeaders(allowedHeaders);
+                    cors.setExposedHeaders(exposedHeaders);
                     return cors;
                 })
                 .and()
@@ -63,7 +64,8 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests(authorize ->
-                        authorize.antMatchers("/**").permitAll()
+                        authorize
+                                .antMatchers("/**").permitAll()
                                 .anyRequest().authenticated())
                 .addFilter(new JwtUsernameAndPasswordAuthFilter(authenticationManager(), secretKey, jwtConfig, userService))
                 .addFilterAfter(jwtTokenVerifyFilter, JwtUsernameAndPasswordAuthFilter.class)
@@ -77,7 +79,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(){
+    public AuthenticationManager authenticationManager() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setUserDetailsService(gameraUserDetailService);
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());

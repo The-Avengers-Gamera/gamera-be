@@ -47,7 +47,7 @@ public class GameService {
 
     @Transactional
     public List<Genre> handleFrontendGenreList(List<Genre> genreList) {
-        Map<Boolean, List<Genre>> checkGenres = genreList.stream().collect(Collectors.partitioningBy(item -> item.getId()==null));
+        Map<Boolean, List<Genre>> checkGenres = genreList.stream().collect(Collectors.partitioningBy(item -> item.getId() == null));
         List<Genre> newGetDto = checkGenres.get(true);
         List<Genre> existGetDto = checkGenres.get(false);
         List<Genre> existGenre = genreService.getAllGenre(existGetDto);
@@ -97,7 +97,7 @@ public class GameService {
     }
 
     public GameGetDto getGame(Long id) {
-        Game game=findActiveGame(id);
+        Game game = findActiveGame(id);
         return gameMapper.GameToGameGetDto(game);
     }
 }

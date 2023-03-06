@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Date;
@@ -31,7 +32,7 @@ public class GamePostDto {
     private String developers;
 
     private String publishers;
-    
+
     private String introduction;
 
     private String description;

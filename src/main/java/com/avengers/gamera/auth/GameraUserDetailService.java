@@ -20,11 +20,11 @@ public class GameraUserDetailService implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException{
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(()->new ResourceNotFoundException("User",email));
+                .orElseThrow(() -> new ResourceNotFoundException("User", email));
 
-        Set<GrantedAuthority> grantedAuthorities=user.getAuthorities().stream()
+        Set<GrantedAuthority> grantedAuthorities = user.getAuthorities().stream()
                 .map(authority -> new SimpleGrantedAuthority(authority.getName()))
                 .collect(Collectors.toSet());
 

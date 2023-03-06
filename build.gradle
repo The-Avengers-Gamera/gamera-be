@@ -30,7 +30,6 @@ dependencies {
 	implementation 'org.springdoc:springdoc-openapi-ui:1.6.11'
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
-
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.2.Final'
 	testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.5.2.Final'
 
@@ -45,13 +44,8 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	annotationProcessor "org.projectlombok:lombok-mapstruct-binding:0.2.0"
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-}
 
-flyway {
-	url = 'jdbc:postgresql://localhost:5432/postgres?currentSchema=gamera'
-	user = 'postgres'
-	password = 'admin'
-	locations = ['classpath:db/migration']
+	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 }
 
 tasks.named('test') {
