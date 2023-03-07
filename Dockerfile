@@ -12,8 +12,8 @@ WORKDIR /app
 
 COPY . .
 
-RUN ./gradlew build
+RUN ./gradlew build -Dspring.profiles.active=uat --spring.config.name=application-uat
 
 EXPOSE 8080
 
-CMD ["./gradlew", "bootRun"]
+CMD ["./gradlew", "bootRun -Dspring.profiles.active=uat --spring.config.name=application-uat"]

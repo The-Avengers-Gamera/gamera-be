@@ -18,7 +18,7 @@ pipeline {
             steps {
                 //Get the source code to workspace
                 echo 'Getting the source code...'
-                git branch: 'main',
+                git branch: 'uat',
                 url: 'https://github.com/The-Avengers-Gamera/gamera-be.git'
             }
         }
@@ -27,7 +27,7 @@ pipeline {
             steps {
                 //Build the project
                 echo 'Building project...'
-                sh './gradlew build'
+                sh './gradlew build -Dspring.profiles.active=uat --spring.config.name=application-uat'
             }
         }
 
