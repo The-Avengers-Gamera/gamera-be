@@ -1,6 +1,6 @@
 package com.avengers.gamera.dto.game;
 
-import com.avengers.gamera.entity.Genre;
+import com.avengers.gamera.dto.genre.GenreGetDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,5 +27,5 @@ public class GameGetDto {
     private String description;
     private OffsetDateTime createdTime;
     private OffsetDateTime updatedTime;
-    private List<Genre> genreList;
+    private List<GenreGetDto> genreList;
 }
