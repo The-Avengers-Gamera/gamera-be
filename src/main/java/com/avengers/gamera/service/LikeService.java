@@ -24,9 +24,6 @@ import java.util.stream.Collectors;
 public class LikeService {
     private final LikeMapper likeMapper;
     private final LikeRepository likeRepository;
-//    private final UserService userService;
-//    private final ArticleService articleService;
-//    private final ArticleMapper articleMapper;
     private final ArticleRepository articleRepository;
 
     @Transactional
@@ -48,11 +45,8 @@ public class LikeService {
 
     @Transactional
     public List<LikeGetForUserProfileDto> getLikeByUserId(Long userId) {
-        log.info("got hereeee");
         return (likeRepository.findByUserId(userId).stream().map(like -> {
-            log.info("achieve {}",like.toString());
             LikeGetForUserProfileDto likeGetForUserProfileDto = likeMapper.likeToLikeGetForUserProfileDto(like);
-            log.info("achieve {}",likeGetForUserProfileDto.toString());
             String articleTitle = articleRepository.findTitleByIdAndIsDeletedFalse(likeGetForUserProfileDto.getArticleId());
             likeGetForUserProfileDto.setArticleTile(articleTitle);
             if(articleTitle.isBlank())
