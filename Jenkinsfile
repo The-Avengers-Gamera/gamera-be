@@ -27,7 +27,7 @@ pipeline {
             steps {
                 //Build the project
                 echo 'Building project...'
-                sh './gradlew build -Dspring.profiles.active=uat --spring.config.name=application-uat'
+                sh './gradlew build'
             }
         }
 
