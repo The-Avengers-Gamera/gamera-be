@@ -1,6 +1,7 @@
 package com.avengers.gamera.service;
 
 
+import com.avengers.gamera.dto.game.GameGenrePostDto;
 import com.avengers.gamera.dto.genre.GenrePostDto;
 import com.avengers.gamera.dto.genre.GenreUpdateDto;
 import com.avengers.gamera.entity.Genre;
@@ -34,12 +35,10 @@ public class GenreServiceTest {
     Genre mockGenre3 = Genre.builder().id(1L).name("Avenger1").createdTime(OffsetDateTime.now()).updatedTime(OffsetDateTime.now()).build();
     Genre mockGenre4 = Genre.builder().id(1L).name("Avenger2").createdTime(OffsetDateTime.now()).updatedTime(OffsetDateTime.now()).build();
     GenrePostDto mockGenrePostDto = GenrePostDto.builder().name("Avenger").build();
-    GenrePostDto mockGenrePostDto1 = GenrePostDto.builder().name("Avenger1").build();
-    GenrePostDto mockGenrePostDto2 = GenrePostDto.builder().name("Avenger2").build();
     GenreUpdateDto mockGenreUpdateDto = GenreUpdateDto.builder().name("Avenger2").build();
-    Genre mockGenre1 = Genre.builder().name("Avenger1").build();
-    Genre mockGenre2 = Genre.builder().name("Avenger2").build();
-    List<Genre> genreNames = List.of(mockGenre1, mockGenre2);
+    GameGenrePostDto mockGenre1 = GameGenrePostDto.builder().name("Avenger1").build();
+    GameGenrePostDto mockGenre2 = GameGenrePostDto.builder().name("Avenger2").build();
+    List<GameGenrePostDto> genreNames = List.of(mockGenre1, mockGenre2);
 
     List<Genre> mockGenreList = List.of(mockGenre3, mockGenre4);
 
@@ -66,8 +65,6 @@ public class GenreServiceTest {
 
     @Test
     void shouldReturnGenreListWhenSaveAll() {
-        when(genreMapper.GenreToGenrePostDto(any())).thenReturn(mockGenrePostDto1, mockGenrePostDto2);
-        when(genreMapper.GenrePostDtoToGenre(any())).thenReturn(mockGenre3, mockGenre4);
         when(genreRepository.saveAll(any())).thenReturn(mockGenreList);
 
         List<Genre> genreList = genreService.saveAllGenre(genreNames);

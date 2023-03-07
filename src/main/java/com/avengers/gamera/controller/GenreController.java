@@ -1,5 +1,6 @@
 package com.avengers.gamera.controller;
 
+import com.avengers.gamera.dto.game.GameGenrePostDto;
 import com.avengers.gamera.dto.genre.GenrePostDto;
 import com.avengers.gamera.dto.genre.GenreUpdateDto;
 import com.avengers.gamera.entity.Genre;
@@ -19,15 +20,10 @@ public record GenreController(GenreService genreService) {
         return genreService.createGenre(genrePostDto);
     }
 
-    @PostMapping("/multiple")
-    @ResponseStatus(HttpStatus.CREATED)
-    public List<Genre> createGenre(@Valid @RequestBody List<Genre> genreNames) {
-        return genreService.saveAllGenre(genreNames);
-    }
 
     @GetMapping("/multiple")
     @ResponseStatus(HttpStatus.CREATED)
-    public List<Genre> getMultipleGenre(@Valid @RequestBody List<Genre> genreNames) {
+    public List<Genre> getMultipleGenre(@Valid @RequestBody List<GameGenrePostDto> genreNames) {
         return genreService.getAllGenre(genreNames);
     }
 

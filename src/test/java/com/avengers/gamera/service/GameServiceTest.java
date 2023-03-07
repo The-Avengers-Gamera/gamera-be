@@ -1,5 +1,6 @@
 package com.avengers.gamera.service;
 
+import com.avengers.gamera.dto.game.GameGenrePostDto;
 import com.avengers.gamera.dto.game.GameGetDto;
 import com.avengers.gamera.dto.game.GamePostDto;
 import com.avengers.gamera.dto.game.GameUpdateDto;
@@ -12,13 +13,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -35,14 +33,13 @@ public class GameServiceTest {
     @InjectMocks
     private GameService gameService;
 
-    Genre mockGenre1 = Genre.builder().id(1L).name("HH").createdTime(OffsetDateTime.now()).updatedTime(OffsetDateTime.now()).build();
-    Genre mockGenre2 = Genre.builder().id(1L).name("ZZ").createdTime(OffsetDateTime.now()).updatedTime(OffsetDateTime.now()).build();
-    Genre mockGenre3 = Genre.builder().name("HH").build();
+    GameGenrePostDto mockGenre2 = GameGenrePostDto.builder().id(1L).name("ZZ").build();
+    Genre mockGenre =Genre.builder().id(1L).name("ZZ").createdTime(OffsetDateTime.now()).updatedTime(OffsetDateTime.now()).build();
 
-    List<Genre> updatedGenreList = List.of(mockGenre2);
-    List<Genre> updatedGenreList1 = List.of(mockGenre1);
+    List<GameGenrePostDto> updatedGenreList = List.of(mockGenre2);
+    List<Genre> genreLst =List.of(mockGenre);
 
-    private final GamePostDto gamePostDto = GamePostDto.builder().name("Game1").description("Excellent game").genreList(List.of(mockGenre1, mockGenre3)).build();
+    private final GamePostDto gamePostDto = GamePostDto.builder().name("Game1").description("Excellent game").gameGenrePostDtoList(updatedGenreList).build();
     private final Game mockGame = Game.builder()
             .id(1L)
             .name("Game1")
@@ -50,7 +47,7 @@ public class GameServiceTest {
             .isDeleted(false)
             .createdTime(OffsetDateTime.now())
             .updatedTime(OffsetDateTime.now())
-            .genreList(updatedGenreList)
+            .genreList(List.of(mockGenre))
             .build();
     private final Long mockGameId = mockGame.getId();
 
@@ -60,7 +57,7 @@ public class GameServiceTest {
             .description("Excellent game")
             .createdTime(OffsetDateTime.now())
             .updatedTime(OffsetDateTime.now())
-            .genreList(updatedGenreList)
+            .genreList(genreLst)
             .build();
     private final GameUpdateDto mockGameUpdateDto = GameUpdateDto.builder()
             .name("Game2")
@@ -68,7 +65,7 @@ public class GameServiceTest {
             .isDeleted(false)
             .createdTime(OffsetDateTime.now())
             .updatedTime(OffsetDateTime.now())
-            .genreList(updatedGenreList)
+            .gameGenrePostDtoList(updatedGenreList)
             .build();
 
     private final Game mockUpdateGame = Game.builder()
@@ -82,10 +79,8 @@ public class GameServiceTest {
 
     @Test
     void shouldSaveNewGameInGameRpoWhenCreateGame() {
-        when(genreService.getAllGenre(any())).thenReturn(updatedGenreList);
-        when(genreService.saveAllGenre(any())).thenReturn(updatedGenreList1);
+        when(genreService.getAllGenre(gamePostDto.getGameGenrePostDtoList())).thenReturn(List.of(mockGenre));
         when(gameMapper.GamePostDtoToGame(gamePostDto)).thenReturn(mockGame);
-        when(gameService.isExist(mockGame.getName())).thenReturn(false);
 
         gameService.createGame(gamePostDto);
         verify(gameRepository).save(mockGame);
