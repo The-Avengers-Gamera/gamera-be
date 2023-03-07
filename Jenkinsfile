@@ -18,7 +18,7 @@ pipeline {
             steps {
                 //Get the source code to workspace
                 echo 'Getting the source code...'
-                git branch: 'developer',
+                git branch: 'develop',
                 url: 'https://github.com/The-Avengers-Gamera/gamera-be.git'
             }
         }
