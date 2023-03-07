@@ -44,8 +44,6 @@ public class ArticleService {
     private final GameService gameService;
 
 
-
-
     public ArticleGetDto createArticle(ArticlePostDto articlePostDto) {
         Article article = articleMapper.articlePostDtoToArticle(articlePostDto);
 
@@ -56,14 +54,14 @@ public class ArticleService {
         article.setUser(userService.findUser(articlePostDto.getAuthorId()));
         ArticleType articleType = articlePostDto.getType();
 
-        if(articleType == ArticleType.valueOf("REVIEW")){
+        if (articleType == ArticleType.valueOf("REVIEW")) {
             article.setGame(gameService.findActiveGame(articlePostDto.getGameId()));
-        }else if(articleType== ArticleType.valueOf("NEWS")){
-            if(articlePostDto.getGameId()!=null){
+        } else if (articleType == ArticleType.valueOf("NEWS")) {
+            if (articlePostDto.getGameId() != null) {
                 article.setGame(gameService.findActiveGame(articlePostDto.getGameId()));
             }
         }
-        log.info("Saving the article with title:  "+article.getTitle()+"  to database");
+        log.info("Saving the article with title:  " + article.getTitle() + "  to database");
         return articleMapper.articleToArticleGetDto(articleRepository.save(article));
     }
 
