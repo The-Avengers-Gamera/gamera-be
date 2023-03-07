@@ -37,35 +37,32 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ArticleService {
     private final ArticleRepository articleRepository;
-    private final GameRepository gameRepository;
-    private final UserRepository userRepository;
     private final ArticleMapper articleMapper;
     private final CommentMapper commentMapper;
     private final UserMapper userMapper;
-
+    private final UserService userService;
+    private final GameService gameService;
 
 
     public ArticleGetDto createArticle(ArticlePostDto articlePostDto) {
-        Article article = articlePostDtoToArticle(articlePostDto);
-        log.info("Saving the article with title:  "+article.getTitle()+"  to database");
-        return articleMapper.articleToArticleGetDto(articleRepository.save(article));
-    }
-
-    public Article articlePostDtoToArticle(ArticlePostDto articlePostDto){
         Article article = articleMapper.articlePostDtoToArticle(articlePostDto);
+
         String img = article.getCoverImgUrl();
         if (StringUtils.isBlank(img)) {
             article.setCoverImgUrl("https://picsum.photos/800/400");
         }
-        Game game = gameRepository.findById(articlePostDto.getGameId()).orElseThrow(()->
-                new ResourceNotFoundException("Related game with ID("+ articlePostDto.getGameId() +")" )
-        );
-        article.setGame(game);
-        User user = userRepository.findById(articlePostDto.getAuthorId()).orElseThrow(() ->
-                new ResourceNotFoundException("Related Author(userId: "+ articlePostDto.getAuthorId() +")")
-        );
-        article.setUser(user);
-        return article;
+        article.setUser(userService.findUser(articlePostDto.getAuthorId()));
+        ArticleType articleType = articlePostDto.getType();
+
+        if (articleType == ArticleType.valueOf("REVIEW")) {
+            article.setGame(gameService.findActiveGame(articlePostDto.getGameId()));
+        } else if (articleType == ArticleType.valueOf("NEWS")) {
+            if (articlePostDto.getGameId() != null) {
+                article.setGame(gameService.findActiveGame(articlePostDto.getGameId()));
+            }
+        }
+        log.info("Saving the article with title:  " + article.getTitle() + "  to database");
+        return articleMapper.articleToArticleGetDto(articleRepository.save(article));
     }
 
     public Page<MiniArticleGetDto> getMiniArticles(Pageable pageable){
