@@ -36,11 +36,12 @@ public class GameService {
 
     @Transactional
     public GameGetDto createGame(GamePostDto gamePostDto) {
+        isExist(gamePostDto.getName());
 
         List<Genre> updateGenreList = handleFrontendGenreList(gamePostDto.getGenreList());
         gamePostDto.setGenreList(updateGenreList);
         Game game = gameMapper.GamePostDtoToGame(gamePostDto);
-        isExist(gamePostDto.getName());
+
 
         return gameMapper.GameToGameGetDto(gameRepository.save(game));
     }
@@ -61,13 +62,12 @@ public class GameService {
         return updatedGenreList;
     }
 
-    public boolean isExist(String name) {
+    public void isExist(String name) {
 
-        Boolean isExist = gameRepository.existsUserByName(name);
-        if (Boolean.TRUE.equals(isExist)) {
+        boolean isExist = gameRepository.existsUserByName(name);
+        if (isExist) {
             throw new ResourceExistException("Game already existed!");
         }
-        return isExist;
     }
 
     public GameGetDto updateGame(GameUpdateDto gameUpdateDto, Long id) {
@@ -86,10 +86,9 @@ public class GameService {
     }
 
     public String deleteGame(Long id) {
-        Game game = findActiveGame(id);
-        game.setIsDeleted(true);
-        gameRepository.save(game);
-        return "Delete game successfully";
+      int result=  gameRepository.updateIsDeleted(id);
+      System.out.println(result);
+        return (result == 1L ? "Delete successfully" : "Game not exist");
     }
 
     public Game findActiveGame(Long id) {
