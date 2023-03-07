@@ -36,6 +36,10 @@ public class GameServiceTest {
 
     GameGenrePostDto mockGenre2 = GameGenrePostDto.builder().id(1L).name("ZZ").build();
     Genre mockGenre =Genre.builder().id(1L).name("ZZ").createdTime(OffsetDateTime.now()).updatedTime(OffsetDateTime.now()).build();
+    Genre mockGenre1 = Genre.builder().id(1L).name("HH").createdTime(OffsetDateTime.now()).updatedTime(OffsetDateTime.now()).build();
+  
+    Genre mockGenre3 = Genre.builder().name("HH").build();
+    int mockResult = 1;
 
     List<GameGenrePostDto> updatedGenreList = List.of(mockGenre2);
     GenreGetDto genreLst = GenreGetDto.builder().id(1L).name("ZZ").createdTime(OffsetDateTime.now()).updatedTime(OffsetDateTime.now()).build();
@@ -113,9 +117,9 @@ public class GameServiceTest {
     @Test
     void shouldDeleteGame() {
         Long id = 1L;
-        when(gameRepository.findGameByIdAndIsDeletedFalse(id)).thenReturn(Optional.ofNullable(mockGame));
+        when(gameRepository.updateIsDeleted(id)).thenReturn(mockResult);
 
         String delete = gameService.deleteGame(id);
-        assertEquals(delete, "Delete game successfully");
+        assertEquals(delete, "Delete successfully");
     }
 }

@@ -7,6 +7,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "article")
@@ -20,12 +21,12 @@ public class Article {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "game_id")
     private Game game;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "author_id")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "author_id", nullable = false)
     private User user;
 
     @Column(name = "cover_img_url")
@@ -40,6 +41,9 @@ public class Article {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ArticleType type;
+
+    @OneToMany(mappedBy = "article")
+    private List<Comment> commentList;
 
     @Column(name = "is_deleted")
     @Builder.Default

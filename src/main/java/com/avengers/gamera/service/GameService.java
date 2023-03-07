@@ -64,7 +64,7 @@ public class GameService {
 
     public void isExist(String name) {
 
-        Boolean isExist = gameRepository.existsUserByName(name);
+        boolean isExist = gameRepository.existsUserByName(name);
         if (isExist) {
             throw new ResourceExistException("Game already existed!");
         }
@@ -86,10 +86,9 @@ public class GameService {
     }
 
     public String deleteGame(Long id) {
-        Game game = findActiveGame(id);
-        game.setIsDeleted(true);
-        gameRepository.save(game);
-        return "Delete game successfully";
+      int result=  gameRepository.updateIsDeleted(id);
+      System.out.println(result);
+        return (result == 1L ? "Delete successfully" : "Game not exist");
     }
 
     public Game findActiveGame(Long id) {

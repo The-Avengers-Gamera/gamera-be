@@ -18,10 +18,9 @@ public class ArticlePostDto{
 
     private String coverImgUrl;
 
-    @NotBlank()
     private Long gameId;
 
-    @NotBlank()
+    @NotNull(message = "Author must be provided.")
     private Long authorId;
 
     @NotBlank(message = "Article title must be provided.")

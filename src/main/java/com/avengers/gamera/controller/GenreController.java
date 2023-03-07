@@ -1,5 +1,6 @@
 package com.avengers.gamera.controller;
 
+
 import com.avengers.gamera.dto.game.GameGenrePostDto;
 import com.avengers.gamera.dto.genre.GenrePostDto;
 import com.avengers.gamera.dto.genre.GenreUpdateDto;
@@ -16,7 +17,7 @@ import java.util.List;
 public record GenreController(GenreService genreService) {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Genre createGenre(@Valid @RequestBody GenrePostDto genrePostDto) {
+    public GenreGetDto createGenre(@Valid @RequestBody GenrePostDto genrePostDto) {
         return genreService.createGenre(genrePostDto);
     }
 
