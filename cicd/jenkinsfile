@@ -13,7 +13,7 @@ pipeline {
         DB_URL = credentials('DB_URL')
         DB_USERNAME = credentials('DB_USERNAME')
         DB_PASSWORD = credentials('DB_PASSWORD')
-        ECR_REPO= '738917964840.dkr.ecr.ap-southeast-2.amazonaws.com'
+        ECR_REPO= credentials ('738917964840.dkr.ecr.ap-southeast-2.amazonaws.com')
     }
 
     stages {
@@ -45,7 +45,7 @@ pipeline {
         stage('building image') {
             steps {
                 echo 'Building docker images'
-                sh 'aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 738917964840.dkr.ecr.ap-southeast-2.amazonaws.com'
+                sh 'aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin ${ECR_REPO}'
                 sh 'sudo docker build --build-arg DB_URL=${DB_URL} --build-arg DB_USERNAME=${DB_USERNAME} --build-arg DB_PASSWORD=${DB_PASSWORD} -t ${REPO_IMAGE_NAME}:${REPO_IMAGE_TAG} .'
             }
         }
@@ -59,7 +59,7 @@ pipeline {
         stage('Deploying to ECS') {
             steps {
                 echo 'deploying image to ECS cluster service'
-                sh 'aws ecs update-service --cluster gamera_be_cluster --service gamera_be_service --force-new-deployment'
+                sh 'aws ecs update-service --cluster gamera_be_cluster --service demoEcsService --force-new-deployment'
             }
         }
         stage('Clean old Image') {
