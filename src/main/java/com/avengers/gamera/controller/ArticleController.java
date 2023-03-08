@@ -42,4 +42,7 @@ public class ArticleController {
                                                          @RequestParam(defaultValue = "10") int size) {
         return articleService.getArticlePage(EArticleType.REVIEW, page, size);
     }
+
+
+
 }

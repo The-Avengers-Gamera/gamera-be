@@ -134,38 +134,45 @@ public class ArticleService {
         Article article = articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(() ->
                 new ResourceNotFoundException("Related Article with the ID(" + articleId + ")")
         );
-        log.info("Article with ID("+ articleId +") title("+ article.getTitle() +") is being deleted");
+        log.info("Article with ID(" + articleId + ") title(" + article.getTitle() + ") is being deleted");
         article.setDeleted(true);
         articleRepository.save(article);
-       return "The article with ID("+ articleId +") has been deleted";
+        return "The article with ID(" + articleId + ") has been deleted";
     }
 
-    public ArticleGetDto updateArticle (ArticlePutDto articlePutDto, Long articleId){
-        Article article = articleRepository.findById(articleId).orElseThrow(() -> new ResourceNotFoundException("Article",articleId));
+    public ArticleGetDto updateArticle(ArticlePutDto articlePutDto, Long articleId) {
+        Article article = articleRepository.findById(articleId).orElseThrow(() -> new ResourceNotFoundException("Article", articleId));
 
         article.setTitle(articlePutDto.getTitle());
         article.setText(articlePutDto.getText());
         article.setUpdatedTime(OffsetDateTime.now());
 
-        log.info("Updated article with id "+articleId+" in the database.");
+        log.info("Updated article with id " + articleId + " in the database.");
         return articleMapper.articleToArticleGetDto(articleRepository.save(article));
     }
-    public Page<MiniArticleGetDto> getMiniArticlesByPlatform(Pageable pageable, String platform){
-        List<MiniArticleGetDto> miniArticleGetDtoList=articleRepository.findArticleByGamePlatformAndIsDeletedFalse(platform,pageable)
-                .stream()
-                .map(articleMapper::articleToMiniArticleGetDto)
-                .toList();
-    return new PageImpl<>(miniArticleGetDtoList,pageable,miniArticleGetDtoList.size());
+
+    public PagingDto<Object> getReviewsMetadataByPlatform(String platform, int page, int size) {
+        return getArticleMetadataByPlatform(EArticleType.REVIEW,platform,page,size);
+
     }
 
-    public Page<MiniArticleGetDto> getMiniArticlesByPlatformAndType(ArticleType articleType, Pageable pageable, String platform) {
-        List<MiniArticleGetDto> miniArticleGetDtoList=articleRepository.findArticleByGamePlatformAndTypeAndIsDeletedFalse(platform,articleType,pageable)
+    public PagingDto<Object> getNewsMetadataByPlatform(String platform, int page, int size) {
+        return getArticleMetadataByPlatform(EArticleType.NEWS,platform,page,size);
+    }
+
+    public PagingDto<Object>  getArticleMetadataByPlatform(EArticleType articleType,String platform, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Article> articlePage = articleRepository.findArticleByGamePlatformContainingAndTypeAndIsDeletedFalse( platform.toLowerCase(), articleType,pageable);
+        List<MiniArticleGetDto> miniArticleGetDtoList = articlePage.getContent()
                 .stream()
                 .map(articleMapper::articleToMiniArticleGetDto)
                 .toList();
-        return new PageImpl<>(miniArticleGetDtoList,pageable,miniArticleGetDtoList.size());
 
-
+        return PagingDto.builder().data(miniArticleGetDtoList).totalItems(miniArticleGetDtoList.size())
+                .currentPage(articlePage.getNumber())
+                .totalPages(articlePage.getTotalPages())
+                .build();
 
     }
 }
