@@ -18,15 +18,26 @@ public record AmazonEmailService (AmazonSimpleEmailService amazonSimpleEmailServ
         List<String> toAddresses = List.of(receiverEmail);
         destination.withToAddresses(toAddresses);
         Message message=new Message();
-        message.withSubject(new Content("Welcome Gamera" +info));
-        message.withBody(new Body(new Content("Nice to meet you, please active your account with below link"+link)));
+        message.withSubject(new Content("Welcome Gamera"));
+        message.withBody(new Body(new Content(info+": Nice to meet you, please active your account with below link: "+
+                link)));
 
+        System.out.println(senderEmail);
+        System.out.println(receiverEmail);
 
         SendEmailRequest sendEmailRequest= new SendEmailRequest();
         sendEmailRequest.withDestination(destination)
                 .withMessage(message)
                 .withSource(senderEmail);
 
-        amazonSimpleEmailService.sendEmail(sendEmailRequest);
+        try{
+            SendEmailResult result= amazonSimpleEmailService.sendEmail(sendEmailRequest);
+            System.out.println(result);
+        }
+        catch (Exception e){
+
+            System.out.println(e);
+
+        }
     }
 }
