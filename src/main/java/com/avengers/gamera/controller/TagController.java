@@ -38,7 +38,7 @@ public record TagController(TagService tagService) {
     }
 
     @PutMapping("/{tagId}")
-    public Tag update(@PathVariable Long tagId, @RequestBody TagPutDto tagPutDto) {
+    public TagGetDto update(@PathVariable Long tagId, @RequestBody TagPutDto tagPutDto) {
         return tagService.updateTag(tagId, tagPutDto);
     }
 

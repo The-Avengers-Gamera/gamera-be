@@ -1,11 +1,6 @@
 package com.avengers.gamera.entity;
 
-<<<<<<< HEAD
-import com.avengers.gamera.constant.ArticleType;
-import com.avengers.gamera.dto.tag.TagGetDto;
-=======
 import com.avengers.gamera.constant.EArticleType;
->>>>>>> develop
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;

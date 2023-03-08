@@ -47,14 +47,14 @@ public class TagService {
         return tagRepository.findAllById(tagIdList);
     }
 
-    public Tag updateTag(Long tagId, TagPutDto tagPutDto) {
+    public TagGetDto updateTag(Long tagId, TagPutDto tagPutDto) {
         Tag tag = findTag(tagId);
         tag.setName(tagPutDto.getName());
-        return tagRepository.save(tag);
+        return tagMapper.tagToTagGetDto(tagRepository.save(tag));
     }
 
     public Tag findTag(Long tagId) {
-        return tagRepository.findById(tagId).orElseThrow(() -> new ResourceNotFoundException("Tag"));
+        return tagRepository.findTagByIdAndIsDeletedFalse(tagId).orElseThrow(() -> new ResourceNotFoundException("Tag"));
     }
 
     @Modifying

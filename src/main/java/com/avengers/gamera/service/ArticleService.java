@@ -8,10 +8,12 @@ import com.avengers.gamera.dto.article.MiniArticleGetDto;
 import com.avengers.gamera.dto.article.ArticlePutDto;
 import com.avengers.gamera.dto.comment.CommentGetDto;
 import com.avengers.gamera.dto.comment.CommentSlimDto;
+import com.avengers.gamera.dto.tag.TagSlimDto;
 import com.avengers.gamera.entity.*;
 import com.avengers.gamera.exception.ResourceNotFoundException;
 import com.avengers.gamera.mapper.ArticleMapper;
 import com.avengers.gamera.mapper.CommentMapper;
+import com.avengers.gamera.mapper.TagMapper;
 import com.avengers.gamera.mapper.UserMapper;
 import com.avengers.gamera.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +38,7 @@ public class ArticleService {
     private final ArticleMapper articleMapper;
     private final CommentMapper commentMapper;
     private final UserMapper userMapper;
+    private final TagMapper tagMapper;
     private final UserService userService;
     private final GameService gameService;
     private final TagService tagService;
@@ -118,8 +121,11 @@ public class ArticleService {
                     commentSlimDto.setUser(userMapper.userToUserSlimGetDto(childComments.getUser()));
                     return commentSlimDto;
                 }).toList()));
+        List<Tag> tagList = article.getTagList().stream().filter(item -> !item.isDeleted()).toList();
+        List<TagSlimDto> tagSlimDtoList=tagList.stream().map(tagMapper::tagToTagSlimDto).toList();
         ArticleGetDto articleGetDto = articleMapper.articleToArticleGetDto(article);
         articleGetDto.setCommentList(allParentComments);
+        articleGetDto.setTagList(tagSlimDtoList);
         return articleGetDto;
     }
 

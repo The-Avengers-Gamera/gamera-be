@@ -38,7 +38,7 @@ public class CommentService {
     }
 
     public Map<String, Object> getCommentByCommentId(Long commentId) {
-        Comment comment = commentRepository.findCommentByIdAndIsDeletedFalse(commentId).orElseThrow(() -> new ResourceNotFoundException("Comment", commentId));
+        Comment comment = find(commentId);
         Map<String, Object> commentResponse = new HashMap<>();
         commentResponse.put("id", commentId);
         commentResponse.put("text", comment.getText());
@@ -62,11 +62,11 @@ public class CommentService {
     }
 
     public Comment find(Long commentId) {
-        return commentRepository.findById(commentId).orElseThrow(() -> new ResourceNotFoundException("Comment", commentId));
+        return commentRepository.findCommentByIdAndIsDeletedFalse(commentId).orElseThrow(() -> new ResourceNotFoundException("Comment", commentId));
     }
 
     private Article findArticleById(Long articleId) {
-        return articleRepository.findById(articleId).orElseThrow(() -> new ResourceNotFoundException("Article", articleId));
+        return articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(() -> new ResourceNotFoundException("Article", articleId));
     }
 
 }

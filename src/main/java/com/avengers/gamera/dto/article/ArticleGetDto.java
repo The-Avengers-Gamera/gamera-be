@@ -25,12 +25,8 @@ public class ArticleGetDto {
     private String coverImgUrl;
     private String title;
     private String text;
-<<<<<<< HEAD
-    private ArticleType type;
     private List<TagSlimDto> tagList;
-=======
     private EArticleType type;
->>>>>>> develop
     private OffsetDateTime createdTime;
     private OffsetDateTime updatedTime;
 }
