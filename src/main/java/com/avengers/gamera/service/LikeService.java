@@ -37,7 +37,6 @@ public class LikeService {
         throw new RuntimeException("userId can not be found");
     }
 
-    @Transactional
     public LikeGetDto createLike(LikePostDto likePostDto) {
         Like like = likeMapper.likePostDtoToLike(likePostDto);
         if (likeRepository.existsByUserIdAndArticleId(like.getUserId(), like.getArticleId())){
@@ -48,7 +47,6 @@ public class LikeService {
         return likeMapper.likeToLikeGetDto(likeRepository.save(like));
     }
 
-    @Transactional
     public LikeGetDto getLike(Long articleId) {
 
         return likeMapper.likeToLikeGetDto(likeRepository.findByUserIdAndArticleId(this.getUserId(), articleId).orElseThrow(() -> new ResourceNotFoundException("like")));
