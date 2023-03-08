@@ -26,7 +26,7 @@ public class MailConfig {
                 .withCredentials(new AWSStaticCredentialsProvider(
                         new BasicAWSCredentials(
                                 awsAccessKey,awsSecretKey)))
-                .withRegion(Regions.US_EAST_2)
+                .withRegion(Regions.AP_SOUTHEAST_2)
                 .build();
     }
 

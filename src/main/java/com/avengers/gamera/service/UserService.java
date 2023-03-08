@@ -66,7 +66,7 @@ public class UserService {
     public void sendEmail( String email, Long userId, Key secretKey) {
 
         String registerLink = createSignUpLink(systemParam.getBaseUrl(), email,userId,secretKey);
-        String info = "register";
+        String info = "Active your account";
 
         try {
             emailService.sendEmail(email, registerLink, info);
