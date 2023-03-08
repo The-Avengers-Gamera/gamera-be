@@ -1,6 +1,7 @@
 package com.avengers.gamera.service;
 
-import com.avengers.gamera.constant.ArticleType;
+import com.avengers.gamera.constant.EArticleType;
+import com.avengers.gamera.dto.PagingDto;
 import com.avengers.gamera.dto.article.ArticleGetDto;
 import com.avengers.gamera.dto.article.ArticlePostDto;
 import com.avengers.gamera.dto.article.MiniArticleGetDto;
@@ -9,20 +10,16 @@ import com.avengers.gamera.dto.comment.CommentGetDto;
 import com.avengers.gamera.dto.comment.CommentSlimDto;
 import com.avengers.gamera.entity.Article;
 import com.avengers.gamera.entity.Comment;
-import com.avengers.gamera.entity.Game;
-import com.avengers.gamera.entity.User;
 import com.avengers.gamera.exception.ResourceNotFoundException;
 import com.avengers.gamera.mapper.ArticleMapper;
 import com.avengers.gamera.mapper.CommentMapper;
 import com.avengers.gamera.mapper.UserMapper;
 import com.avengers.gamera.repository.ArticleRepository;
-import com.avengers.gamera.repository.GameRepository;
-import com.avengers.gamera.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +27,6 @@ import java.time.OffsetDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +39,22 @@ public class ArticleService {
     private final UserService userService;
     private final GameService gameService;
 
+    public PagingDto<Object> getArticlePage(EArticleType articleType, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Article> articlePage = articleRepository.findArticlesByTypeAndIsDeletedFalse(articleType, pageable);
+        List<MiniArticleGetDto> miniArticleGetDtoList = articlePage.getContent()
+                .stream()
+                .map(articleMapper::articleToMiniArticleGetDto)
+                .toList();
+
+        return PagingDto.builder()
+                .data(miniArticleGetDtoList)
+                .totalItems(articlePage.getTotalElements())
+                .currentPage(articlePage.getNumber())
+                .totalPages(articlePage.getTotalPages())
+                .build();
+    }
 
     public ArticleGetDto createArticle(ArticlePostDto articlePostDto) {
         Article article = articleMapper.articlePostDtoToArticle(articlePostDto);
@@ -52,11 +64,11 @@ public class ArticleService {
             article.setCoverImgUrl("https://picsum.photos/800/400");
         }
         article.setUser(userService.findUser(articlePostDto.getAuthorId()));
-        ArticleType articleType = articlePostDto.getType();
+        EArticleType articleType = articlePostDto.getType();
 
-        if (articleType == ArticleType.valueOf("REVIEW")) {
+        if (articleType == EArticleType.valueOf("REVIEW")) {
             article.setGame(gameService.findActiveGame(articlePostDto.getGameId()));
-        } else if (articleType == ArticleType.valueOf("NEWS")) {
+        } else if (articleType == EArticleType.valueOf("NEWS")) {
             if (articlePostDto.getGameId() != null) {
                 article.setGame(gameService.findActiveGame(articlePostDto.getGameId()));
             }
@@ -64,23 +76,6 @@ public class ArticleService {
         log.info("Saving the article with title:  " + article.getTitle() + "  to database");
         return articleMapper.articleToArticleGetDto(articleRepository.save(article));
     }
-
-    public Page<MiniArticleGetDto> getMiniArticles(Pageable pageable){
-        List<MiniArticleGetDto> getMiniArticles = articleRepository.findArticleByIsDeletedFalse(pageable)
-                .stream()
-                .map(articleMapper::articleToMiniArticleGetDto)
-                .collect(Collectors.toList());
-        return new PageImpl<>(getMiniArticles, pageable, getMiniArticles.size());
-    }
-
-    public Page<MiniArticleGetDto> getMiniArticlesByType(ArticleType articleType, Pageable pageable) {
-        List<MiniArticleGetDto> getMiniArticles=articleRepository.findArticlesByTypeAndIsDeletedFalse(articleType, pageable)
-                .stream()
-                .map(articleMapper::articleToMiniArticleGetDto)
-                .collect(Collectors.toList());
-        return new PageImpl<>(getMiniArticles, pageable, getMiniArticles.size());
-    }
-
 
     public ArticleGetDto getArticleById(Long articleId) {
         Article article = articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(() ->
@@ -93,19 +88,17 @@ public class ArticleService {
                 .map(commentMapper::commentToCommentGetDto).toList();
         List<Comment> allChildComments = allResults.stream()
                 .filter(comment -> !Objects.isNull(comment.getParentComment())).toList();
-        allParentComments.forEach(parent -> {
-            parent.setChildComment(allChildComments.stream()
-                    .filter(child -> Objects.equals(child.getParentComment().getId(), parent.getId()))
-                    .map((childComments) -> {
-                        CommentSlimDto commentSlimDto = new CommentSlimDto();
-                        commentSlimDto.setId(childComments.getId());
-                        commentSlimDto.setUpdatedTime(childComments.getUpdatedTime());
-                        commentSlimDto.setCreatedTime(childComments.getCreatedTime());
-                        commentSlimDto.setText(childComments.getText());
-                        commentSlimDto.setUser(userMapper.userToUserSlimGetDto(childComments.getUser()));
-                        return commentSlimDto;
-                    }).toList());
-        });
+        allParentComments.forEach(parent -> parent.setChildComment(allChildComments.stream()
+                .filter(child -> Objects.equals(child.getParentComment().getId(), parent.getId()))
+                .map((childComments) -> {
+                    CommentSlimDto commentSlimDto = new CommentSlimDto();
+                    commentSlimDto.setId(childComments.getId());
+                    commentSlimDto.setUpdatedTime(childComments.getUpdatedTime());
+                    commentSlimDto.setCreatedTime(childComments.getCreatedTime());
+                    commentSlimDto.setText(childComments.getText());
+                    commentSlimDto.setUser(userMapper.userToUserSlimGetDto(childComments.getUser()));
+                    return commentSlimDto;
+                }).toList()));
         ArticleGetDto articleGetDto = articleMapper.articleToArticleGetDto(article);
         articleGetDto.setCommentList(allParentComments);
         return articleGetDto;
