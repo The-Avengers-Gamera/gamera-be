@@ -9,8 +9,8 @@ import org.mapstruct.ReportingPolicy;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface GameMapper {
-    GameGetDto GameToGameGetDto(Game game);
 
+    GameGetDto GameToGameGetDto(Game game);
     Game GamePostDtoToGame(GamePostDto gamePostDto);
 
     Game GameUpdateDtoToGame(GameUpdateDto gameUpdateDto);

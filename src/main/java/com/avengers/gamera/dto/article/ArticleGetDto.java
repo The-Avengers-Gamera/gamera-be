@@ -1,7 +1,6 @@
 package com.avengers.gamera.dto.article;
 
-import com.avengers.gamera.constant.ArticleType;
-
+import com.avengers.gamera.constant.EArticleType;
 import com.avengers.gamera.dto.comment.CommentGetDto;
 import com.avengers.gamera.dto.game.GameSlimGetDto;
 import com.avengers.gamera.dto.tag.TagGetDto;
@@ -26,8 +25,12 @@ public class ArticleGetDto {
     private String coverImgUrl;
     private String title;
     private String text;
+<<<<<<< HEAD
     private ArticleType type;
     private List<TagSlimDto> tagList;
+=======
+    private EArticleType type;
+>>>>>>> develop
     private OffsetDateTime createdTime;
     private OffsetDateTime updatedTime;
 }
