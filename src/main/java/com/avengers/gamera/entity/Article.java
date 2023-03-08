@@ -1,6 +1,6 @@
 package com.avengers.gamera.entity;
 
-import com.avengers.gamera.constant.ArticleType;
+import com.avengers.gamera.constant.EArticleType;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -40,7 +40,7 @@ public class Article {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ArticleType type;
+    private EArticleType type;
 
     @OneToMany(mappedBy = "article")
     private List<Comment> commentList;

@@ -22,7 +22,7 @@ spring:
         jdbc:
           time_zone: UTC
         format_sql: true
-    show-sql: true
+    show-sql: false
 
 cors:
   allowed-origins: "*"
