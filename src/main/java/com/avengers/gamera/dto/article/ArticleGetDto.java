@@ -4,7 +4,10 @@ import com.avengers.gamera.constant.ArticleType;
 
 import com.avengers.gamera.dto.comment.CommentGetDto;
 import com.avengers.gamera.dto.game.GameSlimGetDto;
+import com.avengers.gamera.dto.tag.TagGetDto;
+import com.avengers.gamera.dto.tag.TagSlimDto;
 import com.avengers.gamera.dto.user.UserSlimGetDto;
+import com.avengers.gamera.entity.Tag;
 import lombok.*;
 
 import java.time.OffsetDateTime;
@@ -24,6 +27,7 @@ public class ArticleGetDto {
     private String title;
     private String text;
     private ArticleType type;
+    private List<TagSlimDto> tagList;
     private OffsetDateTime createdTime;
     private OffsetDateTime updatedTime;
 }

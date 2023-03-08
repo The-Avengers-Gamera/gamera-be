@@ -1,6 +1,7 @@
 package com.avengers.gamera.entity;
 
 import com.avengers.gamera.constant.ArticleType;
+import com.avengers.gamera.dto.tag.TagGetDto;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -44,6 +45,13 @@ public class Article {
 
     @OneToMany(mappedBy = "article")
     private List<Comment> commentList;
+
+    @ManyToMany(cascade = {CascadeType.MERGE})
+    @JoinTable(
+            name = "article_tag",
+            joinColumns = {@JoinColumn(name = "article_id")},
+            inverseJoinColumns = {@JoinColumn(name = "tag_id")})
+    private List<Tag> tagList;
 
     @Column(name = "is_deleted")
     @Builder.Default

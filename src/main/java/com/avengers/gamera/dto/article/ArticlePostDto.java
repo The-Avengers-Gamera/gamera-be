@@ -1,17 +1,22 @@
 package com.avengers.gamera.dto.article;
 
 import com.avengers.gamera.constant.ArticleType;
+import com.avengers.gamera.entity.Tag;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.List;
+
 
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class ArticlePostDto{
@@ -34,4 +39,6 @@ public class ArticlePostDto{
     @NotNull(message = "Article type must be provided.")
     @Enumerated(EnumType.STRING)
     private ArticleType type;
+
+    private List<Tag> tagList;
 }

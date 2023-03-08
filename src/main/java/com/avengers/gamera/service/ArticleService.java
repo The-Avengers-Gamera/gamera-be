@@ -7,13 +7,13 @@ import com.avengers.gamera.dto.article.MiniArticleGetDto;
 import com.avengers.gamera.dto.article.ArticlePutDto;
 import com.avengers.gamera.dto.comment.CommentGetDto;
 import com.avengers.gamera.dto.comment.CommentSlimDto;
-import com.avengers.gamera.entity.Article;
-import com.avengers.gamera.entity.Comment;
-import com.avengers.gamera.entity.Game;
-import com.avengers.gamera.entity.User;
+import com.avengers.gamera.dto.tag.TagGetDto;
+import com.avengers.gamera.dto.tag.TagSlimDto;
+import com.avengers.gamera.entity.*;
 import com.avengers.gamera.exception.ResourceNotFoundException;
 import com.avengers.gamera.mapper.ArticleMapper;
 import com.avengers.gamera.mapper.CommentMapper;
+import com.avengers.gamera.mapper.TagMapper;
 import com.avengers.gamera.mapper.UserMapper;
 import com.avengers.gamera.repository.ArticleRepository;
 import com.avengers.gamera.repository.GameRepository;
@@ -26,13 +26,13 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.OffsetDateTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 @Slf4j
 public class ArticleService {
@@ -42,9 +42,14 @@ public class ArticleService {
     private final UserMapper userMapper;
     private final UserService userService;
     private final GameService gameService;
+    private final TagService tagService;
 
 
     public ArticleGetDto createArticle(ArticlePostDto articlePostDto) {
+        if (articlePostDto.getTagList() != null) {
+            List<Tag> updateTagList = handleFrontendTagList(articlePostDto.getTagList());
+            articlePostDto.setTagList(updateTagList);
+        }
         Article article = articleMapper.articlePostDtoToArticle(articlePostDto);
 
         String img = article.getCoverImgUrl();
@@ -63,6 +68,22 @@ public class ArticleService {
         }
         log.info("Saving the article with title:  " + article.getTitle() + "  to database");
         return articleMapper.articleToArticleGetDto(articleRepository.save(article));
+    }
+
+
+    public List<Tag> handleFrontendTagList(List<Tag> tagList) {
+        Map<Boolean, List<Tag>> checkTags = tagList.stream().collect(Collectors.partitioningBy(item -> item.getId() == null));
+        List<Tag> newGetDto = checkTags.get(true);
+        List<Tag> existGetDto = checkTags.get(false);
+        List<Tag> existTag = tagService.getAllTag(existGetDto);
+        List<Tag> updatedTagList = new ArrayList<>(existTag);
+
+        if (newGetDto.size() > 0) {
+            List<Tag> createdTag = tagService.saveAllTag(newGetDto);
+            updatedTagList.addAll(createdTag);
+        }
+
+        return updatedTagList;
     }
 
     public Page<MiniArticleGetDto> getMiniArticles(Pageable pageable){
