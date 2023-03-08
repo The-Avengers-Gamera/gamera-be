@@ -38,7 +38,7 @@ public class GameService {
     @Transactional
     public GameGetDto createGame(GamePostDto gamePostDto) {
         isExist(gamePostDto.getName());
-
+        gamePostDto.setPlatform(gamePostDto.getPlatform().toLowerCase());
         List<Genre> updateGenreList = handleFrontendGenreList(gamePostDto.getGameGenrePostDtoList());
         Game game = gameMapper.GamePostDtoToGame(gamePostDto);
         game.setGenreList(updateGenreList);
