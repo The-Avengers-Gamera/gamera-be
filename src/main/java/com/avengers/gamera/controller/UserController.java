@@ -1,9 +1,12 @@
 package com.avengers.gamera.controller;
 
+import com.avengers.gamera.auth.GameraUserDetails;
+import com.avengers.gamera.dto.like.LikeGetForUserProfileDto;
 import com.avengers.gamera.dto.user.UserAddAuthorityDto;
 import com.avengers.gamera.dto.user.UserGetDto;
 import com.avengers.gamera.dto.user.UserPostDto;
 import com.avengers.gamera.dto.user.UserPutDto;
+import com.avengers.gamera.service.LikeService;
 import com.avengers.gamera.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final LikeService likeService;
 
     @PostMapping("/signup")
     @Operation(summary = "Create new user")
@@ -51,6 +55,11 @@ public class UserController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(@PathVariable Long userId) {
         userService.deleteUser(userId);
+    }
+
+    @GetMapping("/likeList")
+    public List<LikeGetForUserProfileDto> getLikeListForUser() {
+        return likeService.getLikeByUserId();
     }
 
 }

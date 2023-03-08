@@ -1,19 +1,30 @@
 package com.avengers.gamera.controller;
 
+import com.avengers.gamera.auth.GameraAuthenticationToken;
+import com.avengers.gamera.auth.GameraUserDetails;
+import com.avengers.gamera.config.SecurityConfig;
 import com.avengers.gamera.constant.ArticleType;
 import com.avengers.gamera.dto.article.ArticleGetDto;
 import com.avengers.gamera.dto.article.ArticlePostDto;
 import com.avengers.gamera.dto.article.ArticlePutDto;
 import com.avengers.gamera.dto.article.MiniArticleGetDto;
+import com.avengers.gamera.dto.like.LikeGetDto;
+import com.avengers.gamera.dto.like.LikePostDto;
+import com.avengers.gamera.jwt.JwtConfig;
 import com.avengers.gamera.service.ArticleService;
+import com.avengers.gamera.service.LikeService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 
 @RestController
@@ -22,6 +33,7 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 public class ArticleController {
     private final ArticleService articleService;
+    private final LikeService likeService;
 
     @PostMapping
     @Operation(summary = "Create new article")
@@ -59,5 +71,28 @@ public class ArticleController {
     @ResponseStatus(HttpStatus.OK)
     public String deleteArticleById(@PathVariable Long articleId) {
         return articleService.deleteArticleById(articleId);
+    }
+
+    @PostMapping("/like")
+    @Operation(summary = "Create new like")
+    public LikeGetDto createLike(@Valid @RequestBody LikePostDto likePostDto) {
+        return likeService.createLike(likePostDto);
+    }
+
+    @GetMapping("/{articleId}/getLike")
+    @Operation(summary = "Get a like")
+    public LikeGetDto getLike(@PathVariable Long articleId) {
+        return likeService.getLike(articleId);
+    }
+
+    @DeleteMapping("/{articleId}/deleteLike")
+    public void deleteLike(@PathVariable Long articleId) {
+        likeService.deleteLike(articleId);
+        return;
+    }
+
+    @GetMapping("/{articleId}/likeNum")
+    public Long getLikeNumForArticle(@PathVariable Long articleId) {
+        return likeService.getLikeNumByArticleId(articleId);
     }
 }

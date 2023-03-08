@@ -18,6 +18,6 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
     Optional<Article> findArticleByIdAndIsDeletedFalse(Long id);
 
-    @Query(value = "select a.title from Article a where a.id=?1")
+    @Query(value = "select a.title from Article a where a.id=?1 and a.isDeleted=false")
     String findTitleByIdAndIsDeletedFalse(Long id);
 }

@@ -1,5 +1,6 @@
 package com.avengers.gamera.service;
 
+import com.avengers.gamera.auth.GameraUserDetails;
 import com.avengers.gamera.dto.like.LikeGetDto;
 import com.avengers.gamera.dto.like.LikeGetForUserProfileDto;
 import com.avengers.gamera.dto.like.LikePostDto;
@@ -11,6 +12,7 @@ import com.avengers.gamera.repository.ArticleRepository;
 import com.avengers.gamera.repository.LikeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -26,6 +28,15 @@ public class LikeService {
     private final LikeRepository likeRepository;
     private final ArticleRepository articleRepository;
 
+    public Long getUserId() {
+        Long userId;
+        if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof GameraUserDetails userDetails) {
+            userId = userDetails.getId();
+            return userId;
+        }
+        throw new RuntimeException("userId can not be found");
+    }
+
     @Transactional
     public LikeGetDto createLike(LikePostDto likePostDto) {
         Like like = likeMapper.likePostDtoToLike(likePostDto);
@@ -38,14 +49,14 @@ public class LikeService {
     }
 
     @Transactional
-    public LikeGetDto getLike(Long userId, Long articleId) {
+    public LikeGetDto getLike(Long articleId) {
 
-        return likeMapper.likeToLikeGetDto(likeRepository.findByUserIdAndArticleId(userId, articleId).orElseThrow(() -> new ResourceNotFoundException("like")));
+        return likeMapper.likeToLikeGetDto(likeRepository.findByUserIdAndArticleId(this.getUserId(), articleId).orElseThrow(() -> new ResourceNotFoundException("like")));
     }
 
     @Transactional
-    public List<LikeGetForUserProfileDto> getLikeByUserId(Long userId) {
-        return (likeRepository.findByUserId(userId).stream().map(like -> {
+    public List<LikeGetForUserProfileDto> getLikeByUserId() {
+        return (likeRepository.findByUserId(this.getUserId()).stream().map(like -> {
             LikeGetForUserProfileDto likeGetForUserProfileDto = likeMapper.likeToLikeGetForUserProfileDto(like);
             String articleTitle = articleRepository.findTitleByIdAndIsDeletedFalse(likeGetForUserProfileDto.getArticleId());
             likeGetForUserProfileDto.setArticleTile(articleTitle);
@@ -59,13 +70,12 @@ public class LikeService {
 
     @Transactional
     public Long getLikeNumByArticleId(Long articleId) {
-        return likeRepository.findByArticleId(articleId).stream().count();
+        return likeRepository.countByArticleId(articleId);
     }
 
-    @Transactional
-    public String deleteLike(Long userId, Long articleId) {
-        likeRepository.deleteByUserIdAndArticleId(userId, articleId);
-        log.info("Delete like with userId {} articleId {}", userId, articleId);
-        return "Delete like successfully";
+    public void deleteLike(Long articleId) {
+        likeRepository.deleteByUserIdAndArticleId(this.getUserId(), articleId);
+        log.info("Delete like with userId {} articleId {}", this.getUserId(), articleId);
+        return;
     }
 }
