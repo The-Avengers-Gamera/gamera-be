@@ -1,6 +1,10 @@
 package com.avengers.gamera.jwt;
 
+
 import com.avengers.gamera.auth.GameraUserDetails;
+import com.avengers.gamera.dto.user.UserInfoDto;
+import com.avengers.gamera.service.JWTService;
+import com.avengers.gamera.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import lombok.SneakyThrows;
@@ -32,12 +36,18 @@ public class JwtUsernameAndPasswordAuthFilter extends UsernamePasswordAuthentica
     private final AuthenticationManager authenticationManager;
     private final SecretKey secretKey;
     private final JwtConfig jwtConfig;
+    private final UserService userService;
 
-    public JwtUsernameAndPasswordAuthFilter(AuthenticationManager authenticationManager, SecretKey secretKey, JwtConfig jwtConfig) {
+    private final JWTService jwtService;
+
+
+    public JwtUsernameAndPasswordAuthFilter(AuthenticationManager authenticationManager, SecretKey secretKey, JwtConfig jwtConfig, UserService userService, JWTService jwtService) {
         super.setFilterProcessesUrl(LOGIN_URL);
         this.authenticationManager = authenticationManager;
         this.secretKey = secretKey;
         this.jwtConfig = jwtConfig;
+        this.userService = userService;
+        this.jwtService=jwtService;
     }
 
     @Override
@@ -65,14 +75,7 @@ public class JwtUsernameAndPasswordAuthFilter extends UsernamePasswordAuthentica
         Collection<? extends GrantedAuthority> authorities = authResult.getAuthorities();
         long userId = ((GameraUserDetails) authResult.getPrincipal()).getId();
 
-        String jwtToken = Jwts.builder()
-                .setSubject(email)
-                .claim("authorities", authorities)
-                .claim("userId", userId)
-                .setIssuedAt(new Date())
-                .setExpiration(java.sql.Date.valueOf(LocalDate.now().plusDays(1)))
-                .signWith(secretKey)
-                .compact();
+        String jwtToken = jwtService.createJWT(email,authorities,userId,secretKey);
 
         Map<String, Object> userInfo = new HashMap<>();
         userInfo.put("email", email);
