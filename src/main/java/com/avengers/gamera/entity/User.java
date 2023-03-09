@@ -55,4 +55,12 @@ public class User {
 
     @Builder.Default
     private Boolean isDeleted = false;
+
+    @ManyToMany(cascade = {CascadeType.MERGE})
+    @JoinTable(
+            name = "user_likes_article",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "article_id")
+    )
+    List<Article> likedArticles;
 }

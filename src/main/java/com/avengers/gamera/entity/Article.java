@@ -1,6 +1,7 @@
 package com.avengers.gamera.entity;
 
 import com.avengers.gamera.constant.ArticleType;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -56,4 +57,8 @@ public class Article {
     @Column(nullable = false, name = "updated_time")
     @UpdateTimestamp
     private OffsetDateTime updatedTime;
+
+    @ManyToMany(mappedBy = "likedArticles")
+    @JsonBackReference
+    List<User> likeUsers;
 }

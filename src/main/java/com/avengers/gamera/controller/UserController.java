@@ -1,7 +1,6 @@
 package com.avengers.gamera.controller;
 
-import com.avengers.gamera.auth.GameraUserDetails;
-import com.avengers.gamera.dto.like.LikeGetForUserProfileDto;
+import com.avengers.gamera.dto.article.ArticleGetDto;
 import com.avengers.gamera.dto.user.UserAddAuthorityDto;
 import com.avengers.gamera.dto.user.UserGetDto;
 import com.avengers.gamera.dto.user.UserPostDto;
@@ -58,7 +57,7 @@ public class UserController {
     }
 
     @GetMapping("/likeList")
-    public List<LikeGetForUserProfileDto> getLikeListForUser() {
+    public List<ArticleGetDto> getLikeListForUser() {
         return likeService.getLikeByUserId();
     }
 
