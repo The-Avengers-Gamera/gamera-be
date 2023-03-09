@@ -5,6 +5,7 @@ import com.avengers.gamera.dto.comment.CommentGetDto;
 import com.avengers.gamera.dto.game.GameSlimGetDto;
 import com.avengers.gamera.dto.user.UserSlimGetDto;
 import lombok.*;
+import org.checkerframework.checker.interning.qual.EqualsMethod;
 
 import java.time.OffsetDateTime;
 import java.util.List;
