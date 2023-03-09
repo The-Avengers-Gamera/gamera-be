@@ -1,6 +1,7 @@
 package com.avengers.gamera.dto.article;
 
 import com.avengers.gamera.constant.EArticleType;
+import com.avengers.gamera.entity.Tag;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,6 +12,7 @@ import javax.persistence.Enumerated;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 @Getter
 @Builder
@@ -32,6 +34,8 @@ public class ArticlePostDto{
     @NotBlank(message = "Article text must be provided.")
     @Size(max = 6000, message = "Article text can not be more than 6000 characters.")
     private String text;
+
+    private List<Tag> tagList;
 
     @NotNull(message = "Article type must be provided.")
     @Enumerated(EnumType.STRING)
