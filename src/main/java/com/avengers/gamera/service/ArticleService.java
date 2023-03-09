@@ -87,13 +87,13 @@ public class ArticleService {
 
     public List<Tag> handleFrontendTagList(List<Tag> tagList) {
         Map<Boolean, List<Tag>> checkTags = tagList.stream().collect(Collectors.partitioningBy(item -> item.getId() == null));
-        List<Tag> newGetDto = checkTags.get(true);
-        List<Tag> existGetDto = checkTags.get(false);
-        List<Tag> existTag = tagService.getAllTag(existGetDto);
+        List<Tag> newTagFromUser = checkTags.get(true);
+        List<Tag> existTagFromUser = checkTags.get(false);
+        List<Tag> existTag = tagService.getAllTag(existTagFromUser);
         List<Tag> updatedTagList = new ArrayList<>(existTag);
 
-        if (newGetDto.size() > 0) {
-            List<Tag> createdTag = tagService.saveAllTag(newGetDto);
+        if (newTagFromUser.size() > 0) {
+            List<Tag> createdTag = tagService.createMultipleTag(newTagFromUser);
             updatedTagList.addAll(createdTag);
         }
 

@@ -10,6 +10,7 @@ import java.util.Optional;
 
 public interface TagRepository extends JpaRepository<Tag, Long> {
     Optional<Tag> findTagByIdAndIsDeletedFalse(Long id);
+
     @Transactional
     @Modifying
     @Query("update Tag t set t.isDeleted = true where t.id = ?1 and t.isDeleted = false")

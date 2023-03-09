@@ -9,7 +9,6 @@ import com.avengers.gamera.mapper.TagMapper;
 import com.avengers.gamera.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -28,18 +27,14 @@ public class TagService {
         return tagMapper.tagToTagGetDto(tagRepository.save(tag));
     }
 
-    public List<Tag> createMultipleTag(List<TagPostDto> tagPostDtoList) {
+    public List<Tag> createMultipleTag(List<Tag> tagNames) {
+        List<TagPostDto> tagPostDtoList = tagNames.stream().map(tagMapper::tagToTagPostDto).toList();
         List<Tag> tagList = tagPostDtoList.stream().map(tagMapper::tagPostDtoToTag).toList();
         return tagRepository.saveAll(tagList);
     }
 
     public Tag getTag(Long tagId) {
         return findTag(tagId);
-    }
-
-    public List<Tag> saveAllTag(List<Tag> tagNames) {
-        List<TagPostDto> tagPostDtoList = tagNames.stream().map(tagMapper::tagToTagPostDto).toList();
-        return createMultipleTag(tagPostDtoList);
     }
 
     public List<Tag> getAllTag(List<Tag> tagNames) {
@@ -57,7 +52,6 @@ public class TagService {
         return tagRepository.findTagByIdAndIsDeletedFalse(tagId).orElseThrow(() -> new ResourceNotFoundException("Tag"));
     }
 
-    @Modifying
     public void deleteTag(Long tagId) {
         int deleteResponse = tagRepository.deleteTagById(tagId);
         if (deleteResponse != 1L) {

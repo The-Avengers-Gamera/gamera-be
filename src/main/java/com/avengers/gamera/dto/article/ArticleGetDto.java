@@ -3,10 +3,8 @@ package com.avengers.gamera.dto.article;
 import com.avengers.gamera.constant.EArticleType;
 import com.avengers.gamera.dto.comment.CommentGetDto;
 import com.avengers.gamera.dto.game.GameSlimGetDto;
-import com.avengers.gamera.dto.tag.TagGetDto;
 import com.avengers.gamera.dto.tag.TagSlimDto;
 import com.avengers.gamera.dto.user.UserSlimGetDto;
-import com.avengers.gamera.entity.Tag;
 import lombok.*;
 
 import java.time.OffsetDateTime;

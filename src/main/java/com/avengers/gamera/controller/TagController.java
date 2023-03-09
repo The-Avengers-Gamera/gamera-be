@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping("tags")
@@ -18,18 +17,6 @@ public record TagController(TagService tagService) {
     @ResponseStatus(HttpStatus.CREATED)
     public TagGetDto createTag(@Valid @RequestBody TagPostDto tagPostDto) {
         return tagService.createTag(tagPostDto);
-    }
-
-    @PostMapping("/multiple")
-    @ResponseStatus(HttpStatus.CREATED)
-    public List<Tag> createTag(@Valid @RequestBody List<Tag> tagNames) {
-        return tagService.saveAllTag(tagNames);
-    }
-
-    @GetMapping("/multiple")
-    @ResponseStatus(HttpStatus.CREATED)
-    public List<Tag> getMultipleTag(@Valid @RequestBody List<Tag> tagNames) {
-        return tagService.getAllTag(tagNames);
     }
 
     @GetMapping("/{tagId}")
