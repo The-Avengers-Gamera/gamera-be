@@ -14,8 +14,8 @@ public class MockArticleData {
     public static final Long authorId = 1L;
 
     public static final Article mockArticle = Article.builder().id(articleId)
-            .game(null)
-            .user(null)
+            .game(MockGameData.mockGame)
+            .user(MockUserData.mockUser)
             .commentList(new ArrayList<>())
             .coverImgUrl("url")
             .title("title")

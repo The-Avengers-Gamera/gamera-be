@@ -19,5 +19,5 @@ public class MockGenreData {
             .updatedTime(OffsetDateTime.now())
             .build();
 
-    public static final List<Genre> genreList = List.of(mockGenre1, mockGenre2);
+    public static final List<Genre> mockGenreList = List.of(mockGenre1, mockGenre2);
 }
