@@ -71,7 +71,7 @@ public class ArticleService {
         if (StringUtils.isBlank(img)) {
             article.setCoverImgUrl("https://picsum.photos/800/400");
         }
-        article.setUser(userService.findUser(articlePostDto.getAuthorId()));
+        article.setAuthor(userService.findUser(articlePostDto.getAuthorId()));
         EArticleType articleType = articlePostDto.getType();
 
         if (articleType == EArticleType.valueOf("REVIEW")) {

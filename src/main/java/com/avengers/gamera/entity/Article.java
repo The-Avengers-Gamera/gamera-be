@@ -27,7 +27,7 @@ public class Article {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "author_id", nullable = false)
-    private User user;
+    private User author;
 
     @Column(name = "cover_img_url")
     private String coverImgUrl;
