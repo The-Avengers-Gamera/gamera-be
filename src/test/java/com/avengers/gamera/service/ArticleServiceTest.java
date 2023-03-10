@@ -82,7 +82,7 @@ class ArticleServiceTest {
             .title("review for last of us")
             .type(EArticleType.REVIEW)
             .text("review body text for last of us")
-            .user(mockUser)
+            .author(mockUser)
             .game(mockGame)
             .build();
 
