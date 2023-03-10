@@ -53,4 +53,8 @@ public class UserController {
         userService.deleteUser(userId);
     }
 
+    @GetMapping("/verification/emails/{emailAddress}")
+    public Boolean getEmailExists (@PathVariable String emailAddress){
+        return userService.emailExists(emailAddress);
+    }
 }

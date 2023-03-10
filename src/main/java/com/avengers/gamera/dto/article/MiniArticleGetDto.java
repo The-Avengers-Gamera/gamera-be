@@ -18,7 +18,7 @@ public class MiniArticleGetDto {
     private Long id;
     private String coverImgUrl;
     private GameGetDto game;
-    private UserGetDto user;
+    private UserGetDto author;
     private String title;
     private EArticleType type;
     private OffsetDateTime createdTime;

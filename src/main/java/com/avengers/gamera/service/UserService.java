@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-
     private final AuthorityService authorityService;
 
     @Autowired
@@ -38,8 +37,6 @@ public class UserService {
     private String defaultAuthority = "ROLE_USER";
 
     public UserGetDto createUser(UserPostDto userPostDto) {
-        String email = userPostDto.getEmail();
-        emailExists(email);
         String encodedPwd = passwordEncoder.encode(userPostDto.getPassword());
         User user = userMapper.userPostDtoToUser(userPostDto);
         user.setPassword(encodedPwd);

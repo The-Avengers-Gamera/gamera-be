@@ -23,7 +23,7 @@ public class ArticleController {
     }
 
     @GetMapping("/news")
-    public PagingDto<Object> getNews(@RequestParam(defaultValue = "0") int page,
+    public PagingDto<Object> getNews(@RequestParam(defaultValue = "1") int page,
                                      @RequestParam(defaultValue = "10") int size) {
         return articleService.getArticlePage(EArticleType.NEWS, page, size);
     }
