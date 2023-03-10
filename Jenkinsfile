@@ -8,8 +8,7 @@ pipeline {
         DB_PASSWORD = credentials('DB_PASSWORD')
         ECR_PASSWORD_STDIN = credentials('ECR_PASSWORD_STDIN')
     }
-	/
-		/Get code
+	//Get code
   stages {
     stage('Checkout code') {
       steps {
