@@ -7,9 +7,12 @@ pipeline{
         DB_PASSWORD = credentials('DB_PASSWORD')
         REGION = 'ap-southeast-2'
         FAMILY = 'DevGameraCluster'
+        ECS_SERVICE = "gamera-uat"
     }
     
-    agent any
+    agent {
+        label 'gcp_node'
+    }
     
     stages{
         stage('Build'){
@@ -24,7 +27,7 @@ pipeline{
                 sh './gradlew clean test'
             }
         }
-        stage('Build image'){
+        stage('Building image'){
             steps{
                 echo 'Building Docker image...'
                 sh 'docker build --build-arg DB_URL=${DB_URL} \
@@ -47,7 +50,7 @@ pipeline{
             steps{
                 sh """
                 #!bin/sh 
-                sh "aws ecs update-service --cluster ${ECS_CLUSTER} --service ${ECS_SERVICE} --force-new-deployment --task-definition ${ECS_FAMILY}:${IMAGE_TAG}"
+                sh "aws ecs update-service --cluster ${FAMILY} --service ${ECS_SERVICE} --force-new-deployment"
                 """
             }
         }    
