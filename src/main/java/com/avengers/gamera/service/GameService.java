@@ -21,6 +21,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -38,7 +39,10 @@ public class GameService {
     @Transactional
     public GameGetDto createGame(GamePostDto gamePostDto) {
         isExist(gamePostDto.getName());
-        gamePostDto.setPlatform(gamePostDto.getPlatform().toLowerCase());
+
+        String platform=Optional.ofNullable(gamePostDto.getPlatform()).orElse("unknown platform");
+        gamePostDto.setPlatform(platform.toLowerCase());
+
         List<Genre> updateGenreList = handleFrontendGenreList(gamePostDto.getGameGenrePostDtoList());
         Game game = gameMapper.GamePostDtoToGame(gamePostDto);
         game.setGenreList(updateGenreList);

@@ -163,7 +163,7 @@ public class ArticleService {
     public PagingDto<Object>  getArticleMetadataByPlatform(EArticleType articleType,String platform, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<Article> articlePage = articleRepository.findArticleByGamePlatformContainingAndTypeAndIsDeletedFalse( platform.toLowerCase(), articleType,pageable);
+        Page<Article> articlePage = articleRepository.findArticleByGamePlatformContainingAndTypeAndIsDeletedFalseOrderByCreatedTimeDesc( platform.toLowerCase(), articleType,pageable);
         List<MiniArticleGetDto> miniArticleGetDtoList = articlePage.getContent()
                 .stream()
                 .map(articleMapper::articleToMiniArticleGetDto)
