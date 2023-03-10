@@ -44,7 +44,7 @@ public class ArticleService {
     private final TagService tagService;
 
     public PagingDto<Object> getArticlePage(EArticleType articleType, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page - 1, size);
 
         Page<Article> articlePage = articleRepository.findArticlesByTypeAndIsDeletedFalse(articleType, pageable);
         List<MiniArticleGetDto> miniArticleGetDtoList = articlePage.getContent()
@@ -55,7 +55,7 @@ public class ArticleService {
         return PagingDto.builder()
                 .data(miniArticleGetDtoList)
                 .totalItems(articlePage.getTotalElements())
-                .currentPage(articlePage.getNumber())
+                .currentPage(articlePage.getNumber() + 1)
                 .totalPages(articlePage.getTotalPages())
                 .build();
     }
