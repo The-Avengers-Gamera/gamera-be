@@ -2,10 +2,7 @@ package com.avengers.gamera.dto.article;
 
 import com.avengers.gamera.constant.EArticleType;
 import com.avengers.gamera.entity.Tag;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -15,6 +12,7 @@ import javax.validation.constraints.Size;
 import java.util.List;
 
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
