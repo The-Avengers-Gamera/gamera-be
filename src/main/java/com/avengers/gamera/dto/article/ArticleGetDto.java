@@ -3,6 +3,7 @@ package com.avengers.gamera.dto.article;
 import com.avengers.gamera.constant.EArticleType;
 import com.avengers.gamera.dto.comment.CommentGetDto;
 import com.avengers.gamera.dto.game.GameSlimGetDto;
+import com.avengers.gamera.dto.tag.TagSlimDto;
 import com.avengers.gamera.dto.user.UserSlimGetDto;
 import lombok.*;
 import org.checkerframework.checker.interning.qual.EqualsMethod;
@@ -23,6 +24,7 @@ public class ArticleGetDto {
     private String coverImgUrl;
     private String title;
     private String text;
+    private List<TagSlimDto> tagList;
     private EArticleType type;
     private OffsetDateTime createdTime;
     private OffsetDateTime updatedTime;

@@ -8,11 +8,12 @@ import com.avengers.gamera.dto.article.MiniArticleGetDto;
 import com.avengers.gamera.dto.article.ArticlePutDto;
 import com.avengers.gamera.dto.comment.CommentGetDto;
 import com.avengers.gamera.dto.comment.CommentSlimDto;
-import com.avengers.gamera.entity.Article;
-import com.avengers.gamera.entity.Comment;
+import com.avengers.gamera.dto.tag.TagSlimDto;
+import com.avengers.gamera.entity.*;
 import com.avengers.gamera.exception.ResourceNotFoundException;
 import com.avengers.gamera.mapper.ArticleMapper;
 import com.avengers.gamera.mapper.CommentMapper;
+import com.avengers.gamera.mapper.TagMapper;
 import com.avengers.gamera.mapper.UserMapper;
 import com.avengers.gamera.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,12 +24,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.OffsetDateTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 @Slf4j
 public class ArticleService {
@@ -36,11 +38,13 @@ public class ArticleService {
     private final ArticleMapper articleMapper;
     private final CommentMapper commentMapper;
     private final UserMapper userMapper;
+    private final TagMapper tagMapper;
     private final UserService userService;
     private final GameService gameService;
+    private final TagService tagService;
 
     public PagingDto<Object> getArticlePage(EArticleType articleType, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page - 1, size);
 
         Page<Article> articlePage = articleRepository.findArticlesByTypeAndIsDeletedFalse(articleType, pageable);
         List<MiniArticleGetDto> miniArticleGetDtoList = articlePage.getContent()
@@ -51,12 +55,16 @@ public class ArticleService {
         return PagingDto.builder()
                 .data(miniArticleGetDtoList)
                 .totalItems(articlePage.getTotalElements())
-                .currentPage(articlePage.getNumber())
+                .currentPage(articlePage.getNumber() + 1)
                 .totalPages(articlePage.getTotalPages())
                 .build();
     }
 
     public ArticleGetDto createArticle(ArticlePostDto articlePostDto) {
+        if (articlePostDto.getTagList() != null) {
+            List<Tag> updateTagList = handleFrontendTagList(articlePostDto.getTagList());
+            articlePostDto.setTagList(updateTagList);
+        }
         Article article = articleMapper.articlePostDtoToArticle(articlePostDto);
 
         String img = article.getCoverImgUrl();
@@ -77,6 +85,20 @@ public class ArticleService {
         return articleMapper.articleToArticleGetDto(articleRepository.save(article));
     }
 
+    public List<Tag> handleFrontendTagList(List<Tag> tagList) {
+        Map<Boolean, List<Tag>> checkTags = tagList.stream().collect(Collectors.partitioningBy(item -> item.getId() == null));
+        List<Tag> newTagFromUser = checkTags.get(true);
+        List<Tag> existTagFromUser = checkTags.get(false);
+        List<Tag> existTag = tagService.getAllTag(existTagFromUser);
+        List<Tag> updatedTagList = new ArrayList<>(existTag);
+
+        if (newTagFromUser.size() > 0) {
+            List<Tag> createdTag = tagService.createMultipleTag(newTagFromUser);
+            updatedTagList.addAll(createdTag);
+        }
+
+        return updatedTagList;
+    }
     public ArticleGetDto getArticleById(Long articleId) {
         Article article = articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(() ->
                 new ResourceNotFoundException("Related Article with the ID(" + articleId + ")")
@@ -99,8 +121,11 @@ public class ArticleService {
                     commentSlimDto.setUser(userMapper.userToUserSlimGetDto(childComments.getUser()));
                     return commentSlimDto;
                 }).toList()));
+        List<Tag> tagList = article.getTagList().stream().filter(item -> !item.isDeleted()).toList();
+        List<TagSlimDto> tagSlimDtoList=tagList.stream().map(tagMapper::tagToTagSlimDto).toList();
         ArticleGetDto articleGetDto = articleMapper.articleToArticleGetDto(article);
         articleGetDto.setCommentList(allParentComments);
+        articleGetDto.setTagList(tagSlimDtoList);
         return articleGetDto;
     }
 

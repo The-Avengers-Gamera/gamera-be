@@ -45,6 +45,13 @@ public class Article {
     @OneToMany(mappedBy = "article")
     private List<Comment> commentList;
 
+    @ManyToMany(cascade = {CascadeType.MERGE})
+    @JoinTable(
+            name = "article_tag",
+            joinColumns = {@JoinColumn(name = "article_id")},
+            inverseJoinColumns = {@JoinColumn(name = "tag_id")})
+    private List<Tag> tagList;
+
     @Column(name = "is_deleted")
     @Builder.Default
     private boolean isDeleted = false;
