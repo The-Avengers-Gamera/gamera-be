@@ -25,10 +25,10 @@ spring:
     show-sql: true
 
 system-param:
-  aws-active: false
-  aws-access-key: 123
-  aws-secret-key: 123
-  sender-email: kelozheng123@gmail.com1
+  aws-active: true
+  aws-access-key: AKIA2YCXRLQUIA6T6LJ5
+  aws-secret-key: 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
+  sender-email: kelozheng123@gmail.com
   base-url: http://localhost:8080/api/v1
   sign-in-jwt-expired-minute: 3600
 
