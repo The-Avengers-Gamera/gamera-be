@@ -87,11 +87,12 @@ public class UserService {
         return baseUrl + "/verification?code="+ jwtToken;
     }
 
-    public void emailExists(String email) {
-        Boolean isExisted = userRepository.existsUserByEmail(email);
+    public boolean emailExists(String email) {
+        boolean isExisted = userRepository.existsUserByEmail(email);
         if (isExisted) {
             throw new ResourceExistException("Email already existed!");
         }
+        return false;
     }
 
     public UserInfoDto getUserInfo(String email) {
