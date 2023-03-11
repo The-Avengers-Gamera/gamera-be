@@ -1,13 +1,12 @@
 package com.avengers.gamera.jwt;
 
-
 import com.avengers.gamera.auth.GameraUserDetails;
-import com.avengers.gamera.dto.user.UserInfoDto;
-import com.avengers.gamera.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import lombok.SneakyThrows;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -23,6 +22,8 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class JwtUsernameAndPasswordAuthFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -31,14 +32,12 @@ public class JwtUsernameAndPasswordAuthFilter extends UsernamePasswordAuthentica
     private final AuthenticationManager authenticationManager;
     private final SecretKey secretKey;
     private final JwtConfig jwtConfig;
-    private final UserService userService;
 
-    public JwtUsernameAndPasswordAuthFilter(AuthenticationManager authenticationManager, SecretKey secretKey, JwtConfig jwtConfig, UserService userService) {
+    public JwtUsernameAndPasswordAuthFilter(AuthenticationManager authenticationManager, SecretKey secretKey, JwtConfig jwtConfig) {
         super.setFilterProcessesUrl(LOGIN_URL);
         this.authenticationManager = authenticationManager;
         this.secretKey = secretKey;
         this.jwtConfig = jwtConfig;
-        this.userService = userService;
     }
 
     @Override
@@ -75,14 +74,29 @@ public class JwtUsernameAndPasswordAuthFilter extends UsernamePasswordAuthentica
                 .signWith(secretKey)
                 .compact();
 
-        UserInfoDto userInfo = userService.getUserInfo(email);
+        Map<String, Object> userInfo = new HashMap<>();
+        userInfo.put("email", email);
+        userInfo.put("authorities", authorities);
         ObjectMapper objectMapper = new ObjectMapper();
         String userInfoJson = objectMapper.writeValueAsString(userInfo);
 
         response.addHeader(jwtConfig.getAuthorization(), BEARER + jwtToken);
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.getWriter().print(userInfoJson);
+        response.getWriter().flush();
+        response.getWriter().close();
+    }
+
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request,
+                                              HttpServletResponse response,
+                                              AuthenticationException failed) throws IOException, ServletException {
+        if (failed.getCause() instanceof InternalAuthenticationServiceException) {
+            response.sendError((HttpServletResponse.SC_UNAUTHORIZED),failed.getMessage());
+        }
+
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.getWriter().print("Login failed. Please try again.");
         response.getWriter().flush();
         response.getWriter().close();
     }

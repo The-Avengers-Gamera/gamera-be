@@ -5,8 +5,11 @@ import com.avengers.gamera.dto.comment.CommentGetDto;
 import com.avengers.gamera.dto.game.GameSlimGetDto;
 import com.avengers.gamera.dto.tag.TagSlimDto;
 import com.avengers.gamera.dto.user.UserSlimGetDto;
-import lombok.*;
-import org.checkerframework.checker.interning.qual.EqualsMethod;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.OffsetDateTime;
 import java.util.List;

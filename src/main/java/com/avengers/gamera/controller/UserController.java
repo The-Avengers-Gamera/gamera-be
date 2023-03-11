@@ -8,6 +8,7 @@ import com.avengers.gamera.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -25,13 +26,12 @@ public class UserController {
         return userService.createUser(userPostDto);
     }
 
-    @PostMapping("/add-authority")
+    @PostMapping("/roles")
     @ResponseStatus(HttpStatus.CREATED)
     public String addAuthorityToUser(@RequestBody UserAddAuthorityDto userAddAuthority) {
         return userService.addAuthorityToUser(userAddAuthority.getEmail(), userAddAuthority.getName());
     }
 
-    //    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping
     public List<UserGetDto> getAllUsers() {
         return userService.getAllUsers();
@@ -40,6 +40,12 @@ public class UserController {
     @GetMapping("{userId}")
     public UserGetDto getUser(@PathVariable Long userId) {
         return userService.getUser(userId);
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_USER')")
+    @GetMapping("/info")
+    public UserGetDto getUserInfo() {
+        return userService.getUserInfoByToken();
     }
 
     @PutMapping("{userId}")

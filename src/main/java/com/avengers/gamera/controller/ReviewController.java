@@ -25,6 +25,7 @@ public class ReviewController {
     private final ArticleService articleService;
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public ArticleGetDto createReview(@RequestBody ArticlePostDto articlePostDto) {
         return articleService.createArticle(articlePostDto);
     }

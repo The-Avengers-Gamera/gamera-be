@@ -52,6 +52,9 @@ public class Article {
             inverseJoinColumns = {@JoinColumn(name = "tag_id")})
     private List<Tag> tagList;
 
+    @Transient
+    private int commentsNum;
+
     @Column(name = "is_deleted")
     @Builder.Default
     private boolean isDeleted = false;
@@ -63,4 +66,8 @@ public class Article {
     @Column(nullable = false, name = "updated_time")
     @UpdateTimestamp
     private OffsetDateTime updatedTime;
+
+    public int getCommentsNum() {
+        return this.commentList.size();
+    }
 }

@@ -25,6 +25,7 @@ public class NewsController {
     private final ArticleService articleService;
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public ArticleGetDto createNews(@RequestBody ArticlePostDto articlePostDto) {
         return articleService.createArticle(articlePostDto);
     }

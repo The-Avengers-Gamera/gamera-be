@@ -3,11 +3,14 @@ package com.avengers.gamera.controller;
 import com.avengers.gamera.constant.EArticleType;
 import com.avengers.gamera.dto.PagingDto;
 import com.avengers.gamera.dto.article.ArticleGetDto;
+import com.avengers.gamera.dto.article.MiniArticleGetDto;
 import com.avengers.gamera.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/articles")
@@ -23,14 +26,14 @@ public class ArticleController {
     }
 
     @GetMapping("/news")
-    public PagingDto<Object> getNews(@RequestParam(defaultValue = "1") int page,
-                                     @RequestParam(defaultValue = "10") int size) {
+    public PagingDto<List<MiniArticleGetDto>> getNews(@RequestParam(defaultValue = "1") int page,
+                                                      @RequestParam(defaultValue = "10") int size) {
         return articleService.getArticlePage(EArticleType.NEWS, page, size);
     }
 
     @GetMapping("/reviews")
-    public PagingDto<Object> getReviews(@RequestParam(defaultValue = "0") int page,
-                                        @RequestParam(defaultValue = "10") int size) {
+    public PagingDto<List<MiniArticleGetDto>> getReviews(@RequestParam(defaultValue = "1") int page,
+                                                         @RequestParam(defaultValue = "10") int size) {
         return articleService.getArticlePage(EArticleType.REVIEW, page, size);
     }
 }
