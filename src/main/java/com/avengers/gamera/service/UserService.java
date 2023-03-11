@@ -46,7 +46,6 @@ public class UserService {
 
     private String defaultAuthority = "ROLE_USER";
 
-    @Transactional
     public UserGetDto createUser(UserPostDto userPostDto) {
         String email = userPostDto.getEmail();
         emailExists(email);

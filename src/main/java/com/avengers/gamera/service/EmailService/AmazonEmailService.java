@@ -22,22 +22,12 @@ public record AmazonEmailService (AmazonSimpleEmailService amazonSimpleEmailServ
         message.withBody(new Body(new Content(info+": Nice to meet you, please active your account with below link: "+
                 link)));
 
-        System.out.println(senderEmail);
-        System.out.println(receiverEmail);
-
         SendEmailRequest sendEmailRequest= new SendEmailRequest();
         sendEmailRequest.withDestination(destination)
                 .withMessage(message)
                 .withSource(senderEmail);
 
-        try{
-            SendEmailResult result= amazonSimpleEmailService.sendEmail(sendEmailRequest);
-            System.out.println(result);
-        }
-        catch (Exception e){
+        amazonSimpleEmailService.sendEmail(sendEmailRequest);
 
-            System.out.println(e);
-
-        }
     }
 }
