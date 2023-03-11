@@ -43,16 +43,17 @@ public class ArticleService {
     private final GameService gameService;
     private final TagService tagService;
 
-    public PagingDto<List<MiniArticleGetDto>> getArticlePage(EArticleType articleType, int page, int size) {
+    public PagingDto<List<MiniArticleGetDto>> getArticlePage(EArticleType articleType, int page, int size,String platform) {
         Pageable pageable = PageRequest.of(page - 1, size);
         PagingDto<List<MiniArticleGetDto>> data = new PagingDto<>();
-
-        Page<Article> articlePage = articleRepository.findArticlesByTypeAndIsDeletedFalse(articleType, pageable);
+        Page<Article>  articlePage = Optional.ofNullable(platform)
+                .map(p -> articleRepository
+                        .findArticlesByGamePlatformContainingAndTypeAndIsDeletedFalse(p, articleType, pageable))
+                .orElse(articleRepository.findArticlesByTypeAndIsDeletedFalse(articleType, pageable));
         List<MiniArticleGetDto> miniArticleGetDtoList = articlePage.getContent()
                 .stream()
                 .map(articleMapper::articleToMiniArticleGetDto)
                 .toList();
-
         data.setData(miniArticleGetDtoList);
         data.setCurrentPage(articlePage.getNumber() + 1);
         data.setTotalPages(articlePage.getTotalPages());

@@ -1,6 +1,5 @@
 package com.avengers.gamera.controller;
 
-import com.avengers.gamera.dto.PagingDto;
 import com.avengers.gamera.dto.article.ArticleGetDto;
 import com.avengers.gamera.dto.article.ArticlePostDto;
 import com.avengers.gamera.dto.article.ArticlePutDto;
@@ -37,10 +36,4 @@ public class ReviewController {
         return articleService.deleteArticleById(reviewId);
     }
 
-
-    @GetMapping("/platforms/{platform}")
-    public PagingDto<Object> getReviewsMetadataByPlatform(@PathVariable String platform,@RequestParam(defaultValue = "0") int page,
-                                                  @RequestParam(defaultValue = "10") int size) {
-        return articleService.getReviewsMetadataByPlatform(platform,page, size);
-    }
 }
