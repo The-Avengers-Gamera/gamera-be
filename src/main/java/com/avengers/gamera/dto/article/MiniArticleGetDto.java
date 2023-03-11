@@ -1,7 +1,7 @@
 package com.avengers.gamera.dto.article;
 
 import com.avengers.gamera.constant.EArticleType;
-import com.avengers.gamera.dto.game.GameGetDto;
+import com.avengers.gamera.dto.game.GameSlimGetDto;
 import com.avengers.gamera.dto.user.UserGetDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,8 +17,9 @@ import java.time.OffsetDateTime;
 public class MiniArticleGetDto {
     private Long id;
     private String coverImgUrl;
-    private GameGetDto game;
+    private GameSlimGetDto game;
     private UserGetDto author;
+    private int commentsNum;
     private String title;
     private EArticleType type;
     private OffsetDateTime createdTime;

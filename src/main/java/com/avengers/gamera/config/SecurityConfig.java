@@ -1,21 +1,20 @@
 package com.avengers.gamera.config;
 
 import com.avengers.gamera.auth.AuthEntryPoint;
+import com.avengers.gamera.auth.GameraAccessDeniedHandler;
 import com.avengers.gamera.auth.GameraUserDetailService;
 import com.avengers.gamera.jwt.JwtConfig;
 import com.avengers.gamera.jwt.JwtTokenVerifyFilter;
 import com.avengers.gamera.jwt.JwtUsernameAndPasswordAuthFilter;
-import com.avengers.gamera.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -29,6 +28,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 @Setter
 @ConfigurationProperties(prefix = "cors")
@@ -42,10 +42,18 @@ public class SecurityConfig {
     private final SecretKey secretKey;
     private final JwtConfig jwtConfig;
     private final JwtTokenVerifyFilter jwtTokenVerifyFilter;
-    @Lazy
-    @Autowired
-    UserService userService;
 
+    private static final String[] AUTH_URL_WHITELIST = {
+            "/actuator",
+            "/actuator/health",
+            "/users/signup",
+            "/users/login",
+            "/verification/emails/**",
+            "/articles/**",
+            // -- Swagger UI v3 (OpenAPI)
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+    };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -65,11 +73,15 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests(authorize ->
                         authorize
-                                .antMatchers("/**").permitAll()
+                                .antMatchers(AUTH_URL_WHITELIST).permitAll()
+                                .antMatchers("/reviews/**").hasAuthority("ROLE_EDITOR_REVIEW")
+                                .antMatchers("/news/**").hasAuthority("ROLE_EDITOR_NEWS")
                                 .anyRequest().authenticated())
-                .addFilter(new JwtUsernameAndPasswordAuthFilter(authenticationManager(), secretKey, jwtConfig, userService))
+                .addFilter(new JwtUsernameAndPasswordAuthFilter(authenticationManager(), secretKey, jwtConfig))
                 .addFilterAfter(jwtTokenVerifyFilter, JwtUsernameAndPasswordAuthFilter.class)
-                .exceptionHandling().authenticationEntryPoint(new AuthEntryPoint())
+                .exceptionHandling()
+                .accessDeniedHandler(new GameraAccessDeniedHandler())
+                .authenticationEntryPoint(new AuthEntryPoint())
                 .and().build();
     }
 
