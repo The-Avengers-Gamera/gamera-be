@@ -43,16 +43,18 @@ public class ArticleService {
     private final GameService gameService;
     private final TagService tagService;
 
-    public PagingDto<List<MiniArticleGetDto>> getArticlePage(EArticleType articleType, int page, int size) {
+    public PagingDto<List<MiniArticleGetDto>> getArticlePage(EArticleType articleType, int page, int size, String platform) {
         Pageable pageable = PageRequest.of(page - 1, size);
         PagingDto<List<MiniArticleGetDto>> data = new PagingDto<>();
+        Page<Article> articlePage;
+        articlePage = platform.equals("all")
+                ? articleRepository.findArticlesByTypeAndIsDeletedFalse(articleType, pageable)
+                : articleRepository.findArticlesByGamePlatformContainingAndTypeAndIsDeletedFalse(platform, articleType, pageable);
 
-        Page<Article> articlePage = articleRepository.findArticlesByTypeAndIsDeletedFalse(articleType, pageable);
         List<MiniArticleGetDto> miniArticleGetDtoList = articlePage.getContent()
                 .stream()
                 .map(articleMapper::articleToMiniArticleGetDto)
                 .toList();
-
         data.setData(miniArticleGetDtoList);
         data.setCurrentPage(articlePage.getNumber() + 1);
         data.setTotalPages(articlePage.getTotalPages());
@@ -100,6 +102,7 @@ public class ArticleService {
 
         return updatedTagList;
     }
+
     public ArticleGetDto getArticleById(Long articleId) {
         Article article = articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(() ->
                 new ResourceNotFoundException("Related Article with the ID(" + articleId + ")")
@@ -123,7 +126,7 @@ public class ArticleService {
                     return commentSlimDto;
                 }).toList()));
         List<Tag> tagList = article.getTagList().stream().filter(item -> !item.isDeleted()).toList();
-        List<TagSlimDto> tagSlimDtoList=tagList.stream().map(tagMapper::tagToTagSlimDto).toList();
+        List<TagSlimDto> tagSlimDtoList = tagList.stream().map(tagMapper::tagToTagSlimDto).toList();
         ArticleGetDto articleGetDto = articleMapper.articleToArticleGetDto(article);
         articleGetDto.setCommentList(allParentComments);
         articleGetDto.setTagList(tagSlimDtoList);
@@ -134,20 +137,20 @@ public class ArticleService {
         Article article = articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(() ->
                 new ResourceNotFoundException("Related Article with the ID(" + articleId + ")")
         );
-        log.info("Article with ID("+ articleId +") title("+ article.getTitle() +") is being deleted");
+        log.info("Article with ID(" + articleId + ") title(" + article.getTitle() + ") is being deleted");
         article.setDeleted(true);
         articleRepository.save(article);
-       return "The article with ID("+ articleId +") has been deleted";
+        return "The article with ID(" + articleId + ") has been deleted";
     }
 
-    public ArticleGetDto updateArticle (ArticlePutDto articlePutDto, Long articleId){
-        Article article = articleRepository.findById(articleId).orElseThrow(() -> new ResourceNotFoundException("Article",articleId));
+    public ArticleGetDto updateArticle(ArticlePutDto articlePutDto, Long articleId) {
+        Article article = articleRepository.findById(articleId).orElseThrow(() -> new ResourceNotFoundException("Article", articleId));
 
         article.setTitle(articlePutDto.getTitle());
         article.setText(articlePutDto.getText());
         article.setUpdatedTime(OffsetDateTime.now());
 
-        log.info("Updated article with id "+articleId+" in the database.");
+        log.info("Updated article with id " + articleId + " in the database.");
         return articleMapper.articleToArticleGetDto(articleRepository.save(article));
     }
 }

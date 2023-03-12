@@ -13,9 +13,9 @@ import java.util.List;
 
 @Getter
 @Setter
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class ArticlePostDto{
 
     private String coverImgUrl;
