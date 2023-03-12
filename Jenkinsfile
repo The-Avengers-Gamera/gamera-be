@@ -29,40 +29,9 @@ pipeline {
        }
     }
     stage('Deploy') {
-  	  steps {
-        echo 'Deploying...'
-
-        // Generate docker image from Dockerfile
-        sh """sudo docker build \
-              --build-arg DB_URL=${DB_URL} \
-              --build-arg DB_USERNAME=${DB_USERNAME} \
-              --build-arg DB_PASSWORD=${DB_PASSWORD} \
-              -t gamera-service .
-           """
-
-        // Authenticate Docker client to ECR repository
-        withCredentials([usernamePassword(credentialsId: 'ecr-credentials', passwordVariable:     'ECR_PASSWORD_STDIN', usernameVariable: 'ECR_USERNAME')]) {
-          sh "aws ecr get-login-password --region ap-southeast-2 | docker login --username    AWS --password-stdin ${ECR_USERNAME}"
-        }
-
-        // Tag the docker image with version and latest tag
-        def versionTag = "${ECR_USERNAME}/gamera-repository:${BUILD_NUMBER}"
-        def latestTag = "${ECR_USERNAME}/gamera-repository:latest"
-        sh "docker tag gamera-service ${versionTag}"
-        sh "docker tag gamera-service ${latestTag}"
-
-        // Push the Docker image to ECR
-        sh "docker push ${versionTag}"
-        sh "docker push ${latestTag}"
-
-        // Redeploy the service to ECS cluster with new task definition
-        sh "aws ecs update-service \
-              --cluster DevGameraCluster \
-              --service gamera-uat \
-              --force-new-deployment"
   }
 }
-  }
+  
   post {
      	always {
     		echo 'Pipeline completed'
