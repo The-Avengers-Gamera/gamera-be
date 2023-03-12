@@ -38,5 +38,45 @@ SELECT u.id, 2
 FROM "user" as u
 WHERE u.email = 'gamera.admin2@gmail.com';
 
+INSERT INTO user_authority (user_id, authority_id)
+SELECT u.id, 1
+FROM "user" as u
+WHERE u.email = 'gamera.newseditor1@gmail.com';
+
+INSERT INTO user_authority (user_id, authority_id)
+SELECT u.id, 1
+FROM "user" as u
+WHERE u.email = 'gamera.newseditor2@gmail.com';
+
+INSERT INTO user_authority (user_id, authority_id)
+SELECT u.id, 1
+FROM "user" as u
+WHERE u.email = 'gamera.revieweditor1@gmail.com';
+
+INSERT INTO user_authority (user_id, authority_id)
+SELECT u.id, 1
+FROM "user" as u
+WHERE u.email = 'gamera.revieweditor2@gmail.com';
+
+INSERT INTO user_authority (user_id, authority_id)
+SELECT u.id, 1
+FROM "user" as u
+WHERE u.email = 'gamera.admin1@gmail.com';
+
+INSERT INTO user_authority (user_id, authority_id)
+SELECT u.id, 1
+FROM "user" as u
+WHERE u.email = 'gamera.admin2@gmail.com';
+
+INSERT INTO user_authority (user_id, authority_id)
+SELECT u.id, 1
+FROM "user" as u
+WHERE u.email = 'gamera.testuser1@gmail.com';
+
+INSERT INTO user_authority (user_id, authority_id)
+SELECT u.id, 1
+FROM "user" as u
+WHERE u.email = 'gamera.testuser2@gmail.com';
+
 -- password format: Pwd{name}
 -- For example: Pwdnewseditor1
