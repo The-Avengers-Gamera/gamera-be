@@ -37,9 +37,12 @@ pipeline {
   
   post {
      	always {
-    		echo 'Pipeline completed'
+        emailext subject: "Pipeline Completed",
+        body: "The pipeline has completed successfully",
+        to: 'ronaldlgh1995@gmail.com'
   	}
   	failure {
+        email to 'ronaldlgh1995@gmail.com',
     		echo 'Pipeline failed'
   	}
   }
