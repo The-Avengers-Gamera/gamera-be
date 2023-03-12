@@ -43,13 +43,14 @@ public class ArticleService {
     private final GameService gameService;
     private final TagService tagService;
 
-    public PagingDto<List<MiniArticleGetDto>> getArticlePage(EArticleType articleType, int page, int size,String platform) {
+    public PagingDto<List<MiniArticleGetDto>> getArticlePage(EArticleType articleType, int page, int size, String platform) {
         Pageable pageable = PageRequest.of(page - 1, size);
         PagingDto<List<MiniArticleGetDto>> data = new PagingDto<>();
-        Page<Article>  articlePage = Optional.ofNullable(platform)
-                .map(p -> articleRepository
-                        .findArticlesByGamePlatformContainingAndTypeAndIsDeletedFalse(p, articleType, pageable))
-                .orElse(articleRepository.findArticlesByTypeAndIsDeletedFalse(articleType, pageable));
+        Page<Article> articlePage;
+        articlePage = platform.equals("all")
+                ? articleRepository.findArticlesByTypeAndIsDeletedFalse(articleType, pageable)
+                : articleRepository.findArticlesByGamePlatformContainingAndTypeAndIsDeletedFalse(platform, articleType, pageable);
+
         List<MiniArticleGetDto> miniArticleGetDtoList = articlePage.getContent()
                 .stream()
                 .map(articleMapper::articleToMiniArticleGetDto)
@@ -101,6 +102,7 @@ public class ArticleService {
 
         return updatedTagList;
     }
+
     public ArticleGetDto getArticleById(Long articleId) {
         Article article = articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(() ->
                 new ResourceNotFoundException("Related Article with the ID(" + articleId + ")")
@@ -124,7 +126,7 @@ public class ArticleService {
                     return commentSlimDto;
                 }).toList()));
         List<Tag> tagList = article.getTagList().stream().filter(item -> !item.isDeleted()).toList();
-        List<TagSlimDto> tagSlimDtoList=tagList.stream().map(tagMapper::tagToTagSlimDto).toList();
+        List<TagSlimDto> tagSlimDtoList = tagList.stream().map(tagMapper::tagToTagSlimDto).toList();
         ArticleGetDto articleGetDto = articleMapper.articleToArticleGetDto(article);
         articleGetDto.setCommentList(allParentComments);
         articleGetDto.setTagList(tagSlimDtoList);
@@ -150,30 +152,5 @@ public class ArticleService {
 
         log.info("Updated article with id " + articleId + " in the database.");
         return articleMapper.articleToArticleGetDto(articleRepository.save(article));
-    }
-
-    public PagingDto<Object> getReviewsMetadataByPlatform(String platform, int page, int size) {
-        return getArticleMetadataByPlatform(EArticleType.REVIEW,platform,page,size);
-
-    }
-
-    public PagingDto<Object> getNewsMetadataByPlatform(String platform, int page, int size) {
-        return getArticleMetadataByPlatform(EArticleType.NEWS,platform,page,size);
-    }
-
-    public PagingDto<Object>  getArticleMetadataByPlatform(EArticleType articleType,String platform, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-
-        Page<Article> articlePage = articleRepository.findArticleByGamePlatformContainingAndTypeAndIsDeletedFalseOrderByCreatedTimeDesc( platform.toLowerCase(), articleType,pageable);
-        List<MiniArticleGetDto> miniArticleGetDtoList = articlePage.getContent()
-                .stream()
-                .map(articleMapper::articleToMiniArticleGetDto)
-                .toList();
-
-        return PagingDto.builder().data(miniArticleGetDtoList).totalItems(miniArticleGetDtoList.size())
-                .currentPage(articlePage.getNumber())
-                .totalPages(articlePage.getTotalPages())
-                .build();
-
     }
 }

@@ -11,8 +11,8 @@ import java.util.Optional;
 
 @Repository
 public interface ArticleRepository extends JpaRepository<Article, Long> {
-    Page<Article> findArticlesByGamePlatformContainingAndTypeAndIsDeletedFalse(String platform,EArticleType EArticleType, Pageable pageable);
     Page<Article> findArticlesByTypeAndIsDeletedFalse(EArticleType EArticleType, Pageable pageable);
-    Optional<Article> findArticleByIdAndIsDeletedFalse(Long id);
 
+    Optional<Article> findArticleByIdAndIsDeletedFalse(Long id);
+    Page<Article> findArticlesByGamePlatformContainingAndTypeAndIsDeletedFalse(String platform, EArticleType articleType, Pageable pageable);
 }
