@@ -40,7 +40,7 @@ public class GameService {
     public GameGetDto createGame(GamePostDto gamePostDto) {
         isExist(gamePostDto.getName());
 
-        String platform=Optional.ofNullable(gamePostDto.getPlatform()).orElse("unknown platform");
+        String platform=Optional.ofNullable(gamePostDto.getPlatform()).orElse("");
         gamePostDto.setPlatform(platform.toLowerCase());
 
         List<Genre> updateGenreList = handleFrontendGenreList(gamePostDto.getGameGenrePostDtoList());
