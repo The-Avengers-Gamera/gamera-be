@@ -141,5 +141,8 @@ class ArticleServiceTest {
         assertEquals(ExpectUpdatedArticleGetDto.getTitle(), updatedArticleGetDto.getTitle());
     }
 
+    void getArticlePageTest() {
+//        when(articleRepository.findArticlesByTypeAndIsDeletedFalse(MockArticleData.mockArticle.getType(), ))
+    }
 
 }
