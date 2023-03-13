@@ -1,6 +1,6 @@
 package com.avengers.gamera.entity;
 
-import com.avengers.gamera.constant.ArticleType;
+import com.avengers.gamera.constant.EArticleType;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -28,7 +28,7 @@ public class Article {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "author_id", nullable = false)
-    private User user;
+    private User author;
 
     @Column(name = "cover_img_url")
     private String coverImgUrl;
@@ -41,10 +41,20 @@ public class Article {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ArticleType type;
+    private EArticleType type;
 
     @OneToMany(mappedBy = "article")
     private List<Comment> commentList;
+
+    @ManyToMany(cascade = {CascadeType.MERGE})
+    @JoinTable(
+            name = "article_tag",
+            joinColumns = {@JoinColumn(name = "article_id")},
+            inverseJoinColumns = {@JoinColumn(name = "tag_id")})
+    private List<Tag> tagList;
+
+    @Transient
+    private int commentsNum;
 
     @Column(name = "is_deleted")
     @Builder.Default
@@ -57,6 +67,10 @@ public class Article {
     @Column(nullable = false, name = "updated_time")
     @UpdateTimestamp
     private OffsetDateTime updatedTime;
+
+    public int getCommentsNum() {
+        return this.commentList.size();
+    }
 
     @ManyToMany(mappedBy = "likedArticles")
     @JsonBackReference

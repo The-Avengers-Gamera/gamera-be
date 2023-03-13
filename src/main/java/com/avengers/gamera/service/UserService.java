@@ -1,24 +1,26 @@
 package com.avengers.gamera.service;
 
+import com.avengers.gamera.auth.GameraUserDetails;
 import com.avengers.gamera.dto.user.UserGetDto;
-import com.avengers.gamera.dto.user.UserInfoDto;
 import com.avengers.gamera.dto.user.UserPostDto;
 import com.avengers.gamera.dto.user.UserPutDto;
 import com.avengers.gamera.entity.Authority;
 import com.avengers.gamera.entity.User;
+import com.avengers.gamera.exception.GameraAccessDeniedException;
 import com.avengers.gamera.exception.ResourceExistException;
 import com.avengers.gamera.exception.ResourceNotFoundException;
 import com.avengers.gamera.mapper.UserMapper;
 import com.avengers.gamera.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -29,17 +31,12 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-
     private final AuthorityService authorityService;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
-
-    private String defaultAuthority = "ROLE_USER";
+    private final String defaultAuthority = "ROLE_USER";
 
     public UserGetDto createUser(UserPostDto userPostDto) {
-        String email = userPostDto.getEmail();
-        emailExists(email);
         String encodedPwd = passwordEncoder.encode(userPostDto.getPassword());
         User user = userMapper.userPostDtoToUser(userPostDto);
         user.setPassword(encodedPwd);
@@ -59,8 +56,16 @@ public class UserService {
         return isExisted;
     }
 
-    public UserInfoDto getUserInfo(String email) {
-        return userMapper.userToUserInfoDto(getByEmail(email));
+    public UserGetDto getUserInfoByToken() {
+        UserGetDto user;
+        Object userDetails = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (!Objects.equals(userDetails.toString(), "anonymousUser")) {
+            Long userId = ((GameraUserDetails) userDetails).getId();
+            user = getUser(userId);
+        } else {
+            throw new GameraAccessDeniedException();
+        }
+        return user;
     }
 
     private User getByEmail(String email) {
@@ -101,5 +106,4 @@ public class UserService {
         user.setIsDeleted(true);
         log.info(" User id {} was deleted", userId);
     }
-
 }

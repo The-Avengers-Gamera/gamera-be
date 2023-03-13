@@ -5,7 +5,6 @@ import com.avengers.gamera.dto.article.ArticlePostDto;
 import com.avengers.gamera.dto.article.MiniArticleGetDto;
 import com.avengers.gamera.entity.Article;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 import org.mapstruct.ReportingPolicy;
 
