@@ -1,16 +1,21 @@
 package com.avengers.gamera.service;
 
 import com.avengers.gamera.constant.EArticleType;
+import com.avengers.gamera.dto.PagingDto;
 import com.avengers.gamera.dto.article.ArticleGetDto;
-import com.avengers.gamera.entity.Article;
+import com.avengers.gamera.dto.article.MiniArticleGetDto;
+import com.avengers.gamera.dto.comment.CommentGetDto;
+import com.avengers.gamera.dto.tag.TagSlimDto;
+import com.avengers.gamera.entity.*;
 import com.avengers.gamera.mapper.ArticleMapper;
+import com.avengers.gamera.mapper.CommentMapper;
+import com.avengers.gamera.mapper.TagMapper;
+import com.avengers.gamera.mapper.UserMapper;
 import com.avengers.gamera.repository.ArticleRepository;
 import com.avengers.gamera.util.MockArticleData;
 
 import com.avengers.gamera.dto.article.ArticlePostDto;
-import com.avengers.gamera.entity.Game;
-import com.avengers.gamera.entity.Genre;
-import com.avengers.gamera.entity.User;
+import com.avengers.gamera.utils.MockCommentData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,7 +23,10 @@ import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 
@@ -43,6 +51,12 @@ class ArticleServiceTest {
 
     @Mock
     private UserService userService;
+
+    @Mock
+    private CommentMapper commentMapper;
+
+    @Mock(lenient=true)
+    private TagMapper tagMapper;
 
     @InjectMocks
     private ArticleService articleService;
@@ -141,8 +155,81 @@ class ArticleServiceTest {
         assertEquals(ExpectUpdatedArticleGetDto.getTitle(), updatedArticleGetDto.getTitle());
     }
 
-    void getArticlePageTest() {
-//        when(articleRepository.findArticlesByTypeAndIsDeletedFalse(MockArticleData.mockArticle.getType(), ))
+    private Page<Article> generateMockArticlePage(Article article) {
+        List<Article> articleList = new ArrayList<>();
+        articleList.add(article);
+        return (Page) new PageImpl(articleList);
+    }
+    private MiniArticleGetDto generateMiniArticleGetDto(Article article){
+        return  MiniArticleGetDto.builder().id(MockArticleData.articleId)
+                .game(null)
+                .author(null)
+                .commentsNum(article.getCommentsNum())
+                .coverImgUrl(article.getCoverImgUrl())
+                .title(article.getTitle())
+                .type(EArticleType.REVIEW)
+                .createdTime(article.getCreatedTime())
+                .updatedTime(article.getUpdatedTime()).build();
     }
 
+    MiniArticleGetDto ExpectMiniArticleGetDto = MiniArticleGetDto.builder().id(MockArticleData.articleId)
+            .game(null)
+            .author(null)
+            .commentsNum(1)
+            .coverImgUrl("url")
+            .title("title")
+            .type(EArticleType.REVIEW)
+            .createdTime(OffsetDateTime.now())
+            .updatedTime(OffsetDateTime.now()).build();
+
+    @Test
+    void getArticlePageTest() {
+        Pageable pageable = PageRequest.of(0, 10);
+        when(articleRepository.findArticlesByTypeAndIsDeletedFalse(MockArticleData.mockArticle.getType(), pageable)).thenReturn(generateMockArticlePage(MockArticleData.mockArticle));
+        when(articleMapper.articleToMiniArticleGetDto(MockArticleData.mockArticle)).thenAnswer(new Answer<MiniArticleGetDto>() {
+            @Override
+            public MiniArticleGetDto answer(InvocationOnMock invocation) throws Throwable {
+                Article article = (Article) invocation.getArguments()[0];
+                return generateMiniArticleGetDto(article);
+            }
+        });
+        PagingDto<List<MiniArticleGetDto>> getArticlePageDto = articleService.getArticlePage(EArticleType.REVIEW, 1, 10, "all");
+
+        assertEquals(ExpectMiniArticleGetDto.getCommentsNum(), getArticlePageDto.getData().get(0).getCommentsNum());
+        assertEquals(ExpectMiniArticleGetDto.getTitle(), getArticlePageDto.getData().get(0).getTitle());
+    }
+
+    CommentGetDto generateCommentGetDto(Comment comment) {
+        CommentGetDto commentGetDto = new CommentGetDto(comment.getId(), comment.getText(), null, null, null, comment.getCreatedTime(), comment.getUpdatedTime());
+        return commentGetDto;
+    }
+
+    TagSlimDto generateTagSlimDto() {
+        TagSlimDto tagSlimDto = new TagSlimDto(1L, "horror");
+        return tagSlimDto;
+    }
+
+    @Test
+    void getArticleByIdTest() {
+        when(articleRepository.findArticleByIdAndIsDeletedFalse(any())).thenReturn(Optional.ofNullable(MockArticleData.mockArticle));
+        when(commentMapper.commentToCommentGetDto(any())).thenReturn(generateCommentGetDto(MockCommentData.mockComment));
+        when(tagMapper.tagToTagSlimDto(any())).thenReturn(generateTagSlimDto());
+        when(articleMapper.articleToArticleGetDto(MockArticleData.mockArticle)).thenAnswer(new Answer<ArticleGetDto>() {
+        @Override
+        public ArticleGetDto answer(InvocationOnMock invocation) throws Throwable {
+            Article article = (Article) invocation.getArguments()[0];
+            return generateArticleGetDto (article);
+        }
+        });
+        ArticleGetDto articleGetDto = articleService.getArticleById(MockArticleData.articleId);
+        assertEquals("title", articleGetDto.getTitle());
+        assertEquals("text", articleGetDto.getText());
+    }
+
+    @Test
+    void deleteArticleByIdTest() {
+        when(articleRepository.findArticleByIdAndIsDeletedFalse(MockArticleData.articleId)).thenReturn(Optional.ofNullable(MockArticleData.mockArticle));
+        articleService.deleteArticleById(MockArticleData.articleId);
+        verify(articleRepository).save(MockArticleData.mockArticle);
+    }
 }

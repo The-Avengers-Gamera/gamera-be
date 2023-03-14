@@ -7,6 +7,7 @@ import com.avengers.gamera.entity.Article;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MockArticleData {
     public static final Long articleId = 1L;
@@ -16,12 +17,13 @@ public class MockArticleData {
     public static final Article mockArticle = Article.builder().id(articleId)
             .game(MockGameData.mockGame)
             .author(MockUserData.mockUser)
-            .commentList(new ArrayList<>())
+            .commentList(Arrays.asList(MockCommentData.mockComment))
             .coverImgUrl("url")
             .title("title")
             .text("text")
             .type(EArticleType.REVIEW)
             .isDeleted(false)
+            .tagList(new ArrayList<>())
             .createdTime(OffsetDateTime.now())
             .updatedTime(OffsetDateTime.now()).build();
 
