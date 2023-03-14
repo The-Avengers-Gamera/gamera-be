@@ -19,7 +19,7 @@ public record AmazonEmailService (AmazonSimpleEmailService amazonSimpleEmailServ
         destination.withToAddresses(toAddresses);
         Message message=new Message();
         message.withSubject(new Content("Welcome Gamera"));
-        message.withBody(new Body(new Content(info+": Nice to meet you, please active your account with below link: "+
+        message.withBody(new Body(new Content(info+" by below link: "+
                 link)));
 
         SendEmailRequest sendEmailRequest= new SendEmailRequest();

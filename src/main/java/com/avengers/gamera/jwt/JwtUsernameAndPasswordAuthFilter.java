@@ -2,11 +2,8 @@ package com.avengers.gamera.jwt;
 
 
 import com.avengers.gamera.auth.GameraUserDetails;
-import com.avengers.gamera.dto.user.UserInfoDto;
 import com.avengers.gamera.service.JWTService;
-import com.avengers.gamera.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.Jwts;
 import lombok.SneakyThrows;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,9 +20,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,17 +31,14 @@ public class JwtUsernameAndPasswordAuthFilter extends UsernamePasswordAuthentica
     private final AuthenticationManager authenticationManager;
     private final SecretKey secretKey;
     private final JwtConfig jwtConfig;
-    private final UserService userService;
-
     private final JWTService jwtService;
 
 
-    public JwtUsernameAndPasswordAuthFilter(AuthenticationManager authenticationManager, SecretKey secretKey, JwtConfig jwtConfig, UserService userService, JWTService jwtService) {
+    public JwtUsernameAndPasswordAuthFilter(AuthenticationManager authenticationManager, SecretKey secretKey, JwtConfig jwtConfig, JWTService jwtService) {
         super.setFilterProcessesUrl(LOGIN_URL);
         this.authenticationManager = authenticationManager;
         this.secretKey = secretKey;
         this.jwtConfig = jwtConfig;
-        this.userService = userService;
         this.jwtService=jwtService;
     }
 
