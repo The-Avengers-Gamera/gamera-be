@@ -3,10 +3,7 @@ package com.avengers.gamera.dto.article;
 import com.avengers.gamera.constant.EArticleType;
 import com.avengers.gamera.dto.game.GameSlimGetDto;
 import com.avengers.gamera.dto.user.UserGetDto;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.OffsetDateTime;
 
@@ -24,4 +21,5 @@ public class MiniArticleGetDto {
     private EArticleType type;
     private OffsetDateTime createdTime;
     private OffsetDateTime updatedTime;
+    private int likeNum;
 }

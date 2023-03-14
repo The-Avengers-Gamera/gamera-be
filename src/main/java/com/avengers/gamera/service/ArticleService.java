@@ -38,6 +38,7 @@ public class ArticleService {
     private final ArticleMapper articleMapper;
     private final CommentMapper commentMapper;
     private final UserMapper userMapper;
+    private final LikeService likeService;
     private final TagMapper tagMapper;
     private final UserService userService;
     private final GameService gameService;
@@ -130,6 +131,8 @@ public class ArticleService {
         ArticleGetDto articleGetDto = articleMapper.articleToArticleGetDto(article);
         articleGetDto.setCommentList(allParentComments);
         articleGetDto.setTagList(tagSlimDtoList);
+        //For LikeNum
+        articleGetDto.setLikeNum(likeService.getLikeNumByArticleId(articleId));
         return articleGetDto;
     }
 

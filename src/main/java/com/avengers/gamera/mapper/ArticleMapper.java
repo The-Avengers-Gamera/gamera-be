@@ -18,7 +18,5 @@ public interface ArticleMapper {
 
     ArticleGetDto articleToArticleGetDto(Article article);
 
-
-
     MiniArticleGetDto articleToMiniArticleGetDto(Article articles);
 }

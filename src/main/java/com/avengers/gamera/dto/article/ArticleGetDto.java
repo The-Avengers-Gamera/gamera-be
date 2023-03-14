@@ -31,4 +31,5 @@ public class ArticleGetDto {
     private EArticleType type;
     private OffsetDateTime createdTime;
     private OffsetDateTime updatedTime;
+    private int likeNum;
 }
