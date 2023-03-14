@@ -28,7 +28,10 @@ public class GameUpdateDto {
 
     @NotNull
     private String country;
+
     private Boolean isDeleted;
+
+    private String imgUrl;
 
     @NotNull
     private Double scores;

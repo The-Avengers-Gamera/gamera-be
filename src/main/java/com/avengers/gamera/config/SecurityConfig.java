@@ -6,6 +6,7 @@ import com.avengers.gamera.auth.GameraUserDetailService;
 import com.avengers.gamera.jwt.JwtConfig;
 import com.avengers.gamera.jwt.JwtTokenVerifyFilter;
 import com.avengers.gamera.jwt.JwtUsernameAndPasswordAuthFilter;
+import com.avengers.gamera.service.JWTService;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -43,6 +44,8 @@ public class SecurityConfig {
     private final JwtConfig jwtConfig;
     private final JwtTokenVerifyFilter jwtTokenVerifyFilter;
 
+    private final JWTService jwtService;
+
     private static final String[] AUTH_URL_WHITELIST = {
             "/actuator",
             "/actuator/health",
@@ -77,7 +80,7 @@ public class SecurityConfig {
                                 .antMatchers("/reviews/**").hasAuthority("ROLE_EDITOR_REVIEW")
                                 .antMatchers("/news/**").hasAuthority("ROLE_EDITOR_NEWS")
                                 .anyRequest().authenticated())
-                .addFilter(new JwtUsernameAndPasswordAuthFilter(authenticationManager(), secretKey, jwtConfig))
+                .addFilter(new JwtUsernameAndPasswordAuthFilter(authenticationManager(), secretKey, jwtConfig, jwtService))
                 .addFilterAfter(jwtTokenVerifyFilter, JwtUsernameAndPasswordAuthFilter.class)
                 .exceptionHandling()
                 .accessDeniedHandler(new GameraAccessDeniedHandler())

@@ -24,6 +24,7 @@ public class GameGetDto {
     private Double scores;
     private String developers;
     private String publishers;
+    private String imgUrl;
     private String introduction;
     private String description;
     private OffsetDateTime createdTime;
