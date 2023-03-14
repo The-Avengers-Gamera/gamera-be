@@ -58,6 +58,9 @@ public class Game {
     @Builder.Default
     private Boolean isDeleted = false;
 
+    @Column(name = "img_url")
+    private String imgUrl;
+
     @Column(name = "created_time")
     @CreationTimestamp
     private OffsetDateTime createdTime;

@@ -37,6 +37,8 @@ public class GamePostDto {
 
     private String description;
 
+    private String imgUrl;
+
     private List<GameGenrePostDto> gameGenrePostDtoList;
 
 }
