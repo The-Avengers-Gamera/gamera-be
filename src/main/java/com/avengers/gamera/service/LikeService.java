@@ -57,11 +57,11 @@ public class LikeService {
     public List<ArticleGetDto> getLikeByUserId() {
         User user = this.getUser();
         List<Article> likedArticles = user.getLikedArticles();
-        return likedArticles.stream().map(article -> articleMapper.articleToArticleGetDto(article)).collect(Collectors.toList());
+        return likedArticles.stream().map(articleMapper::articleToArticleGetDto).collect(Collectors.toList());
     }
 
-    public Long getLikeNumByArticleId(Long articleId) {
-        return articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(()-> new ResourceNotFoundException("article not found")).getLikeUsers().stream().count();
+    public int getLikeNumByArticleId(Long articleId) {
+        return articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(()-> new ResourceNotFoundException("article not found")).getLikeUsers().size();
     }
 
     @Transactional

@@ -62,7 +62,7 @@ public class ArticleController {
     }
 
     @GetMapping("/{articleId}/likeNum")
-    public Long getLikeNumForArticle(@PathVariable Long articleId) {
+    public int getLikeNumForArticle(@PathVariable Long articleId) {
         return likeService.getLikeNumByArticleId(articleId);
     }
 }

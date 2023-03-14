@@ -75,4 +75,9 @@ public class Article {
     @ManyToMany(mappedBy = "likedArticles")
     @JsonBackReference
     List<User> likeUsers;
+
+    @Transient
+    private int likeNum;
+
+    public int getLikeNum() { return this.getLikeUsers().size(); }
 }
