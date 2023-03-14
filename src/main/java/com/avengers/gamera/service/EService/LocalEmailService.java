@@ -1,4 +1,4 @@
-package com.avengers.gamera.service.EmailService;
+package com.avengers.gamera.service.EService;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;

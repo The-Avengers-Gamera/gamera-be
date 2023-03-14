@@ -60,7 +60,7 @@ public class UserController {
     }
 
     @GetMapping("/verification")
-    public Boolean getEmailExists (@RequestParam String email){
+    public boolean getEmailExists (@RequestParam String email){
         return userService.emailExists(email);
     }
 }

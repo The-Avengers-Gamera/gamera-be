@@ -12,7 +12,7 @@ import com.avengers.gamera.exception.ResourceExistException;
 import com.avengers.gamera.exception.ResourceNotFoundException;
 import com.avengers.gamera.mapper.UserMapper;
 import com.avengers.gamera.repository.UserRepository;
-import com.avengers.gamera.service.EmailService.EmailService;
+import com.avengers.gamera.service.EService.EmailService;
 import com.avengers.gamera.util.SystemParam;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +42,7 @@ public class UserService {
     private final AuthorityService authorityService;
     private final SystemParam systemParam;
     private final EmailService emailService;
+
     private final SecretKey secretKey;
 
     private final PasswordEncoder passwordEncoder;
@@ -87,11 +88,12 @@ public class UserService {
         return baseUrl + "/verification?code="+ jwtToken;
     }
 
-    public void emailExists(String email) {
-        Boolean isExisted = userRepository.existsUserByEmail(email);
-        if (isExisted) {
+    public boolean emailExists(String email) {
+        boolean isExisted = userRepository.existsUserByEmail(email);
+        if (isExisted== Boolean.TRUE) {
             throw new ResourceExistException("Email already existed!");
         }
+        else return false;
     }
 
     public UserGetDto getUserInfoByToken() {
