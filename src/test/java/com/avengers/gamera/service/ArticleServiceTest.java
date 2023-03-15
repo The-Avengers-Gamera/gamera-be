@@ -114,6 +114,7 @@ class ArticleServiceTest {
         assertEquals(articleGetDto, mockArticleGetDto);
         verify(articleRepository).save(mockArticle);
     }
+
     ArticleGetDto ExpectUpdatedArticleGetDto = ArticleGetDto.builder().id(MockArticleData.articleId)
             .game(null)
             .author(null)
@@ -177,7 +178,7 @@ class ArticleServiceTest {
             .author(null)
             .commentsNum(1)
             .coverImgUrl("url")
-            .title("title")
+            .title("update title")
             .type(EArticleType.REVIEW)
             .createdTime(OffsetDateTime.now())
             .updatedTime(OffsetDateTime.now()).build();
@@ -215,15 +216,15 @@ class ArticleServiceTest {
         when(commentMapper.commentToCommentGetDto(any())).thenReturn(generateCommentGetDto(MockCommentData.mockComment));
         when(tagMapper.tagToTagSlimDto(any())).thenReturn(generateTagSlimDto());
         when(articleMapper.articleToArticleGetDto(MockArticleData.mockArticle)).thenAnswer(new Answer<ArticleGetDto>() {
-        @Override
-        public ArticleGetDto answer(InvocationOnMock invocation) throws Throwable {
-            Article article = (Article) invocation.getArguments()[0];
-            return generateArticleGetDto (article);
-        }
+            @Override
+            public ArticleGetDto answer(InvocationOnMock invocation) throws Throwable {
+                Article article = (Article) invocation.getArguments()[0];
+                return generateArticleGetDto (article);
+            }
         });
         ArticleGetDto articleGetDto = articleService.getArticleById(MockArticleData.articleId);
-        assertEquals("title", articleGetDto.getTitle());
-        assertEquals("text", articleGetDto.getText());
+        assertEquals("update title", articleGetDto.getTitle());
+        assertEquals("update text", articleGetDto.getText());
     }
 
     @Test
