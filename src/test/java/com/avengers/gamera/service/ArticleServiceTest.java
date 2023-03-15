@@ -58,6 +58,9 @@ class ArticleServiceTest {
     @Mock(lenient=true)
     private TagMapper tagMapper;
 
+    @Mock
+    private LikeService likeService;
+
     @InjectMocks
     private ArticleService articleService;
 
