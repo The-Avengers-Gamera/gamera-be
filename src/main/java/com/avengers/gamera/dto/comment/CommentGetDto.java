@@ -2,6 +2,7 @@ package com.avengers.gamera.dto.comment;
 
 import com.avengers.gamera.dto.user.UserSlimGetDto;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @Setter
 @Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class CommentGetDto {
