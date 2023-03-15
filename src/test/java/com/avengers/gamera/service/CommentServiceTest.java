@@ -53,7 +53,6 @@ public class CommentServiceTest {
     private UserService userService;
 
     final private User user01 = User.builder().id(1L).name("user01").email("user01@gmail.com").createdTime(OffsetDateTime.now()).updatedTime(OffsetDateTime.now()).password("123456").build();
-    final private User user02= User.builder().id(2L).name("user02").email("user02@gmail.com").password("123456").build();
     final private UserSlimGetDto user01SlimGetDto = UserSlimGetDto.builder().id(1L).name("user01").build();
 
     final private Article article01 = Article.builder().id(1L).build();
@@ -107,9 +106,9 @@ public class CommentServiceTest {
     @DisplayName("createNewComment should save the comment given a valid CommentPostDto")
     void ShouldSaveNewCommentGivenValidCommentPostDto(){
         when(commentMapper.commentPostDtoToComment(mockComment03PostDto)).thenReturn(mockComment03);
-        when(commentRepository.findById(mockComment03PostDto.getParentId())).thenReturn(Optional.of(mockComment01));
+        when(commentRepository.findCommentByIdAndIsDeletedFalse(mockComment03PostDto.getParentId())).thenReturn(Optional.of(mockComment01));
         when(userService.findUser(mockComment03PostDto.getAuthorId())).thenReturn(user01);
-        when(articleRepository.findById(mockComment03PostDto.getArticleId())).thenReturn(Optional.of(article01));
+        when(articleRepository.findArticleByIdAndIsDeletedFalse(mockComment03PostDto.getArticleId())).thenReturn(Optional.of(article01));
         when(commentMapper.commentToCommentGetDto(any())).thenReturn(mockComment03GetDto);
 
         CommentGetDto newComment = commentService.createNewComment(mockComment03PostDto);
@@ -135,7 +134,7 @@ public class CommentServiceTest {
     @Test
     @DisplayName("updateComment should update the comment given comment ID and commentPutDto")
     void shouldUpdateCommentGivenCommentPutDto(){
-        when(commentRepository.findById(mockComment03.getId())).thenReturn(Optional.of(mockComment03));
+        when(commentRepository.findCommentByIdAndIsDeletedFalse(mockComment03.getId())).thenReturn(Optional.of(mockComment03));
         mockComment03.setText(mockComment03PutDto.getText());
         when(commentRepository.save(mockComment03)).thenReturn(mockComment03);
         when(commentMapper.commentToCommentGetDto(mockComment03)).thenReturn(mockUpdateComment03GetDto);
@@ -149,10 +148,9 @@ public class CommentServiceTest {
     @Test
     @DisplayName("updateComment should update the comment given invalid comment ID and commentPutDto")
     void shouldUpdateCommentGivenInvalidCommentPutDto(){
-        when(commentRepository.findById(-1L)).thenThrow(new ResourceNotFoundException());
+        when(commentRepository.findCommentByIdAndIsDeletedFalse(-1L)).thenThrow(new ResourceNotFoundException ());
 
         assertThrows(ResourceNotFoundException.class, ()->{CommentGetDto commentUpdateGetDto = commentService.updateComment(-1L, mockComment03PutDto);});
-
     }
 
     @Test
@@ -163,7 +161,6 @@ public class CommentServiceTest {
         commentService.deleteComment(1L);
 
         verify(commentRepository).deleteCommentById(1L);
-
     }
 
     @Test
