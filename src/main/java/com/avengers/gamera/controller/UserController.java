@@ -1,9 +1,11 @@
 package com.avengers.gamera.controller;
 
+import com.avengers.gamera.dto.article.ArticleGetDto;
 import com.avengers.gamera.dto.user.UserAddAuthorityDto;
 import com.avengers.gamera.dto.user.UserGetDto;
 import com.avengers.gamera.dto.user.UserPostDto;
 import com.avengers.gamera.dto.user.UserPutDto;
+import com.avengers.gamera.service.LikeService;
 import com.avengers.gamera.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final LikeService likeService;
 
     @PostMapping("/signup")
     @Operation(summary = "Create new user")
@@ -60,7 +63,12 @@ public class UserController {
     }
 
     @GetMapping("/verification")
-    public Boolean getEmailExists (@RequestParam String email){
-        return userService.emailExists(email);
+    public void getEmailExists (@RequestParam String email){
+        userService.emailExists(email);
     }
+    @GetMapping("/likeList")
+    public List<ArticleGetDto> getLikeListForUser() {
+        return likeService.getLikeByUserId();
+    }
+
 }

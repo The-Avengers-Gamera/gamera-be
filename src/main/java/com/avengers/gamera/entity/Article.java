@@ -1,6 +1,7 @@
 package com.avengers.gamera.entity;
 
 import com.avengers.gamera.constant.EArticleType;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -70,4 +71,13 @@ public class Article {
     public int getCommentsNum() {
         return this.commentList.size();
     }
+
+    @ManyToMany(mappedBy = "likedArticles")
+    @JsonBackReference
+    List<User> likeUsers;
+
+    @Transient
+    private int likeNum;
+
+    public int getLikeNum() { return this.getLikeUsers().size(); }
 }

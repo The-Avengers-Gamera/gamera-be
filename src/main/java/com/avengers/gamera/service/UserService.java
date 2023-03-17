@@ -7,21 +7,29 @@ import com.avengers.gamera.dto.user.UserPutDto;
 import com.avengers.gamera.entity.Authority;
 import com.avengers.gamera.entity.User;
 import com.avengers.gamera.exception.GameraAccessDeniedException;
+import com.avengers.gamera.exception.EmailAddressException;
 import com.avengers.gamera.exception.ResourceExistException;
 import com.avengers.gamera.exception.ResourceNotFoundException;
 import com.avengers.gamera.mapper.UserMapper;
 import com.avengers.gamera.repository.UserRepository;
+import com.avengers.gamera.service.EService.EmailService;
+import com.avengers.gamera.util.SystemParam;
+import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.SecretKey;
 import javax.transaction.Transactional;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.security.Key;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +40,11 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final AuthorityService authorityService;
+    private final SystemParam systemParam;
+    private final EmailService emailService;
+
+    private final SecretKey secretKey;
+
     private final PasswordEncoder passwordEncoder;
 
     private final String defaultAuthority = "ROLE_USER";
@@ -45,15 +58,41 @@ public class UserService {
         authorities.add(authority);
         user.setAuthorities(authorities);
         log.info("Saving new user {} to database", user.getEmail());
-        return userMapper.userToUserGetDto(userRepository.save(user));
+
+        User savedUser=userRepository.save(user);
+        sendEmail(savedUser.getEmail(),savedUser.getId(), secretKey);
+        return userMapper.userToUserGetDto(savedUser);
     }
 
-    public Boolean emailExists(String email) {
-        Boolean isExisted = userRepository.existsUserByEmail(email);
-        if (Boolean.TRUE.equals(isExisted)) {
+    public void sendEmail( String email, Long userId, Key secretKey) {
+
+        String registerLink = createSignUpLink(systemParam.getBaseUrl(), email,userId,secretKey);
+        String info = "Active your account";
+
+        try {
+            emailService.sendEmail(email, registerLink, info);
+        } catch (Exception e) {
+            throw new EmailAddressException();
+        }
+    }
+
+    public String createSignUpLink(String baseUrl, String email, Long userId, Key secretKey ) {
+
+        String jwtToken = Jwts.builder()
+                .setSubject(email)
+                .claim("userId", userId)
+                .setIssuedAt(new Date())
+                .setExpiration(java.sql.Date.valueOf(LocalDate.now().plusDays(1)))
+                .signWith(secretKey)
+                .compact();
+        return baseUrl + "/verification?code="+ jwtToken;
+    }
+
+    public void emailExists(String email) {
+        boolean isExisted = userRepository.existsUserByEmail(email);
+        if (isExisted== Boolean.TRUE) {
             throw new ResourceExistException("Email already existed!");
         }
-        return isExisted;
     }
 
     public UserGetDto getUserInfoByToken() {
@@ -106,4 +145,5 @@ public class UserService {
         user.setIsDeleted(true);
         log.info(" User id {} was deleted", userId);
     }
+
 }

@@ -19,7 +19,10 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     Optional<Article> findArticleByIdAndIsDeletedFalse(Long id);
 
     @Transactional
-    @Query ("select a from Article a join a.game g join g.genreList r where (g.platform like concat ('%',:platform,'%') or :platform = '' ) and (r.name=:name or :name = '')")
-    Page<Article> findArticlesByPlatformAndGenre(@Param("platform") String platform, @Param("name") String genre, Pageable pageable);
+    @Query("select a from Article a join a.game g join g.genreList r where (g.platform like concat ('%',:platform,'%') or :platform = '' ) and (r.name=:name or :name = '') and a.isDeleted=false")
+    Page<Article> findArticlesByPlatformAndGenreAndIsDeletedFalse(@Param("platform") String platform, @Param("name") String genre, Pageable pageable);
+
+    @Query(value = "select a.title from Article a where a.id=?1 and a.isDeleted=false")
+    String findTitleByIdAndIsDeletedFalse(Long id);
 
 }

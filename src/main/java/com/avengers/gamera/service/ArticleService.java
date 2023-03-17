@@ -38,6 +38,7 @@ public class ArticleService {
     private final ArticleMapper articleMapper;
     private final CommentMapper commentMapper;
     private final UserMapper userMapper;
+    private final LikeService likeService;
     private final TagMapper tagMapper;
     private final UserService userService;
     private final GameService gameService;
@@ -49,7 +50,7 @@ public class ArticleService {
         Page<Article> articlePage;
         articlePage = platform.isEmpty() && genre.isEmpty()
                 ? articleRepository.findArticlesByTypeAndIsDeletedFalse(articleType, pageable)
-                : articleRepository.findArticlesByPlatformAndGenre(platform, genre, pageable);
+                : articleRepository.findArticlesByPlatformAndGenreAndIsDeletedFalse(platform, genre, pageable);
 
         List<MiniArticleGetDto> miniArticleGetDtoList = articlePage.getContent()
                 .stream()
@@ -130,6 +131,8 @@ public class ArticleService {
         ArticleGetDto articleGetDto = articleMapper.articleToArticleGetDto(article);
         articleGetDto.setCommentList(allParentComments);
         articleGetDto.setTagList(tagSlimDtoList);
+        //For LikeNum
+        articleGetDto.setLikeNum(likeService.getLikeNumByArticleId(articleId));
         return articleGetDto;
     }
 
