@@ -43,13 +43,13 @@ public class ArticleService {
     private final GameService gameService;
     private final TagService tagService;
 
-    public PagingDto<List<MiniArticleGetDto>> getArticlePage(EArticleType articleType, int page, int size, String platform) {
+    public PagingDto<List<MiniArticleGetDto>> getArticlePage(EArticleType articleType, int page, int size, String platform, String genre) {
         Pageable pageable = PageRequest.of(page - 1, size);
         PagingDto<List<MiniArticleGetDto>> data = new PagingDto<>();
         Page<Article> articlePage;
-        articlePage = platform.equals("all")
+        articlePage = platform.isEmpty() && genre.isEmpty()
                 ? articleRepository.findArticlesByTypeAndIsDeletedFalse(articleType, pageable)
-                : articleRepository.findArticlesByGamePlatformContainingAndTypeAndIsDeletedFalse(platform, articleType, pageable);
+                : articleRepository.findArticlesByPlatformAndGenre(platform, genre, pageable);
 
         List<MiniArticleGetDto> miniArticleGetDtoList = articlePage.getContent()
                 .stream()
