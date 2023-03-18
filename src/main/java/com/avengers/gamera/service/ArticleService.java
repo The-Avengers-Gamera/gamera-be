@@ -48,7 +48,7 @@ public class ArticleService {
         Pageable pageable = PageRequest.of(page - 1, size);
         PagingDto<List<MiniArticleGetDto>> data = new PagingDto<>();
         Page<Article> articlePage;
-        articlePage = platform.isEmpty() && genre.isEmpty()
+        articlePage = platform.isBlank() && genre.isBlank()
                 ? articleRepository.findArticlesByTypeAndIsDeletedFalse(articleType, pageable)
                 : articleRepository.findArticlesByPlatformAndGenreAndIsDeletedFalse(platform, genre, pageable);
 
@@ -78,13 +78,12 @@ public class ArticleService {
         article.setAuthor(userService.findUser(articlePostDto.getAuthorId()));
         EArticleType articleType = articlePostDto.getType();
 
-        if (articleType == EArticleType.valueOf("REVIEW")) {
+        if (articleType == EArticleType.REVIEW) {
             article.setGame(gameService.findActiveGame(articlePostDto.getGameId()));
-        } else if (articleType == EArticleType.valueOf("NEWS")) {
-            if (articlePostDto.getGameId() != null) {
-                article.setGame(gameService.findActiveGame(articlePostDto.getGameId()));
-            }
+        } else if (articleType == EArticleType.NEWS && articlePostDto.getGameId() != null) {
+            article.setGame(gameService.findActiveGame(articlePostDto.getGameId()));
         }
+
         log.info("Saving the article with title:  " + article.getTitle() + "  to database");
         return articleMapper.articleToArticleGetDto(articleRepository.save(article));
     }
@@ -108,6 +107,7 @@ public class ArticleService {
         Article article = articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(() ->
                 new ResourceNotFoundException("Related Article with the ID(" + articleId + ")")
         );
+
         List<Comment> allResults = article.getCommentList().stream().filter(item -> !item.getIsDeleted()).toList();
         List<CommentGetDto> allParentComments = allResults.stream()
                 .filter(comment -> Objects.isNull(comment.getParentComment()))
@@ -115,19 +115,20 @@ public class ArticleService {
                 .map(commentMapper::commentToCommentGetDto).toList();
         List<Comment> allChildComments = allResults.stream()
                 .filter(comment -> !Objects.isNull(comment.getParentComment())).toList();
+
         allParentComments.forEach(parent -> parent.setChildComment(allChildComments.stream()
                 .filter(child -> Objects.equals(child.getParentComment().getId(), parent.getId()))
-                .map((childComments) -> {
-                    CommentSlimDto commentSlimDto = new CommentSlimDto();
-                    commentSlimDto.setId(childComments.getId());
-                    commentSlimDto.setUpdatedTime(childComments.getUpdatedTime());
-                    commentSlimDto.setCreatedTime(childComments.getCreatedTime());
-                    commentSlimDto.setText(childComments.getText());
-                    commentSlimDto.setUser(userMapper.userToUserSlimGetDto(childComments.getUser()));
-                    return commentSlimDto;
-                }).toList()));
+                .map((childComments) -> CommentSlimDto.builder()
+                        .id(childComments.getId())
+                        .updatedTime(childComments.getUpdatedTime())
+                        .createdTime(childComments.getCreatedTime())
+                        .text(childComments.getText())
+                        .user(userMapper.userToUserSlimGetDto(childComments.getUser()))
+                        .build()).toList()));
+
         List<Tag> tagList = article.getTagList().stream().filter(item -> !item.isDeleted()).toList();
         List<TagSlimDto> tagSlimDtoList = tagList.stream().map(tagMapper::tagToTagSlimDto).toList();
+
         ArticleGetDto articleGetDto = articleMapper.articleToArticleGetDto(article);
         articleGetDto.setCommentList(allParentComments);
         articleGetDto.setTagList(tagSlimDtoList);
