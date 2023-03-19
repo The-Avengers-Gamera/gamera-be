@@ -16,7 +16,7 @@ public class MiniArticleGetDto {
     private String coverImgUrl;
     private GameSlimGetDto game;
     private UserGetDto author;
-    private int commentsNum;
+    private int commentNum;
     private String title;
     private EArticleType type;
     private OffsetDateTime createdTime;

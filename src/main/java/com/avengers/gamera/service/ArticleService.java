@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 @Transactional
 @RequiredArgsConstructor
 @Slf4j
+
 public class ArticleService {
     private final ArticleRepository articleRepository;
     private final ArticleMapper articleMapper;
@@ -60,7 +61,6 @@ public class ArticleService {
         data.setCurrentPage(articlePage.getNumber() + 1);
         data.setTotalPages(articlePage.getTotalPages());
         data.setTotalItems(articlePage.getTotalElements());
-
         return data;
     }
 
@@ -78,19 +78,20 @@ public class ArticleService {
         article.setAuthor(userService.findUser(articlePostDto.getAuthorId()));
         EArticleType articleType = articlePostDto.getType();
 
-        if (articleType == EArticleType.valueOf("REVIEW")) {
+        if (articleType == EArticleType.REVIEW) {
             article.setGame(gameService.findActiveGame(articlePostDto.getGameId()));
-        } else if (articleType == EArticleType.valueOf("NEWS")) {
-            if (articlePostDto.getGameId() != null) {
-                article.setGame(gameService.findActiveGame(articlePostDto.getGameId()));
-            }
+        } else if (articleType == EArticleType.NEWS && articlePostDto.getGameId() != null) {
+            article.setGame(gameService.findActiveGame(articlePostDto.getGameId()));
         }
+
         log.info("Saving the article with title:  " + article.getTitle() + "  to database");
+
         return articleMapper.articleToArticleGetDto(articleRepository.save(article));
     }
 
     public List<Tag> handleFrontendTagList(List<Tag> tagList) {
-        Map<Boolean, List<Tag>> checkTags = tagList.stream().collect(Collectors.partitioningBy(item -> item.getId() == null));
+        Map<Boolean, List<Tag>> checkTags = tagList.stream()
+                .collect(Collectors.partitioningBy(item -> item.getId() == null));
         List<Tag> newTagFromUser = checkTags.get(true);
         List<Tag> existTagFromUser = checkTags.get(false);
         List<Tag> existTag = tagService.getAllTag(existTagFromUser);
@@ -104,10 +105,14 @@ public class ArticleService {
         return updatedTagList;
     }
 
-    public ArticleGetDto getArticleById(Long articleId) {
-        Article article = articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(() ->
+    public Article findById(Long articleId){
+        return articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(() ->
                 new ResourceNotFoundException("Related Article with the ID(" + articleId + ")")
         );
+    }
+
+    public ArticleGetDto getArticleById(Long articleId) {
+        Article article = findById(articleId);
         List<Comment> allResults = article.getCommentList().stream().filter(item -> !item.getIsDeleted()).toList();
         List<CommentGetDto> allParentComments = allResults.stream()
                 .filter(comment -> Objects.isNull(comment.getParentComment()))
@@ -156,4 +161,20 @@ public class ArticleService {
         log.info("Updated article with id " + articleId + " in the database.");
         return articleMapper.articleToArticleGetDto(articleRepository.save(article));
     }
+
+    public PagingDto<List<MiniArticleGetDto>> getPopularReviewArticles(int page, int size, EArticleType articleType){
+        Pageable pageable = PageRequest.of(page-1, size);
+        Page<Article> getAllReviewsByCommentNumDesc = articleRepository.findArticlesByTypeAndIsDeletedFalseOrderByCommentNumDesc(articleType, pageable);
+
+        List<MiniArticleGetDto> miniArticleGetDtoList = getAllReviewsByCommentNumDesc.getContent()
+                .stream()
+                .map(articleMapper::articleToMiniArticleGetDto)
+                .toList();
+
+        PagingDto<List<MiniArticleGetDto>> pagingDtoOfMiniArticleGetDto =  PagingDto
+                .<List<MiniArticleGetDto>>builder().data(miniArticleGetDtoList).build();
+
+        return pagingDtoOfMiniArticleGetDto;
+    }
+
 }

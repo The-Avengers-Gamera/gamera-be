@@ -7,6 +7,7 @@ import com.avengers.gamera.dto.article.ArticlePostDto;
 import com.avengers.gamera.dto.article.ArticlePutDto;
 import com.avengers.gamera.dto.article.MiniArticleGetDto;
 import com.avengers.gamera.service.ArticleService;
+import com.avengers.gamera.service.CommentService;
 import com.avengers.gamera.service.LikeService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,8 @@ public class ArticleController {
     private final ArticleService articleService;
     private final LikeService likeService;
 
+    private final CommentService commentService;
+
     @GetMapping("/{articleId}")
     @ResponseStatus(HttpStatus.OK)
     public ArticleGetDto getArticleById(@PathVariable Long articleId) {
@@ -45,9 +48,6 @@ public class ArticleController {
         return articleService.getArticlePage(EArticleType.REVIEW, page, size, platform);
     }
 
-
-
-
     @PostMapping("/{articleId}/like")
     @Operation(summary = "Create new like")
     @ResponseStatus(HttpStatus.CREATED)
@@ -61,8 +61,16 @@ public class ArticleController {
         likeService.deleteLike(articleId);
     }
 
-    @GetMapping("/{articleId}/likeNum")
+    @GetMapping("/{articleId}/like-num")
     public int getLikeNumForArticle(@PathVariable Long articleId) {
         return likeService.getLikeNumByArticleId(articleId);
     }
+
+    @GetMapping("/reviews/comment-num")
+    public PagingDto<List<MiniArticleGetDto>> getCommentNumForArticle(@RequestParam(defaultValue = "1") int page,
+                                                                      @RequestParam(defaultValue = "10") int size) {
+        return articleService.getPopularReviewArticles(page,size,EArticleType.REVIEW);
+    }
+
+
 }

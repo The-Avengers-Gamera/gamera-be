@@ -32,4 +32,5 @@ public class ArticleGetDto {
     private OffsetDateTime createdTime;
     private OffsetDateTime updatedTime;
     private int likeNum;
+    private int commentNum;
 }

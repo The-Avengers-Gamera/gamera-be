@@ -38,4 +38,6 @@ public class ArticlePostDto{
     @NotNull(message = "Article type must be provided.")
     @Enumerated(EnumType.STRING)
     private EArticleType type;
+
+
 }

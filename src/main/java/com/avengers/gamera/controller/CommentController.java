@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -18,6 +17,7 @@ import java.util.Map;
 @CrossOrigin
 public class CommentController {
     private final CommentService commentService;
+
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
