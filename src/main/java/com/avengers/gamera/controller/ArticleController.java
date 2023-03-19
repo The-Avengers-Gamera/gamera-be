@@ -30,13 +30,17 @@ public class ArticleController {
 
     @GetMapping("/news")
     public PagingDto<List<MiniArticleGetDto>> getNews(@RequestParam(defaultValue = "1") int page,
-                                                      @RequestParam(defaultValue = "10") int size,@RequestParam() String platform, @RequestParam() String genre) {
+                                                      @RequestParam(defaultValue = "10") int size,
+                                                      @RequestParam(defaultValue = "all") String platform,
+                                                      @RequestParam(defaultValue = "all") String genre) {
         return articleService.getArticlePage(EArticleType.NEWS, page, size, platform, genre);
     }
 
     @GetMapping("/reviews")
     public PagingDto<List<MiniArticleGetDto>> getReviews(@RequestParam(defaultValue = "1") int page,
-                                                         @RequestParam(defaultValue = "10") int size, @RequestParam() String platform, @RequestParam() String genre) {
+                                                         @RequestParam(defaultValue = "10") int size,
+                                                         @RequestParam(defaultValue = "all") String platform,
+                                                         @RequestParam(defaultValue = "all") String genre) {
         return articleService.getArticlePage(EArticleType.REVIEW, page, size, platform, genre);
     }
 

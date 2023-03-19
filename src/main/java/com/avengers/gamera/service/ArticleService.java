@@ -48,9 +48,9 @@ public class ArticleService {
         Pageable pageable = PageRequest.of(page - 1, size);
         PagingDto<List<MiniArticleGetDto>> data = new PagingDto<>();
         Page<Article> articlePage;
-        articlePage = platform.isBlank() && genre.isBlank()
+        articlePage = platform.equals("all") & genre.equals("all")
                 ? articleRepository.findArticlesByTypeAndIsDeletedFalse(articleType, pageable)
-                : articleRepository.findArticlesByPlatformAndGenreAndIsDeletedFalse(platform, genre, pageable);
+                : articleRepository.findArticlesByTypeAndPlatformAndGenreAndIsDeletedFalse(articleType, platform, genre, pageable);
 
         List<MiniArticleGetDto> miniArticleGetDtoList = articlePage.getContent()
                 .stream()
