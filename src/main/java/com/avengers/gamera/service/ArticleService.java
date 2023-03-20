@@ -64,27 +64,35 @@ public class ArticleService {
         return data;
     }
 
+    //get userID from token
+    //judge the type by path
     public ArticleGetDto createArticle(ArticlePostDto articlePostDto) {
+
+        if (articlePostDto.getType() == EArticleType.REVIEW && articlePostDto.getGameId() == null) {
+            throw new ArgumentNotValidException();
+        }
+
+        return handleCreateArticle(articlePostDto);
+    }
+
+    @Transactional
+    public ArticleGetDto handleCreateArticle(ArticlePostDto articlePostDto) {
+
+        Article article = articleMapper.articlePostDtoToArticle(articlePostDto);
+
+        if (articlePostDto.getGameId() != null) {
+            article.setGame(gameService.findActiveGame(articlePostDto.getGameId()));
+        }
+
         if (articlePostDto.getTagList() != null) {
             List<Tag> updateTagList = handleFrontendTagList(articlePostDto.getTagList());
             articlePostDto.setTagList(updateTagList);
         }
-        Article article = articleMapper.articlePostDtoToArticle(articlePostDto);
 
-        String img = article.getCoverImgUrl();
-        if (StringUtils.isBlank(img)) {
-            article.setCoverImgUrl("https://picsum.photos/800/400");
-        }
         article.setAuthor(userService.findUser(articlePostDto.getAuthorId()));
-        EArticleType articleType = articlePostDto.getType();
 
-        if (articleType == EArticleType.REVIEW) {
-            article.setGame(gameService.findActiveGame(articlePostDto.getGameId()));
-        } else if (articleType == EArticleType.NEWS && articlePostDto.getGameId() != null) {
-            article.setGame(gameService.findActiveGame(articlePostDto.getGameId()));
-        }
+        log.info("Saving the" + article.getType() + "with title:  " + article.getTitle() + "  to database");
 
-        log.info("Saving the article with title:  " + article.getTitle() + "  to database");
         return articleMapper.articleToArticleGetDto(articleRepository.save(article));
     }
 
