@@ -5,6 +5,7 @@ import com.avengers.gamera.dto.article.ArticleGetDto;
 import com.avengers.gamera.entity.Article;
 import com.avengers.gamera.mapper.ArticleMapper;
 import com.avengers.gamera.repository.ArticleRepository;
+import com.avengers.gamera.util.CurrentUserController;
 import com.avengers.gamera.util.MockArticleData;
 
 import com.avengers.gamera.dto.article.ArticlePostDto;
@@ -43,6 +44,9 @@ class ArticleServiceTest {
 
     @Mock
     private UserService userService;
+
+    @Mock
+    private CurrentUserController currentUserController;
 
 
     @InjectMocks
@@ -94,7 +98,7 @@ class ArticleServiceTest {
     @Test
     void shouldSaveNewArticleWhenCreateArticle() {
         when(articleMapper.articlePostDtoToArticle(articlePostD)).thenReturn(mockArticle);
-//        when(jwtService.decodeJWT(tokenUserIdDto.getToken())).thenReturn(mockerId);
+        when(currentUserController.getUserId()).thenReturn(mockerId);
         when(userService.findUser(mockerId)).thenReturn(mockUser);
         when(gameService.findActiveGame(articlePostD.getGameId())).thenReturn(mockGame);
         when(articleMapper.articleToArticleGetDto(any())).thenReturn(mockArticleGetDto);

@@ -73,11 +73,11 @@ public class ArticleService {
             throw new ArgumentNotValidException();
         }
 
-        return handleCreateArticle(articlePostDto);
+        return handleCreateArticle(articlePostDto, eArticleType);
     }
 
     @Transactional
-    public ArticleGetDto handleCreateArticle(ArticlePostDto articlePostDto) {
+    public ArticleGetDto handleCreateArticle(ArticlePostDto articlePostDto, EArticleType eArticleType) {
 
         Article article = articleMapper.articlePostDtoToArticle(articlePostDto);
 
@@ -90,6 +90,7 @@ public class ArticleService {
             articlePostDto.setTagList(updateTagList);
         }
 
+        article.setType(eArticleType);
         article.setAuthor(userService.findUser(currentUserController.getUserId()));
 
         log.info("Saving the" + article.getType() + "with title:  " + article.getTitle() + "  to database");

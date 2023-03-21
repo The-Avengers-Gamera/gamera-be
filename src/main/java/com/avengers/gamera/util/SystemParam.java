@@ -31,7 +31,5 @@ public class SystemParam {
     @Value("${system-param.sign-in-jwt-expired-minute}")
     private String signInJwtExpiredMinute;
 
-    @Value("${jwt.secretKey}")
-    private String jwtSecretKey;
 
 }
