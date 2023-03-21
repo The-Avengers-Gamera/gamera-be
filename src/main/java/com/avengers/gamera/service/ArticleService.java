@@ -10,15 +10,16 @@ import com.avengers.gamera.dto.comment.CommentGetDto;
 import com.avengers.gamera.dto.comment.CommentSlimDto;
 import com.avengers.gamera.dto.tag.TagSlimDto;
 import com.avengers.gamera.entity.*;
+import com.avengers.gamera.exception.ArgumentNotValidException;
 import com.avengers.gamera.exception.ResourceNotFoundException;
 import com.avengers.gamera.mapper.ArticleMapper;
 import com.avengers.gamera.mapper.CommentMapper;
 import com.avengers.gamera.mapper.TagMapper;
 import com.avengers.gamera.mapper.UserMapper;
 import com.avengers.gamera.repository.ArticleRepository;
+import com.avengers.gamera.util.CurrentUserController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -44,6 +45,8 @@ public class ArticleService {
     private final GameService gameService;
     private final TagService tagService;
 
+    private final CurrentUserController currentUserController;
+
     public PagingDto<List<MiniArticleGetDto>> getArticlePage(EArticleType articleType, int page, int size, String platform, String genre) {
         Pageable pageable = PageRequest.of(page - 1, size);
         PagingDto<List<MiniArticleGetDto>> data = new PagingDto<>();
@@ -64,11 +67,9 @@ public class ArticleService {
         return data;
     }
 
-    //get userID from token
-    //judge the type by path
-    public ArticleGetDto createArticle(ArticlePostDto articlePostDto) {
+    public ArticleGetDto createArticle(ArticlePostDto articlePostDto, EArticleType eArticleType) {
 
-        if (articlePostDto.getType() == EArticleType.REVIEW && articlePostDto.getGameId() == null) {
+        if (eArticleType == EArticleType.REVIEW && articlePostDto.getGameId() == null) {
             throw new ArgumentNotValidException();
         }
 
@@ -89,7 +90,7 @@ public class ArticleService {
             articlePostDto.setTagList(updateTagList);
         }
 
-        article.setAuthor(userService.findUser(articlePostDto.getAuthorId()));
+        article.setAuthor(userService.findUser(currentUserController.getUserId()));
 
         log.info("Saving the" + article.getType() + "with title:  " + article.getTitle() + "  to database");
 

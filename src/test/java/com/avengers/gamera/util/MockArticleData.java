@@ -1,4 +1,4 @@
-package com.avengers.gamera.utils;
+package com.avengers.gamera.util;
 
 import com.avengers.gamera.constant.EArticleType;
 import com.avengers.gamera.dto.article.ArticlePostDto;
@@ -29,11 +29,4 @@ public class MockArticleData {
             .title("update title")
             .text("update text").build();
 
-    public static final ArticlePostDto mockArticlePostDto = ArticlePostDto.builder()
-            .coverImgUrl("url")
-            .gameId(gameId)
-            .authorId(authorId)
-            .title("title")
-            .text("text")
-            .type(EArticleType.REVIEW).build();
 }

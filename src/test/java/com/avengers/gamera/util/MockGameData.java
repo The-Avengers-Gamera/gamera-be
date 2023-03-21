@@ -1,4 +1,4 @@
-package com.avengers.gamera.utils;
+package com.avengers.gamera.util;
 
 import com.avengers.gamera.dto.game.GamePostDto;
 import com.avengers.gamera.entity.Game;
@@ -16,8 +16,4 @@ public class MockGameData {
             .genreList(MockGenreData.mockGenreList)
             .build();
 
-    public static final GamePostDto mockGamePostDto = GamePostDto.builder()
-            .name("any")
-            .country("Au")
-            .build();
 }

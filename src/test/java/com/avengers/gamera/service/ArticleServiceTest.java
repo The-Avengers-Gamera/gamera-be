@@ -5,7 +5,7 @@ import com.avengers.gamera.dto.article.ArticleGetDto;
 import com.avengers.gamera.entity.Article;
 import com.avengers.gamera.mapper.ArticleMapper;
 import com.avengers.gamera.repository.ArticleRepository;
-import com.avengers.gamera.utils.MockArticleData;
+import com.avengers.gamera.util.MockArticleData;
 
 import com.avengers.gamera.dto.article.ArticlePostDto;
 import com.avengers.gamera.entity.Game;
@@ -44,17 +44,18 @@ class ArticleServiceTest {
     @Mock
     private UserService userService;
 
+
     @InjectMocks
     private ArticleService articleService;
 
-    private final ArticlePostDto articlePostDto = ArticlePostDto.builder()
+    private final ArticlePostDto articlePostD=ArticlePostDto
+            .builder()
             .coverImgUrl("https://assets-prd.ignimgs.com/2023/02/20/legend-of-zelda-tears-of-the-kingdom-1663081213439-1675804568959-1676863480057.jpg?fit=crop&width=282&height=282&dpr=2")
             .gameId(1L)
             .authorId(2L)
             .title("review for last of us")
             .text("review body text for last of us")
-            .type(EArticleType.REVIEW)
-            .build();
+            .type(EArticleType.REVIEW).build();
 
     Genre mockGenre2 = Genre.builder().id(1L).name("ZZ").createdTime(OffsetDateTime.now()).updatedTime(OffsetDateTime.now()).build();
 
@@ -77,6 +78,8 @@ class ArticleServiceTest {
             .updatedTime(OffsetDateTime.now())
             .build();
 
+    private final Long mockerId = mockUser.getId();
+
     private final Article mockArticle = Article.builder()
             .coverImgUrl("https://assets-prd.ignimgs.com/2023/02/20/legend-of-zelda-tears-of-the-kingdom-1663081213439-1675804568959-1676863480057.jpg?fit=crop&width=282&height=282&dpr=2")
             .title("review for last of us")
@@ -90,16 +93,18 @@ class ArticleServiceTest {
 
     @Test
     void shouldSaveNewArticleWhenCreateArticle() {
-        when(articleMapper.articlePostDtoToArticle(articlePostDto)).thenReturn(mockArticle);
-        when(userService.findUser(articlePostDto.getAuthorId())).thenReturn(mockUser);
-        when(gameService.findActiveGame(articlePostDto.getGameId())).thenReturn(mockGame);
+        when(articleMapper.articlePostDtoToArticle(articlePostD)).thenReturn(mockArticle);
+//        when(jwtService.decodeJWT(tokenUserIdDto.getToken())).thenReturn(mockerId);
+        when(userService.findUser(mockerId)).thenReturn(mockUser);
+        when(gameService.findActiveGame(articlePostD.getGameId())).thenReturn(mockGame);
         when(articleMapper.articleToArticleGetDto(any())).thenReturn(mockArticleGetDto);
 
-        ArticleGetDto articleGetDto =  articleService.createArticle(articlePostDto);
+        ArticleGetDto articleGetDto = articleService.createArticle(articlePostD, EArticleType.NEWS);
 
         assertEquals(articleGetDto, mockArticleGetDto);
         verify(articleRepository).save(mockArticle);
     }
+
     ArticleGetDto ExpectUpdatedArticleGetDto = ArticleGetDto.builder().id(MockArticleData.articleId)
             .game(null)
             .user(null)
@@ -111,8 +116,8 @@ class ArticleServiceTest {
             .createdTime(OffsetDateTime.now())
             .updatedTime(OffsetDateTime.now()).build();
 
-    private ArticleGetDto generateArticleGetDto(Article article){
-        return  ArticleGetDto.builder().id(MockArticleData.articleId)
+    private ArticleGetDto generateArticleGetDto(Article article) {
+        return ArticleGetDto.builder().id(MockArticleData.articleId)
                 .game(null)
                 .user(null)
                 .commentList(new ArrayList<>())
@@ -132,7 +137,7 @@ class ArticleServiceTest {
             @Override
             public ArticleGetDto answer(InvocationOnMock invocation) throws Throwable {
                 Article article = (Article) invocation.getArguments()[0];
-                return generateArticleGetDto (article);
+                return generateArticleGetDto(article);
             }
         });
         ArticleGetDto updatedArticleGetDto = articleService.updateArticle(MockArticleData.mockArticlePutDto, MockArticleData.articleId);
