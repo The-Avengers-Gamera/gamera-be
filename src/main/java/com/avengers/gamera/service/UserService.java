@@ -123,7 +123,6 @@ public class UserService {
         return userRepository.findAllByIsDeletedFalse().stream().map(userMapper::userToUserGetDto).collect(Collectors.toList());
     }
 
-
     public UserGetDto getUser(Long userId) {
         return userMapper.userToUserGetDto(findUser(userId));
     }

@@ -17,7 +17,7 @@ import com.avengers.gamera.mapper.CommentMapper;
 import com.avengers.gamera.mapper.TagMapper;
 import com.avengers.gamera.mapper.UserMapper;
 import com.avengers.gamera.repository.ArticleRepository;
-import com.avengers.gamera.util.CurrentUserController;
+import com.avengers.gamera.util.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -45,7 +45,7 @@ public class ArticleService {
     private final GameService gameService;
     private final TagService tagService;
 
-    private final CurrentUserController currentUserController;
+    private final CurrentUser currentUser;
 
     public PagingDto<List<MiniArticleGetDto>> getArticlePage(EArticleType articleType, int page, int size, String platform, String genre) {
         Pageable pageable = PageRequest.of(page - 1, size);
@@ -67,6 +67,7 @@ public class ArticleService {
         return data;
     }
 
+    @Transactional
     public ArticleGetDto createArticle(ArticlePostDto articlePostDto, EArticleType eArticleType) {
 
         if (eArticleType == EArticleType.REVIEW && articlePostDto.getGameId() == null) {
@@ -77,7 +78,7 @@ public class ArticleService {
     }
 
     @Transactional
-    public ArticleGetDto handleCreateArticle(ArticlePostDto articlePostDto, EArticleType eArticleType) {
+    public ArticleGetDto handleCreateArticle(ArticlePostDto articlePostDto, EArticleType articleType) {
 
         Article article = articleMapper.articlePostDtoToArticle(articlePostDto);
 
@@ -90,8 +91,8 @@ public class ArticleService {
             articlePostDto.setTagList(updateTagList);
         }
 
-        article.setType(eArticleType);
-        article.setAuthor(userService.findUser(currentUserController.getUserId()));
+        article.setType(articleType);
+        article.setAuthor(userService.findUser(currentUser.getUserId()));
 
         log.info("Saving the" + article.getType() + "with title:  " + article.getTitle() + "  to database");
 

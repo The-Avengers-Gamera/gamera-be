@@ -5,7 +5,7 @@ import com.avengers.gamera.dto.article.ArticleGetDto;
 import com.avengers.gamera.entity.Article;
 import com.avengers.gamera.mapper.ArticleMapper;
 import com.avengers.gamera.repository.ArticleRepository;
-import com.avengers.gamera.util.CurrentUserController;
+import com.avengers.gamera.util.CurrentUser;
 import com.avengers.gamera.util.MockArticleData;
 
 import com.avengers.gamera.dto.article.ArticlePostDto;
@@ -46,13 +46,12 @@ class ArticleServiceTest {
     private UserService userService;
 
     @Mock
-    private CurrentUserController currentUserController;
-
+    private CurrentUser currentUser;
 
     @InjectMocks
     private ArticleService articleService;
 
-    private final ArticlePostDto articlePostD=ArticlePostDto
+    private final ArticlePostDto articlePostD = ArticlePostDto
             .builder()
             .coverImgUrl("https://assets-prd.ignimgs.com/2023/02/20/legend-of-zelda-tears-of-the-kingdom-1663081213439-1675804568959-1676863480057.jpg?fit=crop&width=282&height=282&dpr=2")
             .gameId(1L)
@@ -98,7 +97,7 @@ class ArticleServiceTest {
     @Test
     void shouldSaveNewArticleWhenCreateArticle() {
         when(articleMapper.articlePostDtoToArticle(articlePostD)).thenReturn(mockArticle);
-        when(currentUserController.getUserId()).thenReturn(mockerId);
+        when(currentUser.getUserId()).thenReturn(mockerId);
         when(userService.findUser(mockerId)).thenReturn(mockUser);
         when(gameService.findActiveGame(articlePostD.getGameId())).thenReturn(mockGame);
         when(articleMapper.articleToArticleGetDto(any())).thenReturn(mockArticleGetDto);

@@ -8,7 +8,7 @@ import com.avengers.gamera.exception.ResourceNotFoundException;
 import com.avengers.gamera.mapper.ArticleMapper;
 import com.avengers.gamera.repository.ArticleRepository;
 import com.avengers.gamera.repository.UserRepository;
-import com.avengers.gamera.util.CurrentUserController;
+import com.avengers.gamera.util.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,18 +24,24 @@ public class LikeService {
     private final ArticleRepository articleRepository;
     private final UserRepository userRepository;
     private final ArticleMapper articleMapper;
-    private final CurrentUserController currentUserController;
+    private final CurrentUser currentUser;
+    private final UserService userService;
 
     public User getUser() {
 
-        return userRepository.findUserByIdAndIsDeletedFalse(currentUserController.getUserId()).orElseThrow(() -> new ResourceNotFoundException("user not found"));
+        return userService.findUser(currentUser.getUserId());
+
+    }
+
+    public Article getArticle(long articleId) {
+        return articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(() -> new ResourceNotFoundException("Article"));
 
     }
 
     @Transactional
     public void createLike(Long articleId) {
         User user = this.getUser();
-        Article article = articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(() -> new ResourceNotFoundException("article not found"));
+        Article article = this.getArticle(articleId);
         List<Article> likedArticles = user.getLikedArticles();
         if (likedArticles.stream().map(Article::getId).toList().contains(articleId)) {
             log.error("user {} already liked article {}", user.getId(), articleId);
@@ -57,13 +63,13 @@ public class LikeService {
     }
 
     public int getLikeNumByArticleId(Long articleId) {
-        return articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(() -> new ResourceNotFoundException("article not found")).getLikeUsers().size();
+        return this.getArticle(articleId).getLikeUsers().size();
     }
 
     @Transactional
     public void deleteLike(Long articleId) {
         User user = this.getUser();
-        Article article = articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(() -> new ResourceNotFoundException("article not found"));
+        Article article = this.getArticle(articleId);
         List<Article> likedArticles = user.getLikedArticles();
         if (!likedArticles.stream().map(Article::getId).toList().contains(articleId)) {
             log.error("user {} and article {} like relation not exists", user.getId(), articleId);
