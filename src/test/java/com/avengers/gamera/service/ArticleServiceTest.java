@@ -6,6 +6,7 @@ import com.avengers.gamera.dto.article.ArticleGetDto;
 import com.avengers.gamera.dto.article.MiniArticleGetDto;
 import com.avengers.gamera.dto.comment.CommentGetDto;
 import com.avengers.gamera.dto.tag.TagSlimDto;
+import com.avengers.gamera.dto.user.UserGetDto;
 import com.avengers.gamera.entity.*;
 import com.avengers.gamera.mapper.ArticleMapper;
 import com.avengers.gamera.mapper.CommentMapper;
@@ -16,6 +17,7 @@ import com.avengers.gamera.util.MockArticleData;
 
 import com.avengers.gamera.dto.article.ArticlePostDto;
 import com.avengers.gamera.utils.MockCommentData;
+import com.avengers.gamera.utils.MockUserData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -164,10 +166,18 @@ class ArticleServiceTest {
         articleList.add(article);
         return (Page) new PageImpl(articleList);
     }
+
+    private UserGetDto generateUserGetDto(User user){
+        return UserGetDto.builder().id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .updatedTime(user.getUpdatedTime()).build();
+    }
+
     private MiniArticleGetDto generateMiniArticleGetDto(Article article){
         return  MiniArticleGetDto.builder().id(MockArticleData.articleId)
                 .game(null)
-                .author(null)
+                .author(generateUserGetDto(article.getAuthor()))
                 .commentsNum(article.getCommentsNum())
                 .coverImgUrl(article.getCoverImgUrl())
                 .title(article.getTitle())
@@ -178,7 +188,7 @@ class ArticleServiceTest {
 
     MiniArticleGetDto ExpectMiniArticleGetDto = MiniArticleGetDto.builder().id(MockArticleData.articleId)
             .game(null)
-            .author(null)
+            .author(generateUserGetDto(MockArticleData.mockArticle.getAuthor()))
             .commentsNum(1)
             .coverImgUrl("url")
             .title("update title")
