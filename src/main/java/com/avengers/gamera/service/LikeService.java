@@ -34,6 +34,7 @@ public class LikeService {
     }
 
     public Article getArticle(long articleId) {
+
         return articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(() -> new ResourceNotFoundException("Article"));
 
     }
