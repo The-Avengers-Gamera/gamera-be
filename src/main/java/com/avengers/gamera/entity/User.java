@@ -35,6 +35,10 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(name = "is_verified")
+    @Builder.Default
+    private boolean isVerified = false;
+
     @CreationTimestamp
     private OffsetDateTime createdTime;
 

@@ -10,6 +10,7 @@ import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -71,6 +72,10 @@ public class JwtTokenVerifyFilter extends OncePerRequestFilter {
                     .collect(Collectors.toSet());
 
             UserDetails userDetails = gameraUserDetailService.loadUserByUsername(email);
+
+            if  (!userDetails.isEnabled()){
+                throw new BadCredentialsException("Please active account first");
+           }
 
             GameraAuthenticationToken authentication = new GameraAuthenticationToken(
                     userId,
