@@ -20,8 +20,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class JwtUsernameAndPasswordAuthFilter extends UsernamePasswordAuthenticationFilter {
@@ -64,7 +64,7 @@ public class JwtUsernameAndPasswordAuthFilter extends UsernamePasswordAuthentica
                                             Authentication authResult) throws IOException, ServletException {
 
         String email = authResult.getName();
-        Collection<? extends GrantedAuthority> authorities = authResult.getAuthorities();
+        List<String> authorities = authResult.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
         long userId = ((GameraUserDetails) authResult.getPrincipal()).getId();
 
         String jwtToken = jwtService.createJWT(email,authorities,userId,secretKey);

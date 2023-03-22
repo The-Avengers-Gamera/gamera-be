@@ -1,19 +1,23 @@
 package com.avengers.gamera.service;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
+import javax.crypto.SecretKey;
 import java.security.Key;
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+
+import static org.aspectj.runtime.internal.Conversions.longValue;
 
 @Service
 @RequiredArgsConstructor
 public class JWTService {
+    private final SecretKey secretKey;
 
-    public String createJWT (String email, Collection<? extends GrantedAuthority>  authorities, Long userId, Key secretKey){
+    public String createJWT (String email, List<String> authorities, Long userId, Key secretKey){
 
         return Jwts.builder()
             .setSubject(email)
@@ -25,5 +29,11 @@ public class JWTService {
             .compact();
     }
 
+    public Long decodeJWT(String token) {
+        Claims jwt=Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
+        Integer userId= (Integer) jwt.get("userId");
+
+        return longValue(userId);
+    }
 }
 

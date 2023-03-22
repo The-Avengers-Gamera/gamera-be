@@ -47,6 +47,8 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final JWTService jwtService;
+
     private final String defaultAuthority = "ROLE_USER";
 
     public UserGetDto createUser(UserPostDto userPostDto) {
@@ -59,8 +61,11 @@ public class UserService {
         user.setAuthorities(authorities);
         log.info("Saving new user {} to database", user.getEmail());
 
+
         User savedUser=userRepository.save(user);
-        sendEmail(savedUser.getEmail(),savedUser.getId(), secretKey);
+        List<String> authoritiesList= savedUser.getAuthorities().stream().map(Authority::getName).toList();
+        System.out.println(jwtService.createJWT(savedUser.getEmail(), authoritiesList,savedUser.getId(), secretKey));
+//        sendEmail(savedUser.getEmail(),savedUser.getId(), secretKey);
         return userMapper.userToUserGetDto(savedUser);
     }
 
@@ -146,7 +151,8 @@ public class UserService {
         log.info(" User id {} was deleted", userId);
     }
 
-    public void verifyAccount(Long id) {
+    public void verifyAccount(String token) {
+        Long id = jwtService.decodeJWT(token);
         userRepository.findByIdAAndIsDeletedIsFalseAndVerifiedIsFalse(id);
     }
 }

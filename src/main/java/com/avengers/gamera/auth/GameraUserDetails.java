@@ -1,10 +1,15 @@
 package com.avengers.gamera.auth;
 
+import com.avengers.gamera.entity.Authority;
+import com.avengers.gamera.entity.User;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 
@@ -13,6 +18,7 @@ import java.util.Set;
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class GameraUserDetails implements UserDetails {
+    private User user;
     private Long id;
     private String username;
     private String password;
@@ -34,7 +40,12 @@ public class GameraUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return grantedAuthorities;
+        Set<Authority> authorities=user.getAuthorities();
+        List<SimpleGrantedAuthority> authorityList= new ArrayList<>();
+        for (Authority authority: authorities){
+            authorityList.add(new SimpleGrantedAuthority(authority.getName()));
+        }
+        return authorityList;
     }
 
     @Override

@@ -30,9 +30,9 @@ public class UserController {
         return userService.createUser(userPostDto);
     }
 
-    @PutMapping("/verify-account/{id}")
-    public void verifyAccount(@PathVariable Long id){
-        userService.verifyAccount(id);
+    @PutMapping("/verify-account/{token}")
+    public void verifyAccount(@PathVariable String token){
+        userService.verifyAccount(token);
 
     }
 
