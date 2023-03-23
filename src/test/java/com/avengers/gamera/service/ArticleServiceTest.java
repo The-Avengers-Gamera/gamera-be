@@ -45,9 +45,6 @@ class ArticleServiceTest {
     @Mock
     private UserService userService;
 
-    @Mock
-    private CurrentUser currentUser;
-
     @InjectMocks
     private ArticleService articleService;
 
@@ -97,12 +94,11 @@ class ArticleServiceTest {
     @Test
     void shouldSaveNewArticleWhenCreateArticle() {
         when(articleMapper.articlePostDtoToArticle(articlePostD)).thenReturn(mockArticle);
-        when(currentUser.getUserId()).thenReturn(mockerId);
         when(userService.findUser(mockerId)).thenReturn(mockUser);
         when(gameService.findActiveGame(articlePostD.getGameId())).thenReturn(mockGame);
         when(articleMapper.articleToArticleGetDto(any())).thenReturn(mockArticleGetDto);
 
-        ArticleGetDto articleGetDto = articleService.createArticle(articlePostD, EArticleType.NEWS);
+        ArticleGetDto articleGetDto = articleService.createArticle(articlePostD, EArticleType.NEWS, mockerId);
 
         assertEquals(articleGetDto, mockArticleGetDto);
         verify(articleRepository).save(mockArticle);
@@ -110,7 +106,7 @@ class ArticleServiceTest {
 
     ArticleGetDto ExpectUpdatedArticleGetDto = ArticleGetDto.builder().id(MockArticleData.articleId)
             .game(null)
-            .user(null)
+            .author(null)
             .commentList(new ArrayList<>())
             .coverImgUrl("url")
             .title("update title")
@@ -122,7 +118,7 @@ class ArticleServiceTest {
     private ArticleGetDto generateArticleGetDto(Article article) {
         return ArticleGetDto.builder().id(MockArticleData.articleId)
                 .game(null)
-                .user(null)
+                .author(null)
                 .commentList(new ArrayList<>())
                 .coverImgUrl(article.getCoverImgUrl())
                 .title(article.getTitle())
@@ -134,7 +130,7 @@ class ArticleServiceTest {
 
     @Test
     void updateArticleTest() {
-        when(articleRepository.findById(MockArticleData.articleId)).thenReturn(Optional.ofNullable(MockArticleData.mockArticle));
+        when(articleRepository.findArticleByIdAndIsDeletedFalse(MockArticleData.articleId)).thenReturn(Optional.ofNullable(MockArticleData.mockArticle));
         when(articleRepository.save(any())).thenReturn(MockArticleData.mockArticle);
         when(articleMapper.articleToArticleGetDto(MockArticleData.mockArticle)).thenAnswer(new Answer<ArticleGetDto>() {
             @Override

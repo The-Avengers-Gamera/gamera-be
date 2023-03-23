@@ -22,7 +22,7 @@ import java.util.List;
 public class ArticleGetDto {
     private Long id;
     private GameSlimGetDto game;
-    private UserSlimGetDto user;
+    private UserSlimGetDto author;
     private List<CommentGetDto> commentList;
     private String coverImgUrl;
     private String title;

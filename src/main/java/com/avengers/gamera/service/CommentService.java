@@ -3,7 +3,6 @@ package com.avengers.gamera.service;
 import com.avengers.gamera.dto.comment.CommentGetDto;
 import com.avengers.gamera.dto.comment.CommentPostDto;
 import com.avengers.gamera.dto.comment.CommentPutDto;
-import com.avengers.gamera.entity.Article;
 import com.avengers.gamera.entity.Comment;
 import com.avengers.gamera.exception.ResourceNotFoundException;
 import com.avengers.gamera.mapper.CommentMapper;
@@ -24,7 +23,8 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
     private final UserService userService;
-    private final ArticleRepository articleRepository;
+
+    private final ArticleService articleService;
 
     public CommentGetDto createNewComment(CommentPostDto commentPostDto) {
         Comment comment = commentMapper.commentPostDtoToComment(commentPostDto);
@@ -32,7 +32,7 @@ public class CommentService {
         if (commentPostDto.getParentId() != null) {
             comment.setParentComment(find(commentPostDto.getParentId()));
         }
-        comment.setArticle(findArticleById(commentPostDto.getArticleId()));
+        comment.setArticle(articleService.findArticle(commentPostDto.getArticleId()));
         return commentMapper.commentToCommentGetDto(commentRepository.save(comment));
     }
 
@@ -61,10 +61,6 @@ public class CommentService {
 
     public Comment find(Long commentId) {
         return commentRepository.findCommentByIdAndIsDeletedFalse(commentId).orElseThrow(() -> new ResourceNotFoundException("Comment", commentId));
-    }
-
-    private Article findArticleById(Long articleId) {
-        return articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(() -> new ResourceNotFoundException("Article", articleId));
     }
 
 }

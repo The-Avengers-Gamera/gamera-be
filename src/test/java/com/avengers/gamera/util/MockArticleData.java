@@ -29,4 +29,12 @@ public class MockArticleData {
             .title("update title")
             .text("update text").build();
 
+    public static final ArticlePostDto mockArticlePostDto = ArticlePostDto.builder()
+            .coverImgUrl("url")
+            .gameId(gameId)
+            .authorId(authorId)
+            .title("title")
+            .text("text")
+            .type(EArticleType.REVIEW).build();
+
 }

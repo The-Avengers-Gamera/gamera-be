@@ -46,8 +46,7 @@ public class CommentServiceTest {
     private CommentRepository commentRepository;
 
     @Mock
-    private ArticleRepository articleRepository;
-
+    private ArticleService articleService;
 
     @Mock
     private UserService userService;
@@ -108,7 +107,7 @@ public class CommentServiceTest {
         when(commentMapper.commentPostDtoToComment(mockComment03PostDto)).thenReturn(mockComment03);
         when(commentRepository.findCommentByIdAndIsDeletedFalse(mockComment03PostDto.getParentId())).thenReturn(Optional.of(mockComment01));
         when(userService.findUser(mockComment03PostDto.getAuthorId())).thenReturn(user01);
-        when(articleRepository.findArticleByIdAndIsDeletedFalse(mockComment03PostDto.getArticleId())).thenReturn(Optional.of(article01));
+        when(articleService.findArticle(mockComment03PostDto.getArticleId())).thenReturn(article01);
         when(commentMapper.commentToCommentGetDto(any())).thenReturn(mockComment03GetDto);
 
         CommentGetDto newComment = commentService.createNewComment(mockComment03PostDto);

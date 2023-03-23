@@ -17,7 +17,6 @@ import com.avengers.gamera.mapper.CommentMapper;
 import com.avengers.gamera.mapper.TagMapper;
 import com.avengers.gamera.mapper.UserMapper;
 import com.avengers.gamera.repository.ArticleRepository;
-import com.avengers.gamera.util.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -39,13 +38,10 @@ public class ArticleService {
     private final ArticleMapper articleMapper;
     private final CommentMapper commentMapper;
     private final UserMapper userMapper;
-    private final LikeService likeService;
     private final TagMapper tagMapper;
     private final UserService userService;
     private final GameService gameService;
     private final TagService tagService;
-
-    private final CurrentUser currentUser;
 
     public PagingDto<List<MiniArticleGetDto>> getArticlePage(EArticleType articleType, int page, int size, String platform, String genre) {
         Pageable pageable = PageRequest.of(page - 1, size);
@@ -67,18 +63,16 @@ public class ArticleService {
         return data;
     }
 
-    @Transactional
-    public ArticleGetDto createArticle(ArticlePostDto articlePostDto, EArticleType eArticleType) {
+    public ArticleGetDto createArticle(ArticlePostDto articlePostDto, EArticleType eArticleType, Long userId) {
 
         if (eArticleType == EArticleType.REVIEW && articlePostDto.getGameId() == null) {
             throw new ArgumentNotValidException();
         }
 
-        return handleCreateArticle(articlePostDto, eArticleType);
+        return handleCreateArticle(articlePostDto, eArticleType, userId);
     }
 
-    @Transactional
-    public ArticleGetDto handleCreateArticle(ArticlePostDto articlePostDto, EArticleType articleType) {
+    public ArticleGetDto handleCreateArticle(ArticlePostDto articlePostDto, EArticleType articleType, Long userId) {
 
         Article article = articleMapper.articlePostDtoToArticle(articlePostDto);
 
@@ -92,7 +86,7 @@ public class ArticleService {
         }
 
         article.setType(articleType);
-        article.setAuthor(userService.findUser(currentUser.getUserId()));
+        article.setAuthor(userService.findUser(userId));
 
         log.info("Saving the" + article.getType() + "with title:  " + article.getTitle() + "  to database");
 
@@ -115,9 +109,7 @@ public class ArticleService {
     }
 
     public ArticleGetDto getArticleById(Long articleId) {
-        Article article = articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(() ->
-                new ResourceNotFoundException("Related Article with the ID(" + articleId + ")")
-        );
+        Article article = findArticle(articleId);
 
         List<Comment> allResults = article.getCommentList().stream().filter(item -> !item.getIsDeleted()).toList();
         List<CommentGetDto> allParentComments = allResults.stream()
@@ -144,14 +136,16 @@ public class ArticleService {
         articleGetDto.setCommentList(allParentComments);
         articleGetDto.setTagList(tagSlimDtoList);
         //For LikeNum
-        articleGetDto.setLikeNum(likeService.getLikeNumByArticleId(articleId));
+        articleGetDto.setLikeNum(article.getLikeNum());
         return articleGetDto;
     }
 
+    public int getLikeNumByArticleId(Long articleId) {
+        return findArticle(articleId).getLikeNum();
+    }
+
     public String deleteArticleById(Long articleId) {
-        Article article = articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(() ->
-                new ResourceNotFoundException("Related Article with the ID(" + articleId + ")")
-        );
+        Article article = findArticle(articleId);
         log.info("Article with ID(" + articleId + ") title(" + article.getTitle() + ") is being deleted");
         article.setDeleted(true);
         articleRepository.save(article);
@@ -159,7 +153,7 @@ public class ArticleService {
     }
 
     public ArticleGetDto updateArticle(ArticlePutDto articlePutDto, Long articleId) {
-        Article article = articleRepository.findById(articleId).orElseThrow(() -> new ResourceNotFoundException("Article", articleId));
+        Article article = findArticle(articleId);
 
         article.setTitle(articlePutDto.getTitle());
         article.setText(articlePutDto.getText());
@@ -167,5 +161,9 @@ public class ArticleService {
 
         log.info("Updated article with id " + articleId + " in the database.");
         return articleMapper.articleToArticleGetDto(articleRepository.save(article));
+    }
+
+    public Article findArticle(Long articleId) {
+        return articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(() -> new ResourceNotFoundException("Article", articleId));
     }
 }

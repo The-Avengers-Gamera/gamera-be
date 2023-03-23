@@ -15,7 +15,7 @@ public interface ArticleMapper {
 
     @Mapping(source = "coverImgUrl", target = "coverImgUrl", defaultValue = "https://picsum.photos/800/400")
     Article articlePostDtoToArticle(ArticlePostDto articlePostDto);
-    @Mapping(source = "author", target = "user")
+
     ArticleGetDto articleToArticleGetDto(Article article);
 
     MiniArticleGetDto articleToMiniArticleGetDto(Article articles);

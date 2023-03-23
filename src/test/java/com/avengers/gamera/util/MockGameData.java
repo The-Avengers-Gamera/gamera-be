@@ -16,4 +16,8 @@ public class MockGameData {
             .genreList(MockGenreData.mockGenreList)
             .build();
 
+    public static final GamePostDto mockGamePostDto = GamePostDto.builder()
+            .name("any")
+            .country("Au")
+            .build();
 }

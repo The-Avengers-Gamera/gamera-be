@@ -1,6 +1,5 @@
 package com.avengers.gamera.service;
 
-
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -9,7 +8,6 @@ import java.security.Key;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Date;
-
 
 @Service
 @RequiredArgsConstructor

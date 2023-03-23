@@ -4,7 +4,6 @@ import com.avengers.gamera.dto.article.ArticleGetDto;
 import com.avengers.gamera.entity.Article;
 import com.avengers.gamera.entity.User;
 import com.avengers.gamera.exception.ResourceExistException;
-import com.avengers.gamera.exception.ResourceNotFoundException;
 import com.avengers.gamera.mapper.ArticleMapper;
 import com.avengers.gamera.repository.ArticleRepository;
 import com.avengers.gamera.repository.UserRepository;
@@ -24,18 +23,18 @@ public class LikeService {
     private final ArticleRepository articleRepository;
     private final UserRepository userRepository;
     private final ArticleMapper articleMapper;
-    private final CurrentUser currentUser;
     private final UserService userService;
+    private final ArticleService articleService;
 
     public User getUser() {
 
-        return userService.findUser(currentUser.getUserId());
+        return userService.findUser(CurrentUser.getUserId());
 
     }
 
     public Article getArticle(long articleId) {
 
-        return articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(() -> new ResourceNotFoundException("Article"));
+        return articleService.findArticle(articleId);
 
     }
 
@@ -61,10 +60,6 @@ public class LikeService {
         User user = this.getUser();
         List<Article> likedArticles = user.getLikedArticles();
         return likedArticles.stream().map(articleMapper::articleToArticleGetDto).collect(Collectors.toList());
-    }
-
-    public int getLikeNumByArticleId(Long articleId) {
-        return this.getArticle(articleId).getLikeUsers().size();
     }
 
     @Transactional
