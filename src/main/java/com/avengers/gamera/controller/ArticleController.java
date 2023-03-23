@@ -44,14 +44,18 @@ public class ArticleController {
         return articleService.getArticlePage(EArticleType.REVIEW, page, size, platform, genre);
     }
 
+    @GetMapping("/trending-news")
+    public List<ArticleGetDto> getFirstTenNewsByCreatedTime() {
 
+        return articleService.getFirstTenNewsByCreatedTime();
 
+    }
 
     @PostMapping("/{articleId}/like")
     @Operation(summary = "Create new like")
     @ResponseStatus(HttpStatus.CREATED)
     public void createLike(@PathVariable Long articleId) {
-       likeService.createLike(articleId);
+        likeService.createLike(articleId);
     }
 
     @DeleteMapping("/{articleId}/Like")

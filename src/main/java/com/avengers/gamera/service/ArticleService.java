@@ -158,17 +158,10 @@ public class ArticleService {
         return articleMapper.articleToArticleGetDto(articleRepository.save(article));
     }
 
-    public PagingDto<List<ArticleGetDto>> getArticleByCreatedTime(int page, int size, EArticleType eArticleType) {
-        Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Article> articlePage = articleRepository.findArticlesByTypeAndCreatedTimeAndIsDeletedFalse(eArticleType, pageable);
-        List<Article> articleList = articlePage.getContent();
-        List<ArticleGetDto> articleGetDtoList = articleList.stream().map(articleMapper::articleToArticleGetDto).toList();
+    public List<ArticleGetDto> getFirstTenNewsByCreatedTime() {
 
-        return PagingDto.<List<ArticleGetDto>>builder()
-                .data(articleGetDtoList)
-                .currentPage(articlePage.getNumber()+1)
-                .totalPages(articlePage.getTotalPages())
-                .totalItems(articlePage.getTotalElements())
-                .build();
+        List<Article> articleList = articleRepository.findFirst10ByTypeAndIsDeletedFalseOrderByCreatedTimeAsc(EArticleType.NEWS);
+
+        return articleList.stream().map(articleMapper::articleToArticleGetDto).toList();
     }
 }

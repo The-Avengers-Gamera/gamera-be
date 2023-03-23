@@ -1,7 +1,5 @@
 package com.avengers.gamera.controller;
 
-import com.avengers.gamera.constant.EArticleType;
-import com.avengers.gamera.dto.PagingDto;
 import com.avengers.gamera.dto.article.ArticleGetDto;
 import com.avengers.gamera.dto.article.ArticlePostDto;
 import com.avengers.gamera.dto.article.ArticlePutDto;
@@ -11,8 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/news")
@@ -33,16 +29,6 @@ public class NewsController {
     public ArticleGetDto updateArticleById(@RequestBody ArticlePutDto articlePutDto, @PathVariable Long newsId) {
         return articleService.updateArticle(articlePutDto, newsId);
     }
-
-    @GetMapping
-    public PagingDto<List<ArticleGetDto>> getNewsByCreatedTime(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size) {
-
-        return articleService.getArticleByCreatedTime(page, size, EArticleType.NEWS);
-
-    }
-
 
     @DeleteMapping("/{newsId}")
     @ResponseStatus(HttpStatus.OK)

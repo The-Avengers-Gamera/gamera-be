@@ -8,15 +8,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface ArticleRepository extends JpaRepository<Article, Long> {
     Page<Article> findArticlesByTypeAndIsDeletedFalse(EArticleType EArticleType, Pageable pageable);
 
-
-    @Query("select distinct a from Article a where a.type=:type and a.isDeleted=false order by a.createdTime ASC")
-    Page<Article> findArticlesByTypeAndCreatedTimeAndIsDeletedFalse (@Param("type") EArticleType eArticleType, Pageable pageable);
+    List<Article> findFirst10ByTypeAndIsDeletedFalseOrderByCreatedTimeAsc(EArticleType eArticleTyp);
 
     Optional<Article> findArticleByIdAndIsDeletedFalse(Long id);
 
