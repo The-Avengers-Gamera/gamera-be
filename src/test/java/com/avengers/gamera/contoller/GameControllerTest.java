@@ -93,7 +93,6 @@ public class GameControllerTest {
                         .content(objectMapper.writeValueAsString(mockGameUpdateDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Au"));
-
     }
 
     @Test

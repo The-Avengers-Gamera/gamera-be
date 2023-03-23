@@ -8,6 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -69,8 +70,9 @@ public class Article {
     private OffsetDateTime updatedTime;
 
     @ManyToMany(mappedBy = "likedArticles")
+    @Builder.Default
     @JsonBackReference
-    List<User> likeUsers;
+    List<User> likeUsers= new ArrayList<>();
 
     @Transient
     private int likeNum;

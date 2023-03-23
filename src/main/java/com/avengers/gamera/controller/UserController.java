@@ -66,7 +66,7 @@ public class UserController {
     public void getEmailExists (@RequestParam String email){
         userService.emailExists(email);
     }
-    @GetMapping("/likeList")
+    @GetMapping("/likes")
     public List<ArticleGetDto> getLikeListForUser() {
         return likeService.getLikeByUserId();
     }

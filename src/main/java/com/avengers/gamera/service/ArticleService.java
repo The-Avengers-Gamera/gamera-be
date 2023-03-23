@@ -45,23 +45,22 @@ public class ArticleService {
     private final GameService gameService;
     private final TagService tagService;
 
-    public PagingDto<List<MiniArticleGetDto>> getArticlePage(EArticleType articleType, int page, int size, String platform) {
+    public PagingDto<List<MiniArticleGetDto>> getArticlePage(EArticleType articleType, int page, int size, String platform, String genre) {
         Pageable pageable = PageRequest.of(page - 1, size);
         PagingDto<List<MiniArticleGetDto>> data = new PagingDto<>();
         Page<Article> articlePage;
-        articlePage = platform.equals("all")
+        articlePage = platform.equals("all") & genre.equals("all")
                 ? articleRepository.findArticlesByTypeAndIsDeletedFalse(articleType, pageable)
-                : articleRepository.findArticlesByGamePlatformContainingAndTypeAndIsDeletedFalse(platform, articleType, pageable);
+                : articleRepository.findArticlesByTypeAndPlatformAndGenreAndIsDeletedFalse(articleType, platform, genre, pageable);
 
         List<MiniArticleGetDto> miniArticleGetDtoList = articlePage.getContent()
                 .stream()
                 .map(articleMapper::articleToMiniArticleGetDto)
                 .toList();
-        data.setData(miniArticleGetDtoList);
-        data.setCurrentPage(articlePage.getNumber() + 1);
-        data.setTotalPages(articlePage.getTotalPages());
-        data.setTotalItems(articlePage.getTotalElements());
-        return data;
+        PagingDto<List<MiniArticleGetDto>> pagingDtoOfMiniArticleGetDto =  PagingDto
+                .<List<MiniArticleGetDto>>builder().data(miniArticleGetDtoList).build();
+
+        return pagingDtoOfMiniArticleGetDto;
     }
 
     public ArticleGetDto createArticle(ArticlePostDto articlePostDto) {
@@ -120,19 +119,20 @@ public class ArticleService {
                 .map(commentMapper::commentToCommentGetDto).toList();
         List<Comment> allChildComments = allResults.stream()
                 .filter(comment -> !Objects.isNull(comment.getParentComment())).toList();
+
         allParentComments.forEach(parent -> parent.setChildComment(allChildComments.stream()
                 .filter(child -> Objects.equals(child.getParentComment().getId(), parent.getId()))
-                .map((childComments) -> {
-                    CommentSlimDto commentSlimDto = new CommentSlimDto();
-                    commentSlimDto.setId(childComments.getId());
-                    commentSlimDto.setUpdatedTime(childComments.getUpdatedTime());
-                    commentSlimDto.setCreatedTime(childComments.getCreatedTime());
-                    commentSlimDto.setText(childComments.getText());
-                    commentSlimDto.setUser(userMapper.userToUserSlimGetDto(childComments.getUser()));
-                    return commentSlimDto;
-                }).toList()));
+                .map((childComments) -> CommentSlimDto.builder()
+                        .id(childComments.getId())
+                        .updatedTime(childComments.getUpdatedTime())
+                        .createdTime(childComments.getCreatedTime())
+                        .text(childComments.getText())
+                        .user(userMapper.userToUserSlimGetDto(childComments.getUser()))
+                        .build()).toList()));
+
         List<Tag> tagList = article.getTagList().stream().filter(item -> !item.isDeleted()).toList();
         List<TagSlimDto> tagSlimDtoList = tagList.stream().map(tagMapper::tagToTagSlimDto).toList();
+
         ArticleGetDto articleGetDto = articleMapper.articleToArticleGetDto(article);
         articleGetDto.setCommentList(allParentComments);
         articleGetDto.setTagList(tagSlimDtoList);
@@ -162,7 +162,7 @@ public class ArticleService {
         return articleMapper.articleToArticleGetDto(articleRepository.save(article));
     }
 
-    public PagingDto<List<MiniArticleGetDto>> getPopularReviewArticles(int page, int size, EArticleType articleType){
+    public PagingDto<List<MiniArticleGetDto>> getPopularReviewArticlesByCommentNum(int page, int size, EArticleType articleType){
         Pageable pageable = PageRequest.of(page-1, size);
         Page<Article> getAllReviewsByCommentNumDesc = articleRepository.findArticlesByTypeAndIsDeletedFalseOrderByCommentNumDesc(articleType, pageable);
 

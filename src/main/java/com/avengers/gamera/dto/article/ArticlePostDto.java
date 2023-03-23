@@ -17,7 +17,6 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class ArticlePostDto{
-
     private String coverImgUrl;
 
     private Long gameId;
@@ -38,6 +37,4 @@ public class ArticlePostDto{
     @NotNull(message = "Article type must be provided.")
     @Enumerated(EnumType.STRING)
     private EArticleType type;
-
-
 }

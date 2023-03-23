@@ -27,10 +27,7 @@ public class CommentService {
     private final CommentMapper commentMapper;
     private final UserService userService;
     private final ArticleRepository articleRepository;
-    private final ArticleMapper articleMapper;
-
     private final ArticleService articleService;
-
 
     public CommentGetDto createNewComment(CommentPostDto commentPostDto) {
         Article article = articleService.findById(commentPostDto.getArticleId());
@@ -78,14 +75,5 @@ public class CommentService {
     public Comment find(Long commentId) {
         return commentRepository.findCommentByIdAndIsDeletedFalse(commentId).orElseThrow(() -> new ResourceNotFoundException("Comment", commentId));
     }
-
-//    private Article findArticleById(Long articleId) {
-//        return articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(() -> new ResourceNotFoundException("Article", articleId));
-//    }
-
-    public int getCommentNumByArticleId(Long articleId) {
-        return articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(()-> new ResourceNotFoundException("article not found")).getCommentNum();
-    }
-
 
 }
