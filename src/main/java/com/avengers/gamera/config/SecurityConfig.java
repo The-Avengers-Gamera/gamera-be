@@ -51,7 +51,7 @@ public class SecurityConfig {
             "/actuator/health",
             "/users/signup",
             "/users/login",
-            "/verification/emails/**",
+            "/verification",
             "/articles/**",
             // -- Swagger UI v3 (OpenAPI)
             "/v3/api-docs/**",

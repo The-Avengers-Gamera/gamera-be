@@ -201,5 +201,23 @@ public class ArticleService {
 
         return pagingDtoOfMiniArticleGetDto;
     }
+
+    public PagingDto<List<MiniArticleGetDto>> getArticlesByUserId(int page, int size, Long userId) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        PagingDto<List<MiniArticleGetDto>> pagingDtoOfMiniArticleByAuthor = new PagingDto<>();
+        User user = userService.findUser(userId);
+        Page<Article> postedArticles = articleRepository.findByAuthor(user, pageable);
+        List<MiniArticleGetDto> miniArticleByAuthor = postedArticles.getContent()
+                .stream()
+                .map(articleMapper::articleToMiniArticleGetDto)
+                .toList();
+
+        pagingDtoOfMiniArticleByAuthor.setData(miniArticleByAuthor);
+        pagingDtoOfMiniArticleByAuthor.setCurrentPage(postedArticles.getNumber() + 1);
+        pagingDtoOfMiniArticleByAuthor.setTotalPages(postedArticles.getTotalPages());
+        pagingDtoOfMiniArticleByAuthor.setTotalItems(postedArticles.getTotalElements());
+
+        return pagingDtoOfMiniArticleByAuthor;
+    }
 }
 

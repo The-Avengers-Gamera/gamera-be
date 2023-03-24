@@ -1,11 +1,14 @@
 package com.avengers.gamera.controller;
 
+import com.avengers.gamera.dto.PagingDto;
 import com.avengers.gamera.dto.article.ArticleGetDto;
+import com.avengers.gamera.dto.article.MiniArticleGetDto;
 import com.avengers.gamera.dto.comment.CommentGetDto;
 import com.avengers.gamera.dto.user.UserAddAuthorityDto;
 import com.avengers.gamera.dto.user.UserGetDto;
 import com.avengers.gamera.dto.user.UserPostDto;
 import com.avengers.gamera.dto.user.UserPutDto;
+import com.avengers.gamera.service.ArticleService;
 import com.avengers.gamera.service.LikeService;
 import com.avengers.gamera.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,6 +26,7 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
     private final LikeService likeService;
+    private final ArticleService articleService;
 
     @PostMapping("/signup")
     @Operation(summary = "Create new user")
@@ -76,5 +80,12 @@ public class UserController {
     @GetMapping("/comment")
     public List<CommentGetDto> getCommentedForUser() {
         return likeService.getCommented();
+    }
+
+    @GetMapping("/{userId}/articles")
+    public PagingDto<List<MiniArticleGetDto>> getArticlesListForUser(@RequestParam(defaultValue = "1") int page,
+                                                                     @RequestParam(defaultValue = "10") int size,
+                                                                     @PathVariable Long userId) {
+        return articleService.getArticlesByUserId(page, size, userId);
     }
 }

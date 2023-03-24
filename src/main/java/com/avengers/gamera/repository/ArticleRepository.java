@@ -2,6 +2,7 @@ package com.avengers.gamera.repository;
 
 import com.avengers.gamera.constant.EArticleType;
 import com.avengers.gamera.entity.Article;
+import com.avengers.gamera.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,6 +17,8 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     Page<Article> findArticlesByTypeAndIsDeletedFalse(EArticleType EArticleType, Pageable pageable);
 
     Optional<Article> findArticleByIdAndIsDeletedFalse(Long id);
+
+    Page<Article> findByAuthor(User user, Pageable pageable);
 
     @Query("select distinct a from Article a " +
             "left join a.game g " +
