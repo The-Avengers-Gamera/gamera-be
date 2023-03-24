@@ -30,6 +30,12 @@ public class UserController {
         return userService.createUser(userPostDto);
     }
 
+    @PutMapping("/{id}/verify-account")
+    public void verifyAccount(@PathVariable Long id){
+        userService.verifyAccount(id);
+
+    }
+
     @PostMapping("/roles")
     @ResponseStatus(HttpStatus.CREATED)
     public String addAuthorityToUser(@RequestBody UserAddAuthorityDto userAddAuthority) {

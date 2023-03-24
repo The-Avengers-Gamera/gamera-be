@@ -146,4 +146,7 @@ public class UserService {
         log.info(" User id {} was deleted", userId);
     }
 
+    public void verifyAccount(Long id) {
+        findUser(id).setVerified(true);
+    }
 }

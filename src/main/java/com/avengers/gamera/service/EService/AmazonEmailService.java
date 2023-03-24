@@ -18,8 +18,8 @@ public record AmazonEmailService (AmazonSimpleEmailService amazonSimpleEmailServ
         List<String> toAddresses = List.of(receiverEmail);
         destination.withToAddresses(toAddresses);
         Message message=new Message();
-        message.withSubject(new Content("Welcome Gamera"));
-        message.withBody(new Body(new Content(info+" by below link: "+
+        message.withSubject(new Content("Welcome to Gamera"));
+        message.withBody(new Body(new Content(info+" by following link: "+
                 link)));
 
         SendEmailRequest sendEmailRequest= new SendEmailRequest();
