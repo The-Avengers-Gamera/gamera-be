@@ -7,7 +7,8 @@ spring:
     properties:
       hibernate:
         default_schema: PUBLIC
-    show-sql: false
+        format_sql: true
+    show-sql: true
   flyway:
     enabled: false
 

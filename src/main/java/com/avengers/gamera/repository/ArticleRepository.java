@@ -8,8 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import javax.transaction.Transactional;
 import java.util.Optional;
 
 @Repository
@@ -32,5 +30,8 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
     @Query(value = "select a.title from Article a where a.id=?1 and a.isDeleted=false")
     String findTitleByIdAndIsDeletedFalse(Long id);
+    Page<Article> findArticlesByGamePlatformContainingAndTypeAndIsDeletedFalse(String platform, EArticleType articleType, Pageable pageable);
+
+    Page<Article> findArticlesByTypeAndIsDeletedFalseOrderByCommentNumDesc(EArticleType articleType, Pageable pageable);
 
 }

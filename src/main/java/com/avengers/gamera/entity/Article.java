@@ -54,8 +54,8 @@ public class Article {
             inverseJoinColumns = {@JoinColumn(name = "tag_id")})
     private List<Tag> tagList;
 
-    @Transient
-    private int commentsNum;
+    @Column(name = "comment_num")
+    private int commentNum;
 
     @Column(name = "is_deleted")
     @Builder.Default
@@ -69,10 +69,6 @@ public class Article {
     @UpdateTimestamp
     private OffsetDateTime updatedTime;
 
-    public int getCommentsNum() {
-        return this.commentList.size();
-    }
-
     @ManyToMany(mappedBy = "likedArticles")
     @Builder.Default
     @JsonBackReference
@@ -82,4 +78,5 @@ public class Article {
     private int likeNum;
 
     public int getLikeNum() { return this.getLikeUsers().size(); }
+
 }

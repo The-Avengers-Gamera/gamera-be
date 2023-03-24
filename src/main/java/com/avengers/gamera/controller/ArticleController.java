@@ -44,9 +44,6 @@ public class ArticleController {
         return articleService.getArticlePage(EArticleType.REVIEW, page, size, platform, genre);
     }
 
-
-
-
     @PostMapping("/{articleId}/like")
     @Operation(summary = "Create new like")
     @ResponseStatus(HttpStatus.CREATED)
@@ -60,8 +57,16 @@ public class ArticleController {
         likeService.deleteLike(articleId);
     }
 
-    @GetMapping("/{articleId}/likeNum")
+    @GetMapping("/{articleId}/like-num")
     public int getLikeNumForArticle(@PathVariable Long articleId) {
         return likeService.getLikeNumByArticleId(articleId);
     }
+
+    @GetMapping("/reviews/comment-num")
+    public PagingDto<List<MiniArticleGetDto>> getCommentNumForArticle(@RequestParam(defaultValue = "1") int page,
+                                                                      @RequestParam(defaultValue = "5") int size) {
+        return articleService.getPopularReviewArticlesByCommentNum(page,size,EArticleType.REVIEW);
+    }
+
+
 }
