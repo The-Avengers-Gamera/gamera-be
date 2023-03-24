@@ -18,6 +18,7 @@ public class MockArticleData {
             .game(MockGameData.mockGame)
             .author(MockUserData.mockUser)
             .commentList(Arrays.asList(MockCommentData.mockComment))
+            .commentNum(1)
             .coverImgUrl("url")
             .title("title")
             .text("text")

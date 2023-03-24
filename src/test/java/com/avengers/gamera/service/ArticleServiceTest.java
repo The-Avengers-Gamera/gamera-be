@@ -178,7 +178,7 @@ class ArticleServiceTest {
         return  MiniArticleGetDto.builder().id(MockArticleData.articleId)
                 .game(null)
                 .author(generateUserGetDto(article.getAuthor()))
-                .commentsNum(article.getCommentsNum())
+                .commentNum(article.getCommentNum())
                 .coverImgUrl(article.getCoverImgUrl())
                 .title(article.getTitle())
                 .type(EArticleType.REVIEW)
@@ -189,7 +189,7 @@ class ArticleServiceTest {
     MiniArticleGetDto ExpectMiniArticleGetDto = MiniArticleGetDto.builder().id(MockArticleData.articleId)
             .game(null)
             .author(generateUserGetDto(MockArticleData.mockArticle.getAuthor()))
-            .commentsNum(1)
+            .commentNum(1)
             .coverImgUrl("url")
             .title("update title")
             .type(EArticleType.REVIEW)
@@ -207,9 +207,8 @@ class ArticleServiceTest {
                 return generateMiniArticleGetDto(article);
             }
         });
-        PagingDto<List<MiniArticleGetDto>> getArticlePageDto = articleService.getArticlePage(EArticleType.REVIEW, 1, 10, "all");
-
-        assertEquals(ExpectMiniArticleGetDto.getCommentsNum(), getArticlePageDto.getData().get(0).getCommentsNum());
+        PagingDto<List<MiniArticleGetDto>> getArticlePageDto = articleService.getArticlePage(EArticleType.REVIEW, 1, 10, "all", "all");
+        assertEquals(ExpectMiniArticleGetDto.getCommentNum(), getArticlePageDto.getData().get(0).getCommentNum());
         assertEquals(ExpectMiniArticleGetDto.getTitle(), getArticlePageDto.getData().get(0).getTitle());
     }
 
