@@ -1,6 +1,5 @@
 package com.avengers.gamera.constant;
 
-
 public enum EArticleType {
     NEWS("news"),
     REVIEW("reviews");

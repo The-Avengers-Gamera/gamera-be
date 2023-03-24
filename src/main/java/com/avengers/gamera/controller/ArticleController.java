@@ -1,5 +1,6 @@
 package com.avengers.gamera.controller;
 
+import com.avengers.gamera.constant.EArticleSort;
 import com.avengers.gamera.constant.EArticleType;
 import com.avengers.gamera.dto.PagingDto;
 import com.avengers.gamera.dto.article.ArticleGetDto;
@@ -13,6 +14,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static com.avengers.gamera.util.SortHelper.getSortOrder;
 
 @RestController
 @RequestMapping("/articles")
@@ -32,23 +35,41 @@ public class ArticleController {
     public PagingDto<List<MiniArticleGetDto>> getNews(@RequestParam(defaultValue = "1") int page,
                                                       @RequestParam(defaultValue = "10") int size,
                                                       @RequestParam(defaultValue = "all") String platform,
-                                                      @RequestParam(defaultValue = "all") String genre) {
-        return articleService.getArticlePage(EArticleType.NEWS, page, size, platform, genre);
+                                                      @RequestParam(defaultValue = "all") String genre,
+                                                      @RequestParam(defaultValue = "createdTime") String sort,
+                                                      @RequestParam(defaultValue = "asc") String order) {
+        return articleService.getArticlePage(
+                EArticleType.NEWS,
+                page,
+                size,
+                platform,
+                genre,
+                EArticleSort.getEnumByString(sort),
+                getSortOrder(order));
     }
 
     @GetMapping("/reviews")
     public PagingDto<List<MiniArticleGetDto>> getReviews(@RequestParam(defaultValue = "1") int page,
                                                          @RequestParam(defaultValue = "10") int size,
                                                          @RequestParam(defaultValue = "all") String platform,
-                                                         @RequestParam(defaultValue = "all") String genre) {
-        return articleService.getArticlePage(EArticleType.REVIEW, page, size, platform, genre);
+                                                         @RequestParam(defaultValue = "all") String genre,
+                                                         @RequestParam(defaultValue = "createdTime") String sort,
+                                                         @RequestParam(defaultValue = "asc") String order) {
+        return articleService.getArticlePage(
+                EArticleType.REVIEW,
+                page,
+                size,
+                platform,
+                genre,
+                EArticleSort.getEnumByString(sort),
+                getSortOrder(order));
     }
 
     @PostMapping("/{articleId}/like")
     @Operation(summary = "Create new like")
     @ResponseStatus(HttpStatus.CREATED)
     public void createLike(@PathVariable Long articleId) {
-       likeService.createLike(articleId);
+        likeService.createLike(articleId);
     }
 
     @DeleteMapping("/{articleId}/Like")

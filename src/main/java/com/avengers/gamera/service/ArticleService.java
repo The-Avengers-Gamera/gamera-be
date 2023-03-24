@@ -1,5 +1,6 @@
 package com.avengers.gamera.service;
 
+import com.avengers.gamera.constant.EArticleSort;
 import com.avengers.gamera.constant.EArticleType;
 import com.avengers.gamera.dto.PagingDto;
 import com.avengers.gamera.dto.article.ArticleGetDto;
@@ -22,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -45,8 +47,14 @@ public class ArticleService {
     private final GameService gameService;
     private final TagService tagService;
 
-    public PagingDto<List<MiniArticleGetDto>> getArticlePage(EArticleType articleType, int page, int size, String platform, String genre) {
-        Pageable pageable = PageRequest.of(page - 1, size);
+    public PagingDto<List<MiniArticleGetDto>> getArticlePage(EArticleType articleType,
+                                                             int page,
+                                                             int size,
+                                                             String platform,
+                                                             String genre,
+                                                             EArticleSort sort,
+                                                             Sort.Direction order) {
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(order, sort.getName()));
         PagingDto<List<MiniArticleGetDto>> data = new PagingDto<>();
         Page<Article> articlePage;
         articlePage = platform.equals("all") & genre.equals("all")
