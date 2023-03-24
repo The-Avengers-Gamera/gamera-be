@@ -7,10 +7,13 @@ pipeline {
     environment {
         //Pass in environmental variables
         //The credentials are stored in Jenkins credentials
-        DB_URL = credentials('DB_URL')
-        DB_USERNAME = credentials('DB_USERNAME')
-        DB_PASSWORD = credentials('DB_PASSWORD')
-        ECR_TOKEN_UAT = credentials('ECR_TOKEN_UAT')
+        DB_URL = credentials('RICHARD_UAT_DB_URL')
+        DB_USERNAME = credentials('RICHARD_UAT_DB_USERNAME')
+        DB_PASSWORD = credentials('RICHARD_UAT_DB_PASSWORD')
+        ECR_TOKEN = credentials('RICHARD_UAT_ECR_TOKEN')
+        ECR_REPO_NAME = credentials('RICHARD_UAT_ECR_NAME')
+        ECS_CLUSTER_NAME = credentials('RICHARD_UAT_ECS_CLUSTER')
+        ECS_SERVICE_NAME = credentials('RICHARD_UAT_ECS_SERVICE')
     }
 
     stages {
@@ -42,6 +45,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying...'
+                
                 //Generate docker image from Dockerfile
                 sh 'sudo docker build --build-arg DB_URL=${DB_URL} \
                     --build-arg DB_USERNAME=${DB_USERNAME} \
@@ -49,19 +53,19 @@ pipeline {
 
                 //Authenticate Docker client to ECR repository
                 sh 'aws ecr get-login-password --region ap-southeast-2 | docker login \
-                    --username AWS --password-stdin ${ECR_TOKEN_UAT}'
+                    --username AWS --password-stdin ${ECR_TOKEN}'
 
                 //Tag the docker built, one for version tag, one for latest tag
-                sh 'docker tag gamera-service ${ECR_TOKEN_UAT}/gamera-repository-uat:${BUILD_NUMBER}'
-                sh 'docker tag gamera-service ${ECR_TOKEN_UAT}/gamera-repository-uat:latest'
+                sh 'docker tag gamera-service ${ECR_TOKEN}/${ECR_REPO_NAME}:${BUILD_NUMBER}'
+                sh 'docker tag gamera-service ${ECR_TOKEN}/${ECR_REPO_NAME}:latest'
 
                 //push the Dockerfile to ECR
-                sh 'docker push ${ECR_TOKEN_UAT}/gamera-repository-uat:${BUILD_NUMBER}'
-                sh 'docker push ${ECR_TOKEN_UAT}/gamera-repository-uat:latest'
+                sh 'docker push ${ECR_TOKEN}/${ECR_REPO_NAME}:${BUILD_NUMBER}'
+                sh 'docker push ${ECR_TOKEN}/${ECR_REPO_NAME}:latest'
 
                 //Redeploy the service to ECS cluster with new task defination
-                sh 'aws ecs update-service --cluster DevGameraCluster \
-                    --service gamera-uat --force-new-deployment'
+                sh 'aws ecs update-service --cluster ${ECS_CLUSTER_NAME} \
+                    --service ${ECS_SERVICE_NAME} --force-new-deployment'
             }
         }
     }
@@ -75,8 +79,12 @@ pipeline {
         }
 
         failure {
-            //Send error messages to developer to debug
-            echo 'Build fail, sending error message to developer'
+            echo 'Build fail, sending error message for debugging'
+
+            // Send error messages to DevOps engineer for debugging
+            mail to: 'yyaug99@gmail.com',
+            subject: "Pipeline build fails in: ${currentBuild.fullDisplayName}",
+            body: "Build failed in ${env.BUILD_URL}"
         }
     }
 }
