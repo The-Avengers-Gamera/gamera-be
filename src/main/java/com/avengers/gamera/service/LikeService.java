@@ -71,7 +71,6 @@ public class LikeService {
     public List<CommentGetDto> getCommented() {
         User user = this.getUser();
         List<Comment> commented = user.getComments();
-        System.out.println("+++++++++++++++++++++++++++++====================================="+ user.getComments()+" ====="+user.getName() );
         return commented.stream().map(commentMapper::commentToCommentGetDto).collect(Collectors.toList());
     }
 
