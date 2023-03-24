@@ -90,4 +90,11 @@ public class ArticleController {
     }
 
 
+
+    @GetMapping
+    public PagingDto<List<MiniArticleGetDto>> getArticlesOrderByLike(@RequestParam(defaultValue = "0") int page,
+                                                          @RequestParam(defaultValue = "10") int size){
+        return articleService.getArticlesOrderByLike(page, size);
+    }
+
 }

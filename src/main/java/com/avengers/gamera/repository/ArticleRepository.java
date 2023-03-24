@@ -31,8 +31,8 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
     @Query(value = "select a.title from Article a where a.id=?1 and a.isDeleted=false")
     String findTitleByIdAndIsDeletedFalse(Long id);
-    Page<Article> findArticlesByGamePlatformContainingAndTypeAndIsDeletedFalse(String platform, EArticleType articleType, Pageable pageable);
 
     Page<Article> findArticlesByTypeAndIsDeletedFalseOrderByCommentNumDesc(EArticleType articleType, Pageable pageable);
 
+    Page<Article> findAllByOrderByLikeNumDesc(Pageable pageable);
 }
