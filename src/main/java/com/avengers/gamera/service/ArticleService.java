@@ -188,7 +188,7 @@ public class ArticleService {
         Pageable pageable = PageRequest.of(page, size);
         PagingDto<List<MiniArticleGetDto>> pagingDtoOfMiniArticleGetDto = new PagingDto<>();
 
-        Page<Article> allByOrderByLikeNumDesc = articleRepository.findAllByOrderByLikeDesc(pageable);
+        Page<Article> allByOrderByLikeNumDesc = articleRepository.findAllByOrderByLikeNumDesc(pageable);
 
         List<MiniArticleGetDto> miniArticleGetDtoList = allByOrderByLikeNumDesc.getContent().stream()
                 .map(articleMapper::articleToMiniArticleGetDto)
