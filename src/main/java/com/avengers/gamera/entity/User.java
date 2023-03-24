@@ -53,6 +53,11 @@ public class User {
     @JoinColumn(name = "author_id")
     private List<Article> articles;
 
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id")
+    private List<Comment> comments;
+
+
     @Builder.Default
     private Boolean isDeleted = false;
 

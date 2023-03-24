@@ -1,6 +1,7 @@
 package com.avengers.gamera.controller;
 
 import com.avengers.gamera.dto.article.ArticleGetDto;
+import com.avengers.gamera.dto.comment.CommentGetDto;
 import com.avengers.gamera.dto.user.UserAddAuthorityDto;
 import com.avengers.gamera.dto.user.UserGetDto;
 import com.avengers.gamera.dto.user.UserPostDto;
@@ -66,9 +67,14 @@ public class UserController {
     public void getEmailExists (@RequestParam String email){
         userService.emailExists(email);
     }
+
     @GetMapping("/likes")
     public List<ArticleGetDto> getLikeListForUser() {
         return likeService.getLikeByUserId();
     }
 
+    @GetMapping("/comment")
+    public List<CommentGetDto> getCommentedForUser() {
+        return likeService.getCommented();
+    }
 }
