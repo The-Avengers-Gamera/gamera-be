@@ -1,5 +1,6 @@
 package com.avengers.gamera.service;
 
+import com.avengers.gamera.constant.EArticleSort;
 import com.avengers.gamera.constant.EArticleType;
 import com.avengers.gamera.dto.PagingDto;
 import com.avengers.gamera.dto.article.ArticleGetDto;
@@ -22,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -33,6 +35,7 @@ import java.util.stream.Collectors;
 @Transactional
 @RequiredArgsConstructor
 @Slf4j
+
 public class ArticleService {
     private final ArticleRepository articleRepository;
     private final ArticleMapper articleMapper;
@@ -43,8 +46,14 @@ public class ArticleService {
     private final GameService gameService;
     private final TagService tagService;
 
-    public PagingDto<List<MiniArticleGetDto>> getArticlePage(EArticleType articleType, int page, int size, String platform, String genre) {
-        Pageable pageable = PageRequest.of(page - 1, size);
+    public PagingDto<List<MiniArticleGetDto>> getArticlePage(EArticleType articleType,
+                                                             int page,
+                                                             int size,
+                                                             String platform,
+                                                             String genre,
+                                                             EArticleSort sort,
+                                                             Sort.Direction order) {
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(order, sort.getName()));
         PagingDto<List<MiniArticleGetDto>> data = new PagingDto<>();
         Page<Article> articlePage;
         articlePage = platform.equals("all") & genre.equals("all")
@@ -55,12 +64,10 @@ public class ArticleService {
                 .stream()
                 .map(articleMapper::articleToMiniArticleGetDto)
                 .toList();
-        data.setData(miniArticleGetDtoList);
-        data.setCurrentPage(articlePage.getNumber() + 1);
-        data.setTotalPages(articlePage.getTotalPages());
-        data.setTotalItems(articlePage.getTotalElements());
+        PagingDto<List<MiniArticleGetDto>> pagingDtoOfMiniArticleGetDto =  PagingDto
+                .<List<MiniArticleGetDto>>builder().data(miniArticleGetDtoList).build();
 
-        return data;
+        return pagingDtoOfMiniArticleGetDto;
     }
 
     public ArticleGetDto createArticle(ArticlePostDto articlePostDto, EArticleType eArticleType, Long userId) {
@@ -88,13 +95,14 @@ public class ArticleService {
         article.setType(articleType);
         article.setAuthor(userService.findUser(userId));
 
-        log.info("Saving the" + article.getType() + "with title:  " + article.getTitle() + "  to database");
+        log.info("Saving the article with title:  " + article.getTitle() + "  to database");
 
         return articleMapper.articleToArticleGetDto(articleRepository.save(article));
     }
 
     public List<Tag> handleFrontendTagList(List<Tag> tagList) {
-        Map<Boolean, List<Tag>> checkTags = tagList.stream().collect(Collectors.partitioningBy(item -> item.getId() == null));
+        Map<Boolean, List<Tag>> checkTags = tagList.stream()
+                .collect(Collectors.partitioningBy(item -> item.getId() == null));
         List<Tag> newTagFromUser = checkTags.get(true);
         List<Tag> existTagFromUser = checkTags.get(false);
         List<Tag> existTag = tagService.getAllTag(existTagFromUser);
@@ -111,6 +119,15 @@ public class ArticleService {
     public ArticleGetDto getArticleById(Long articleId) {
         Article article = findArticle(articleId);
 
+    public Article findById(Long articleId){
+        return articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(() ->
+                new ResourceNotFoundException("Related Article with the ID(" + articleId + ")")
+        );
+    }
+
+
+    public ArticleGetDto getArticleById(Long articleId) {
+        Article article = findById(articleId);
         List<Comment> allResults = article.getCommentList().stream().filter(item -> !item.getIsDeleted()).toList();
         List<CommentGetDto> allParentComments = allResults.stream()
                 .filter(comment -> Objects.isNull(comment.getParentComment()))
@@ -163,7 +180,26 @@ public class ArticleService {
         return articleMapper.articleToArticleGetDto(articleRepository.save(article));
     }
 
+
     public Article findArticle(Long articleId) {
         return articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(() -> new ResourceNotFoundException("Article", articleId));
     }
 }
+
+    public PagingDto<List<MiniArticleGetDto>> getPopularReviewArticlesByCommentNum(int page, int size, EArticleType articleType){
+        Pageable pageable = PageRequest.of(page-1, size);
+        Page<Article> getAllReviewsByCommentNumDesc = articleRepository.findArticlesByTypeAndIsDeletedFalseOrderByCommentNumDesc(articleType, pageable);
+
+        List<MiniArticleGetDto> miniArticleGetDtoList = getAllReviewsByCommentNumDesc.getContent()
+                .stream()
+                .map(articleMapper::articleToMiniArticleGetDto)
+                .toList();
+
+        PagingDto<List<MiniArticleGetDto>> pagingDtoOfMiniArticleGetDto =  PagingDto
+                .<List<MiniArticleGetDto>>builder().data(miniArticleGetDtoList).build();
+
+        return pagingDtoOfMiniArticleGetDto;
+    }
+
+}
+

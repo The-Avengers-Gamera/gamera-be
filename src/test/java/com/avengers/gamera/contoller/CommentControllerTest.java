@@ -42,6 +42,7 @@ public class CommentControllerTest {
     private ArticleRepository articleRepository;
 
     private Comment mockComment01;
+    private Comment mockComment;
     private CommentPostDto mockComment01PostDto;
     private CommentPostDto mockComment03PostDto;
 
@@ -78,8 +79,6 @@ public class CommentControllerTest {
                 .articleId(article01.getId())
                 .authorId(article01.getId())
                 .build();
-
-
     }
 
     @Test

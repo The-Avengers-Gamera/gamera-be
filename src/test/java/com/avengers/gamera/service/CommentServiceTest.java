@@ -22,6 +22,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -46,20 +48,32 @@ public class CommentServiceTest {
     private CommentRepository commentRepository;
 
     @Mock
+
     private ArticleService articleService;
+    
+    @Mock
+    private ArticleRepository articleRepository;
+
 
     @Mock
     private UserService userService;
 
+    @Mock
+    private ArticleService articleService;
+
     final private User user01 = User.builder().id(1L).name("user01").email("user01@gmail.com").createdTime(OffsetDateTime.now()).updatedTime(OffsetDateTime.now()).password("123456").build();
     final private UserSlimGetDto user01SlimGetDto = UserSlimGetDto.builder().id(1L).name("user01").build();
 
-    final private Article article01 = Article.builder().id(1L).build();
-
+    final private Article article01 = Article.builder().id(1L).commentList(List.of(Comment.builder()
+            .id(12L)
+            .text("this is a comment")
+            .user(user01)
+            .build())).build();
     final private Comment mockComment01 = Comment.builder()
             .id(1L)
             .text("this is the first comment")
             .user(user01)
+            .article(article01)
             .build();
 
     final private CommentSlimDto  mockComment01SlimGetDto = CommentSlimDto.builder()
@@ -107,7 +121,7 @@ public class CommentServiceTest {
         when(commentMapper.commentPostDtoToComment(mockComment03PostDto)).thenReturn(mockComment03);
         when(commentRepository.findCommentByIdAndIsDeletedFalse(mockComment03PostDto.getParentId())).thenReturn(Optional.of(mockComment01));
         when(userService.findUser(mockComment03PostDto.getAuthorId())).thenReturn(user01);
-        when(articleService.findArticle(mockComment03PostDto.getArticleId())).thenReturn(article01);
+        when(articleService.findById(mockComment03PostDto.getArticleId())).thenReturn(article01);
         when(commentMapper.commentToCommentGetDto(any())).thenReturn(mockComment03GetDto);
 
         CommentGetDto newComment = commentService.createNewComment(mockComment03PostDto);
@@ -155,6 +169,8 @@ public class CommentServiceTest {
     @Test
     @DisplayName("deleteComment should delete the comment given valid comment ID")
     void shouldDeleteCommentGivenCommentId(){
+        when(commentRepository.findCommentByIdAndIsDeletedFalse(1L)).thenReturn(Optional.ofNullable(mockComment01));
+
         when(commentRepository.deleteCommentById(1L)).thenReturn(1);
 
         commentService.deleteComment(1L);
@@ -163,9 +179,10 @@ public class CommentServiceTest {
     }
 
     @Test
-    @DisplayName("deleteComment should delete the comment given invalid comment ID")
-    void shouldDeleteCommentGivenInvalidCommentId(){
+    @DisplayName("deleteComment should throw ResourceNotFoundException given invalid commentID")
+    void shouldThrowExceptionGivenInvalidCommentId(){
        when(commentRepository.deleteCommentById(-1L)).thenReturn(0);
+       when(commentRepository.findCommentByIdAndIsDeletedFalse(-1L)).thenReturn(Optional.ofNullable(mockComment01));
 
         assertThrows(ResourceNotFoundException.class,()->commentService.deleteComment(-1L));
 

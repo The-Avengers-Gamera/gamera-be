@@ -1,10 +1,13 @@
 package com.avengers.gamera.service;
 
 import com.avengers.gamera.dto.article.ArticleGetDto;
+import com.avengers.gamera.dto.comment.CommentGetDto;
 import com.avengers.gamera.entity.Article;
+import com.avengers.gamera.entity.Comment;
 import com.avengers.gamera.entity.User;
 import com.avengers.gamera.exception.ResourceExistException;
 import com.avengers.gamera.mapper.ArticleMapper;
+import com.avengers.gamera.mapper.CommentMapper;
 import com.avengers.gamera.repository.ArticleRepository;
 import com.avengers.gamera.repository.UserRepository;
 import com.avengers.gamera.util.CurrentUser;
@@ -25,6 +28,7 @@ public class LikeService {
     private final ArticleMapper articleMapper;
     private final UserService userService;
     private final ArticleService articleService;
+    private final CommentMapper commentMapper;
 
     public User getUser() {
 
@@ -62,6 +66,17 @@ public class LikeService {
         return likedArticles.stream().map(articleMapper::articleToArticleGetDto).collect(Collectors.toList());
     }
 
+
+    public int getLikeNumByArticleId(Long articleId) {
+        return articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(()-> new ResourceNotFoundException("article not found")).getLikeUsers().size();
+    }
+
+    public List<CommentGetDto> getCommented() {
+        User user = this.getUser();
+        List<Comment> commented = user.getComments();
+        return commented.stream().map(commentMapper::commentToCommentGetDto).collect(Collectors.toList());
+    }
+
     @Transactional
     public void deleteLike(Long articleId) {
         User user = this.getUser();
@@ -79,4 +94,6 @@ public class LikeService {
         articleRepository.save(article);
         log.info("Successfully delete like: userId {} articleId {}", user.getId(), articleId);
     }
+
+
 }
