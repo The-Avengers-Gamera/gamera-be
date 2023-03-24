@@ -10,7 +10,7 @@ pipeline {
         DB_URL = credentials('DB_URL')
         DB_USERNAME = credentials('DB_USERNAME')
         DB_PASSWORD = credentials('DB_PASSWORD')
-        ECR_PASSWORD_STDIN = credentials('ECR_PASSWORD_STDIN')
+        ECR_TOKEN_UAT = credentials('ECR_TOKEN_UAT')
     }
 
     stages {
@@ -49,15 +49,15 @@ pipeline {
 
                 //Authenticate Docker client to ECR repository
                 sh 'aws ecr get-login-password --region ap-southeast-2 | docker login \
-                    --username AWS --password-stdin ${ECR_PASSWORD_STDIN}'
+                    --username AWS --password-stdin ${ECR_TOKEN_UAT}'
 
                 //Tag the docker built, one for version tag, one for latest tag
-                sh 'docker tag gamera-service ${ECR_PASSWORD_STDIN}/gamera-repository:${BUILD_NUMBER}'
-                sh 'docker tag gamera-service ${ECR_PASSWORD_STDIN}/gamera-repository:latest'
+                sh 'docker tag gamera-service ${ECR_TOKEN_UAT}/gamera-repository-uat:${BUILD_NUMBER}'
+                sh 'docker tag gamera-service ${ECR_TOKEN_UAT}/gamera-repository-uat:latest'
 
                 //push the Dockerfile to ECR
-                sh 'docker push ${ECR_PASSWORD_STDIN}/gamera-repository:${BUILD_NUMBER}'
-                sh 'docker push ${ECR_PASSWORD_STDIN}/gamera-repository:latest'
+                sh 'docker push ${ECR_TOKEN_UAT}/gamera-repository-uat:${BUILD_NUMBER}'
+                sh 'docker push ${ECR_TOKEN_UAT}/gamera-repository-uat:latest'
 
                 //Redeploy the service to ECS cluster with new task defination
                 sh 'aws ecs update-service --cluster DevGameraCluster \

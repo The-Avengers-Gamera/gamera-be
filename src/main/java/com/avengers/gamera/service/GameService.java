@@ -1,5 +1,6 @@
 package com.avengers.gamera.service;
 
+import com.avengers.gamera.dto.game.GameGenrePostDto;
 import com.avengers.gamera.dto.game.GameGetDto;
 import com.avengers.gamera.dto.game.GamePostDto;
 import com.avengers.gamera.dto.game.GameUpdateDto;
@@ -20,6 +21,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -36,20 +38,23 @@ public class GameService {
 
     @Transactional
     public GameGetDto createGame(GamePostDto gamePostDto) {
-
-        List<Genre> updateGenreList = handleFrontendGenreList(gamePostDto.getGenreList());
-        gamePostDto.setGenreList(updateGenreList);
-        Game game = gameMapper.GamePostDtoToGame(gamePostDto);
         isExist(gamePostDto.getName());
+
+        String platform=Optional.ofNullable(gamePostDto.getPlatform()).orElse("");
+        gamePostDto.setPlatform(platform.toLowerCase());
+
+        List<Genre> updateGenreList = handleFrontendGenreList(gamePostDto.getGameGenrePostDtoList());
+        Game game = gameMapper.GamePostDtoToGame(gamePostDto);
+        game.setGenreList(updateGenreList);
 
         return gameMapper.GameToGameGetDto(gameRepository.save(game));
     }
 
     @Transactional
-    public List<Genre> handleFrontendGenreList(List<Genre> genreList) {
-        Map<Boolean, List<Genre>> checkGenres = genreList.stream().collect(Collectors.partitioningBy(item -> item.getId() == null));
-        List<Genre> newGetDto = checkGenres.get(true);
-        List<Genre> existGetDto = checkGenres.get(false);
+    public List<Genre> handleFrontendGenreList(List<GameGenrePostDto> genreList) {
+        Map<Boolean, List<GameGenrePostDto>> checkGenres = genreList.stream().collect(Collectors.partitioningBy(item -> item.getId() == null));
+        List<GameGenrePostDto> newGetDto = checkGenres.get(true);
+        List<GameGenrePostDto> existGetDto = checkGenres.get(false);
         List<Genre> existGenre = genreService.getAllGenre(existGetDto);
         List<Genre> updatedGenreList = new ArrayList<>(existGenre);
 
@@ -61,35 +66,33 @@ public class GameService {
         return updatedGenreList;
     }
 
-    public boolean isExist(String name) {
+    public void isExist(String name) {
 
-        Boolean isExist = gameRepository.existsUserByName(name);
-        if (Boolean.TRUE.equals(isExist)) {
+        boolean isExist = gameRepository.existsUserByName(name);
+        if (isExist) {
             throw new ResourceExistException("Game already existed!");
         }
-        return isExist;
     }
 
+    @Transactional
     public GameGetDto updateGame(GameUpdateDto gameUpdateDto, Long id) {
-        List<Genre> updateGenreList = handleFrontendGenreList(gameUpdateDto.getGenreList());
+        List<Genre> updateGenreList = handleFrontendGenreList(gameUpdateDto.getGameGenrePostDtoList());
         Game game = findActiveGame(id);
 
         gameUpdateDto.setCreatedTime(game.getCreatedTime());
         gameUpdateDto.setId(id);
         gameUpdateDto.setIsDeleted(game.getIsDeleted());
         gameUpdateDto.setUpdatedTime(OffsetDateTime.now());
-        gameUpdateDto.setGenreList(updateGenreList);
+        Game updateGame=gameMapper.GameUpdateDtoToGame(gameUpdateDto);
+        updateGame.setGenreList(updateGenreList);
 
-        gameMapper.GameUpdateDtoToGame(gameUpdateDto);
-
-        return gameMapper.GameToGameGetDto(gameRepository.save((gameMapper.GameUpdateDtoToGame(gameUpdateDto))));
+        return gameMapper.GameToGameGetDto(gameRepository.save(updateGame));
     }
 
     public String deleteGame(Long id) {
-        Game game = findActiveGame(id);
-        game.setIsDeleted(true);
-        gameRepository.save(game);
-        return "Delete game successfully";
+      int result=  gameRepository.updateIsDeleted(id);
+      System.out.println(result);
+        return (result == 1L ? "Delete successfully" : "Game not exist");
     }
 
     public Game findActiveGame(Long id) {

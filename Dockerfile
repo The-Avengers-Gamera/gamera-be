@@ -16,4 +16,4 @@ RUN ./gradlew build
 
 EXPOSE 8080
 
-CMD ["./gradlew", "bootRun"]
+CMD ["./gradlew", "bootRun", "--args='--spring.profiles.active=uat'"]

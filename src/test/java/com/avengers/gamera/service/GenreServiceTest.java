@@ -1,6 +1,7 @@
 package com.avengers.gamera.service;
 
 
+import com.avengers.gamera.dto.genre.GenreGetDto;
 import com.avengers.gamera.dto.genre.GenrePostDto;
 import com.avengers.gamera.dto.genre.GenreUpdateDto;
 import com.avengers.gamera.entity.Genre;
@@ -13,11 +14,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -31,26 +30,21 @@ public class GenreServiceTest {
     private GenreService genreService;
 
     Genre mockGenre = Genre.builder().id(1L).name("Avenger").createdTime(OffsetDateTime.now()).updatedTime(OffsetDateTime.now()).build();
-    Genre mockGenre3 = Genre.builder().id(1L).name("Avenger1").createdTime(OffsetDateTime.now()).updatedTime(OffsetDateTime.now()).build();
+    GenreGetDto mockGenreGetDto=GenreGetDto.builder().id(1L).name("Avenger").createdTime(OffsetDateTime.now()).updatedTime(OffsetDateTime.now()).build();
     Genre mockGenre4 = Genre.builder().id(1L).name("Avenger2").createdTime(OffsetDateTime.now()).updatedTime(OffsetDateTime.now()).build();
     GenrePostDto mockGenrePostDto = GenrePostDto.builder().name("Avenger").build();
-    GenrePostDto mockGenrePostDto1 = GenrePostDto.builder().name("Avenger1").build();
-    GenrePostDto mockGenrePostDto2 = GenrePostDto.builder().name("Avenger2").build();
     GenreUpdateDto mockGenreUpdateDto = GenreUpdateDto.builder().name("Avenger2").build();
-    Genre mockGenre1 = Genre.builder().name("Avenger1").build();
-    Genre mockGenre2 = Genre.builder().name("Avenger2").build();
-    List<Genre> genreNames = List.of(mockGenre1, mockGenre2);
 
-    List<Genre> mockGenreList = List.of(mockGenre3, mockGenre4);
 
     @Test
     void shouldSaveNewGenreInGenreRepoWhenCreateGenre() {
         when(genreMapper.GenrePostDtoToGenre(mockGenrePostDto)).thenReturn(mockGenre);
         when(genreRepository.save(mockGenre)).thenReturn(mockGenre);
+        when(genreMapper.GenreToGenreGetDto(mockGenre)).thenReturn(mockGenreGetDto);
 
-        Genre genreDto = genreService.createGenre(mockGenrePostDto);
+        GenreGetDto genreDto = genreService.createGenre(mockGenrePostDto);
         verify(genreRepository).save(mockGenre);
-        assertEquals(mockGenre, genreDto);
+        assertEquals(mockGenreGetDto, genreDto);
     }
 
     @Test
@@ -63,17 +57,6 @@ public class GenreServiceTest {
 
     }
 
-
-    @Test
-    void shouldReturnGenreListWhenSaveAll() {
-        when(genreMapper.GenreToGenrePostDto(any())).thenReturn(mockGenrePostDto1, mockGenrePostDto2);
-        when(genreMapper.GenrePostDtoToGenre(any())).thenReturn(mockGenre3, mockGenre4);
-        when(genreRepository.saveAll(any())).thenReturn(mockGenreList);
-
-        List<Genre> genreList = genreService.saveAllGenre(genreNames);
-        assertEquals(mockGenreList, genreList);
-
-    }
 
     @Test
     void shouldReturnGenreWhenUpdateGenre() {

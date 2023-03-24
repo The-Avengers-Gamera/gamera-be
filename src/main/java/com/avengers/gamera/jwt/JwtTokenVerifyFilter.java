@@ -84,7 +84,6 @@ public class JwtTokenVerifyFilter extends OncePerRequestFilter {
             log.error("Invalid JWT signature: {}", e.getMessage());
         } catch (ExpiredJwtException e) {
             log.error("JWT token is expired: {}", e.getMessage());
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         } catch (Exception e) {
             log.error("Cannot set user authentication: {}", e.getMessage());
         }
