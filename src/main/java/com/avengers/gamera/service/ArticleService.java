@@ -202,11 +202,11 @@ public class ArticleService {
         return pagingDtoOfMiniArticleGetDto;
     }
 
-    public PagingDto<List<MiniArticleGetDto>> getArticlesByUserId(int page, int size, Long userId) {
+    public PagingDto<List<MiniArticleGetDto>> getArticlesByAuthorId(int page, int size, Long authorId) {
         Pageable pageable = PageRequest.of(page - 1, size);
         PagingDto<List<MiniArticleGetDto>> pagingDtoOfMiniArticleByAuthor = new PagingDto<>();
-        User user = userService.findUser(userId);
-        Page<Article> postedArticles = articleRepository.findByAuthor(user, pageable);
+        User author = userService.findUser(authorId);
+        Page<Article> postedArticles = articleRepository.findByAuthor(author, pageable);
         List<MiniArticleGetDto> miniArticleByAuthor = postedArticles.getContent()
                 .stream()
                 .map(articleMapper::articleToMiniArticleGetDto)

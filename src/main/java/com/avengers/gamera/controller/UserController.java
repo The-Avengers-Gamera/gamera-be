@@ -83,9 +83,9 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/articles")
-    public PagingDto<List<MiniArticleGetDto>> getArticlesListForUser(@RequestParam(defaultValue = "1") int page,
+    public PagingDto<List<MiniArticleGetDto>> getArticlesListByAuthor(@RequestParam(defaultValue = "1") int page,
                                                                      @RequestParam(defaultValue = "10") int size,
                                                                      @PathVariable Long userId) {
-        return articleService.getArticlesByUserId(page, size, userId);
+        return articleService.getArticlesByAuthorId(page, size, userId);
     }
 }
