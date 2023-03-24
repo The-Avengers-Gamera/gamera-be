@@ -40,8 +40,8 @@ public class Article {
     @Column
     private String text;
 
-    @Column(name = "like_num")
-    private int like;
+    @Column
+    private int likeNum;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -76,10 +76,4 @@ public class Article {
     @Builder.Default
     @JsonBackReference
     List<User> likeUsers= new ArrayList<>();
-
-    @Transient
-    private int likeNum;
-
-    public int getLikeNum() { return this.getLikeUsers().size(); }
-
 }
