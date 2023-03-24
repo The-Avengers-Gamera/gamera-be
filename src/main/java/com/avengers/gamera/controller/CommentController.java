@@ -18,7 +18,6 @@ import java.util.Map;
 public class CommentController {
     private final CommentService commentService;
 
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CommentGetDto createComment(@Valid @RequestBody CommentPostDto commentPostDto) {

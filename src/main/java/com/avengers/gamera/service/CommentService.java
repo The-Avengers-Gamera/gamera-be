@@ -1,13 +1,11 @@
 package com.avengers.gamera.service;
 
-import com.avengers.gamera.dto.article.ArticlePostDto;
 import com.avengers.gamera.dto.comment.CommentGetDto;
 import com.avengers.gamera.dto.comment.CommentPostDto;
 import com.avengers.gamera.dto.comment.CommentPutDto;
 import com.avengers.gamera.entity.Article;
 import com.avengers.gamera.entity.Comment;
 import com.avengers.gamera.exception.ResourceNotFoundException;
-import com.avengers.gamera.mapper.ArticleMapper;
 import com.avengers.gamera.mapper.CommentMapper;
 import com.avengers.gamera.repository.ArticleRepository;
 import com.avengers.gamera.repository.CommentRepository;
@@ -59,21 +57,21 @@ public class CommentService {
         return commentMapper.commentToCommentGetDto(commentRepository.save(comment));
     }
 
+    @Transactional
     public void deleteComment(Long commentId) {
         Article article = find(commentId).getArticle();
 
         int deleteResponse = commentRepository.deleteCommentById(commentId);
-        if (deleteResponse != 1L) {
+        if (deleteResponse != 1) {
             throw new ResourceNotFoundException("Comment", commentId);
         }
         article.setCommentNum(article.getCommentList().size()-1);
         articleRepository.save(article);
-        // write save article function in article service
+
         log.info("Successfully delete comment: comment id {};  articleId {}",commentId, article.getId());
     }
 
     public Comment find(Long commentId) {
         return commentRepository.findCommentByIdAndIsDeletedFalse(commentId).orElseThrow(() -> new ResourceNotFoundException("Comment", commentId));
     }
-
 }
