@@ -228,5 +228,11 @@ public class ArticleService {
                 .totalItems(postedArticles.getTotalElements())
                 .build();
     }
-}
 
+    public List<ArticleGetDto> getFirstTenNewsByCreatedTime() {
+
+        List<Article> articleList = articleRepository.findFirst10ByTypeAndIsDeletedFalseOrderByCreatedTimeAsc(EArticleType.NEWS);
+
+        return articleList.stream().map(articleMapper::articleToArticleGetDto).toList();
+    }
+}

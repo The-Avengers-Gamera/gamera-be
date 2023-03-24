@@ -48,6 +48,11 @@ public class ArticleController {
                 getSortOrder(order));
     }
 
+    @GetMapping("/trending-news")
+    public List<ArticleGetDto> getTrendingNews(){
+        return articleService.getFirstTenNewsByCreatedTime();
+    }
+
     @GetMapping("/reviews")
     public PagingDto<List<MiniArticleGetDto>> getReviews(@RequestParam(defaultValue = "1") int page,
                                                          @RequestParam(defaultValue = "10") int size,
