@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
 @Transactional
 @RequiredArgsConstructor
 @Slf4j
-
 public class ArticleService {
     private final ArticleRepository articleRepository;
     private final ArticleMapper articleMapper;
@@ -185,4 +184,22 @@ public class ArticleService {
         return pagingDtoOfMiniArticleGetDto;
     }
 
+    public PagingDto<List<MiniArticleGetDto>> getArticlesOrderByLike(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        PagingDto<List<MiniArticleGetDto>> pagingDtoOfMiniArticleGetDto = new PagingDto<>();
+
+        Page<Article> allByOrderByLikeNumDesc = articleRepository.findAllByOrderByLikeDesc(pageable);
+
+        List<MiniArticleGetDto> miniArticleGetDtoList = allByOrderByLikeNumDesc.getContent().stream()
+                .map(articleMapper::articleToMiniArticleGetDto)
+                .collect(Collectors.toList());
+
+        pagingDtoOfMiniArticleGetDto.setData(miniArticleGetDtoList);
+        pagingDtoOfMiniArticleGetDto.setCurrentPage(allByOrderByLikeNumDesc.getNumber() + 1);
+        pagingDtoOfMiniArticleGetDto.setTotalPages(allByOrderByLikeNumDesc.getTotalPages());
+        pagingDtoOfMiniArticleGetDto.setTotalItems(allByOrderByLikeNumDesc.getTotalElements());
+
+        return pagingDtoOfMiniArticleGetDto;
+    }
 }
+

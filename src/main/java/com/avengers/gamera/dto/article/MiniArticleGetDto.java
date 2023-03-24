@@ -24,5 +24,5 @@ public class MiniArticleGetDto {
     private EArticleType type;
     private OffsetDateTime createdTime;
     private OffsetDateTime updatedTime;
-    private int likeNum;
+    private int like;
 }

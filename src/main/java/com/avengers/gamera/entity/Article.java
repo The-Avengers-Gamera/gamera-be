@@ -40,6 +40,9 @@ public class Article {
     @Column
     private String text;
 
+    @Column(name = "like_num")
+    private int like;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private EArticleType type;
