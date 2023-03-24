@@ -2,6 +2,7 @@ package com.avengers.gamera.service;
 
 import com.avengers.gamera.constant.EArticleSort;
 import com.avengers.gamera.constant.EArticleType;
+import com.avengers.gamera.constant.EUserArticleType;
 import com.avengers.gamera.dto.PagingDto;
 import com.avengers.gamera.dto.article.ArticleGetDto;
 import com.avengers.gamera.dto.article.ArticlePostDto;
@@ -10,6 +11,8 @@ import com.avengers.gamera.dto.article.ArticlePutDto;
 import com.avengers.gamera.dto.comment.CommentGetDto;
 import com.avengers.gamera.dto.comment.CommentSlimDto;
 import com.avengers.gamera.dto.tag.TagSlimDto;
+import com.avengers.gamera.dto.user.UserProfileDto;
+import com.avengers.gamera.entity.*;
 import com.avengers.gamera.entity.Article;
 import com.avengers.gamera.entity.Comment;
 import com.avengers.gamera.entity.Tag;
@@ -21,6 +24,7 @@ import com.avengers.gamera.mapper.CommentMapper;
 import com.avengers.gamera.mapper.TagMapper;
 import com.avengers.gamera.mapper.UserMapper;
 import com.avengers.gamera.repository.ArticleRepository;
+import com.avengers.gamera.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -54,6 +58,7 @@ public class ArticleService {
     private final UserService userService;
     private final GameService gameService;
     private final TagService tagService;
+    private final CommentRepository commentRepository;
 
     public PagingDto<List<MiniArticleGetDto>> getArticlePage(EArticleType articleType,
                                                              int page,
@@ -278,6 +283,37 @@ public class ArticleService {
                 .build();
     }
 
+    public UserProfileDto getUserArticleNumAndRecent3MiniArticlesForProfile(Long userId) {
+        int articleNums = 3;
+        UserProfileDto userProfileDto = new UserProfileDto();
+        User user = userService.findUser(userId);
+        userProfileDto.setLikesArticlesDto(getRecentMiniArticlesByUser(user, EUserArticleType.LIKES, articleNums));
+        userProfileDto.setCommentsArticlesDto(getRecentMiniArticlesByUser(user, EUserArticleType.COMMENTS, articleNums));
+        if(user.getAuthorities().stream().anyMatch(authority -> authority.getName().contains("ROLE_EDITOR"))){
+            userProfileDto.setPostsArticlesDto(getRecentMiniArticlesByUser(user, EUserArticleType.POSTS, 3));
+            userProfileDto.setPostsCount(articleRepository.countByAuthorIdAndIsDeletedFalse(userId));
+        }
+        userProfileDto.setLikesCount(user.getLikedArticles().size());
+        userProfileDto.setCommentsCount(commentRepository.countByUserIdAndIsDeletedFalse(userId));
+        return userProfileDto;
+    }
+
+    private List<MiniArticleGetDto> getRecentMiniArticlesByUser(User user, EUserArticleType userArticleType, Integer articleNums) {
+        switch (userArticleType) {
+            case LIKES:
+                return user.getLikedArticles().stream()
+                        .map(articleMapper::articleToMiniArticleGetDto).sorted(Comparator.comparing(MiniArticleGetDto::getCreatedTime).reversed()).limit(articleNums).toList();
+            case COMMENTS:
+                return articleRepository.findAllByIdIn(commentRepository.findArticleIdByUserIdAndIsDeletedFalse(user.getId())).stream()
+                        .map(articleMapper::articleToMiniArticleGetDto).sorted(Comparator.comparing(MiniArticleGetDto::getCreatedTime).reversed()).limit(articleNums).toList();
+            case POSTS:
+                return articleRepository.findAllByAuthor(user).stream()
+                        .map(articleMapper::articleToMiniArticleGetDto).sorted(Comparator.comparing(MiniArticleGetDto::getCreatedTime).reversed()).limit(articleNums).toList();
+            default:
+                return null;
+        }
+
+    }
     public List<ArticleGetDto> getFirstTenNewsByCreatedTime() {
         List<Article> articleList = articleRepository.findFirst10ByTypeAndIsDeletedFalseOrderByCreatedTimeAsc(EArticleType.NEWS);
 

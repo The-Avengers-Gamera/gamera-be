@@ -7,6 +7,9 @@ import com.avengers.gamera.dto.user.UserGetDto;
 import com.avengers.gamera.dto.user.UserPostDto;
 import com.avengers.gamera.dto.user.UserPutDto;
 import com.avengers.gamera.service.ArticleService;
+import com.avengers.gamera.dto.user.*;
+import com.avengers.gamera.service.ArticleService;
+import com.avengers.gamera.service.LikeService;
 import com.avengers.gamera.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -87,5 +90,11 @@ public class UserController {
                                                                       @RequestParam(defaultValue = "10") int size,
                                                                       @PathVariable Long userId) {
         return articleService.getArticlesByAuthorId(page, size, userId);
+    }
+    @GetMapping("/{userId}/profile")
+    public UserProfileDto getUserProfile(@PathVariable Long userId) {
+        UserProfileDto userProfileDto = articleService.getUserArticleNumAndRecent3MiniArticlesForProfile(userId);
+        userProfileDto.setFromUserGetDto(userService.getUser(userId));
+        return userProfileDto;
     }
 }

@@ -46,5 +46,10 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
     Page<Article> findArticlesByTypeAndIsDeletedFalseOrderByCommentNumDesc(EArticleType articleType, Pageable pageable);
 
+    List<Article> findAllByIdIn(List<Long> ids);
+
+    List<Article> findAllByAuthor(User author);
+
+    Integer countByAuthorIdAndIsDeletedFalse(Long userId);
     Page<Article> findAllByOrderByLikeNumDesc(Pageable pageable);
 }

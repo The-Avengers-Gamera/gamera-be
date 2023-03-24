@@ -1,8 +1,11 @@
 package com.avengers.gamera.service;
 
 import com.avengers.gamera.auth.GameraUserDetails;
+import com.avengers.gamera.constant.EUserArticleType;
+import com.avengers.gamera.dto.article.MiniArticleGetDto;
 import com.avengers.gamera.dto.user.UserGetDto;
 import com.avengers.gamera.dto.user.UserPostDto;
+import com.avengers.gamera.dto.user.UserProfileDto;
 import com.avengers.gamera.dto.user.UserPutDto;
 import com.avengers.gamera.entity.Authority;
 import com.avengers.gamera.entity.User;
@@ -17,6 +20,8 @@ import com.avengers.gamera.util.SystemParam;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -48,6 +53,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     private final String defaultAuthority = "ROLE_USER";
+
 
     public UserGetDto createUser(UserPostDto userPostDto) {
         String encodedPwd = passwordEncoder.encode(userPostDto.getPassword());
@@ -145,5 +151,4 @@ public class UserService {
         user.setIsDeleted(true);
         log.info(" User id {} was deleted", userId);
     }
-
 }
