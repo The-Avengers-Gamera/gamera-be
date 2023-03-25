@@ -1,14 +1,17 @@
 package com.avengers.gamera.controller;
 
+import com.avengers.gamera.constant.EArticleType;
 import com.avengers.gamera.dto.article.ArticleGetDto;
 import com.avengers.gamera.dto.article.ArticlePostDto;
 import com.avengers.gamera.dto.article.ArticlePutDto;
 import com.avengers.gamera.service.ArticleService;
+import com.avengers.gamera.util.CurrentUser;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequestMapping("/news")
@@ -20,7 +23,7 @@ public class NewsController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ArticleGetDto createNews(@RequestBody ArticlePostDto articlePostDto) {
-        return articleService.createArticle(articlePostDto);
+        return articleService.createArticle(articlePostDto, EArticleType.NEWS, CurrentUser.getUserId());
     }
 
     @PutMapping("/{newsId}")

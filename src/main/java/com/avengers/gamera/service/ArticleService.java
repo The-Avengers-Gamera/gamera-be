@@ -14,6 +14,7 @@ import com.avengers.gamera.entity.Article;
 import com.avengers.gamera.entity.Comment;
 import com.avengers.gamera.entity.Tag;
 import com.avengers.gamera.entity.User;
+import com.avengers.gamera.exception.ArgumentNotValidException;
 import com.avengers.gamera.exception.ResourceNotFoundException;
 import com.avengers.gamera.mapper.ArticleMapper;
 import com.avengers.gamera.mapper.CommentMapper;
@@ -22,7 +23,6 @@ import com.avengers.gamera.mapper.UserMapper;
 import com.avengers.gamera.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -80,45 +80,49 @@ public class ArticleService {
                 .build();
     }
 
-    public ArticleGetDto createArticle(ArticlePostDto articlePostDto) {
+    public ArticleGetDto createArticle(ArticlePostDto articlePostDto, EArticleType articleType, Long userId) {
+        if (articleType == EArticleType.REVIEW && articlePostDto.getGameId() == null) {
+            throw new ArgumentNotValidException();
+        }
+
+        return handleCreateArticle(articlePostDto, articleType, userId);
+
+    }
+
+    public ArticleGetDto handleCreateArticle(ArticlePostDto articlePostDto, EArticleType articleType, Long userId) {
+
+        Article article = articleMapper.articlePostDtoToArticle(articlePostDto);
+        if (articlePostDto.getGameId() != null) {
+            article.setGame(gameService.findActiveGame(articlePostDto.getGameId()));
+        }
         if (articlePostDto.getTagList() != null) {
             List<Tag> updateTagList = handleFrontendTagList(articlePostDto.getTagList());
             articlePostDto.setTagList(updateTagList);
         }
-        Article article = articleMapper.articlePostDtoToArticle(articlePostDto);
 
-        String img = article.getCoverImgUrl();
-        if (StringUtils.isBlank(img)) {
-            article.setCoverImgUrl("https://picsum.photos/800/400");
-        }
-        article.setAuthor(userService.findUser(articlePostDto.getAuthorId()));
-        EArticleType articleType = articlePostDto.getType();
-
-        if (articleType == EArticleType.REVIEW) {
-            article.setGame(gameService.findActiveGame(articlePostDto.getGameId()));
-        } else if (articleType == EArticleType.NEWS && articlePostDto.getGameId() != null) {
-            article.setGame(gameService.findActiveGame(articlePostDto.getGameId()));
-        }
+        article.setType(articleType);
+        article.setAuthor(userService.findUser(userId));
 
         log.info("Saving the article with title:  " + article.getTitle() + "  to database");
 
         return articleMapper.articleToArticleGetDto(articleRepository.save(article));
     }
 
+
     public List<Tag> handleFrontendTagList(List<Tag> tagList) {
-        Map<Boolean, List<Tag>> checkTags = tagList.stream()
-                .collect(Collectors.partitioningBy(item -> item.getId() == null));
-        List<Tag> newTagFromUser = checkTags.get(true);
-        List<Tag> existTagFromUser = checkTags.get(false);
-        List<Tag> existTag = tagService.getAllTag(existTagFromUser);
-        List<Tag> updatedTagList = new ArrayList<>(existTag);
+    Map<Boolean, List<Tag>> checkTags = tagList.stream()
+            .collect(Collectors.partitioningBy(item -> item.getId() == null));
+    List<Tag> newTagFromUser = checkTags.get(true);
+    List<Tag> existTagFromUser = checkTags.get(false);
+    List<Tag> existTag = tagService.getAllTag(existTagFromUser);
+    List<Tag> updatedTagList = new ArrayList<>(existTag);
 
-        if (newTagFromUser.size() > 0) {
-            List<Tag> createdTag = tagService.createMultipleTag(newTagFromUser);
-            updatedTagList.addAll(createdTag);
-        }
+    if (newTagFromUser.size() > 0) {
+        List<Tag> createdTag = tagService.createMultipleTag(newTagFromUser);
+        updatedTagList.addAll(createdTag);
+    }
 
-        return updatedTagList;
+    return updatedTagList;
     }
 
     public Article findById(Long articleId){
