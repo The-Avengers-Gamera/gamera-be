@@ -77,7 +77,7 @@ public class UserController {
         return likeService.getLikeByUserId();
     }
 
-    @GetMapping("/comment")
+    @GetMapping("/comments")
     public List<CommentGetDto> getCommentedForUser() {
         return likeService.getCommented();
     }
