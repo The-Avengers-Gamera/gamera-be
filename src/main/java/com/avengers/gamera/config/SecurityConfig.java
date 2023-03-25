@@ -12,6 +12,7 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -51,7 +52,6 @@ public class SecurityConfig {
             "/actuator/health",
             "/users/signup",
             "/users/login",
-            "/verification/emails/**",
             "/articles/**",
             // -- Swagger UI v3 (OpenAPI)
             "/v3/api-docs/**",
@@ -77,6 +77,7 @@ public class SecurityConfig {
                 .authorizeRequests(authorize ->
                         authorize
                                 .antMatchers(AUTH_URL_WHITELIST).permitAll()
+                                .antMatchers(HttpMethod.GET).permitAll()
                                 .antMatchers("/reviews/**").hasAuthority("ROLE_EDITOR_REVIEW")
                                 .antMatchers("/news/**").hasAuthority("ROLE_EDITOR_NEWS")
                                 .anyRequest().authenticated())

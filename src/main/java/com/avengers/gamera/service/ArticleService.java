@@ -20,6 +20,7 @@ import com.avengers.gamera.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -54,9 +55,8 @@ public class ArticleService {
                                                              EArticleSort sort,
                                                              Sort.Direction order) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(order, sort.getName()));
-        PagingDto<List<MiniArticleGetDto>> data = new PagingDto<>();
-        Page<Article> articlePage;
-        articlePage = platform.equals("all") & genre.equals("all")
+
+        Page<Article> articlePage = platform.equals("all") & genre.equals("all")
                 ? articleRepository.findArticlesByTypeAndIsDeletedFalse(articleType, pageable)
                 : articleRepository.findArticlesByTypeAndPlatformAndGenreAndIsDeletedFalse(articleType, platform, genre, pageable);
 
@@ -64,10 +64,13 @@ public class ArticleService {
                 .stream()
                 .map(articleMapper::articleToMiniArticleGetDto)
                 .toList();
-        PagingDto<List<MiniArticleGetDto>> pagingDtoOfMiniArticleGetDto =  PagingDto
-                .<List<MiniArticleGetDto>>builder().data(miniArticleGetDtoList).build();
 
-        return pagingDtoOfMiniArticleGetDto;
+        return PagingDto.<List<MiniArticleGetDto>>builder()
+                .data(miniArticleGetDtoList)
+                .currentPage(articlePage.getNumber() + 1)
+                .totalPages(articlePage.getTotalPages())
+                .totalItems(articlePage.getTotalElements())
+                .build();
     }
 
     public ArticleGetDto createArticle(ArticlePostDto articlePostDto) {
@@ -178,15 +181,16 @@ public class ArticleService {
                 .map(articleMapper::articleToMiniArticleGetDto)
                 .toList();
 
-        PagingDto<List<MiniArticleGetDto>> pagingDtoOfMiniArticleGetDto =  PagingDto
-                .<List<MiniArticleGetDto>>builder().data(miniArticleGetDtoList).build();
-
-        return pagingDtoOfMiniArticleGetDto;
+        return PagingDto.<List<MiniArticleGetDto>>builder()
+                .data(miniArticleGetDtoList)
+                .currentPage(getAllReviewsByCommentNumDesc.getNumber() + 1)
+                .totalPages(getAllReviewsByCommentNumDesc.getTotalPages())
+                .totalItems(getAllReviewsByCommentNumDesc.getTotalElements())
+                .build();
     }
 
     public PagingDto<List<MiniArticleGetDto>> getArticlesOrderByLike(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        PagingDto<List<MiniArticleGetDto>> pagingDtoOfMiniArticleGetDto = new PagingDto<>();
 
         Page<Article> allByOrderByLikeNumDesc = articleRepository.findAllByOrderByLikeNumDesc(pageable);
 
@@ -194,12 +198,35 @@ public class ArticleService {
                 .map(articleMapper::articleToMiniArticleGetDto)
                 .collect(Collectors.toList());
 
-        pagingDtoOfMiniArticleGetDto.setData(miniArticleGetDtoList);
-        pagingDtoOfMiniArticleGetDto.setCurrentPage(allByOrderByLikeNumDesc.getNumber() + 1);
-        pagingDtoOfMiniArticleGetDto.setTotalPages(allByOrderByLikeNumDesc.getTotalPages());
-        pagingDtoOfMiniArticleGetDto.setTotalItems(allByOrderByLikeNumDesc.getTotalElements());
+        return PagingDto.<List<MiniArticleGetDto>>builder()
+                .data(miniArticleGetDtoList)
+                .currentPage(allByOrderByLikeNumDesc.getNumber() + 1)
+                .totalPages(allByOrderByLikeNumDesc.getTotalPages())
+                .totalItems(allByOrderByLikeNumDesc.getTotalElements())
+                .build();
+    }
 
-        return pagingDtoOfMiniArticleGetDto;
+    public PagingDto<List<MiniArticleGetDto>> getArticlesByAuthorId(int page, int size, Long authorId) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        Article article = Article
+                .builder()
+                .author(User.builder().id(authorId).isDeleted(false).build())
+                .build();
+
+        Page<Article> postedArticles = articleRepository.findAll(Example.of(article), pageable);
+
+        List<MiniArticleGetDto> miniArticleByAuthor = postedArticles.getContent()
+                .stream()
+                .map(articleMapper::articleToMiniArticleGetDto)
+                .toList();
+
+        return PagingDto.<List<MiniArticleGetDto>>builder()
+                .data(miniArticleByAuthor)
+                .currentPage(postedArticles.getNumber() + 1)
+                .totalPages(postedArticles.getTotalPages())
+                .totalItems(postedArticles.getTotalElements())
+                .build();
     }
 }
 
