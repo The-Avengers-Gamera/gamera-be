@@ -10,7 +10,10 @@ import com.avengers.gamera.dto.article.ArticlePutDto;
 import com.avengers.gamera.dto.comment.CommentGetDto;
 import com.avengers.gamera.dto.comment.CommentSlimDto;
 import com.avengers.gamera.dto.tag.TagSlimDto;
-import com.avengers.gamera.entity.*;
+import com.avengers.gamera.entity.Article;
+import com.avengers.gamera.entity.Comment;
+import com.avengers.gamera.entity.Tag;
+import com.avengers.gamera.entity.User;
 import com.avengers.gamera.exception.ResourceNotFoundException;
 import com.avengers.gamera.mapper.ArticleMapper;
 import com.avengers.gamera.mapper.CommentMapper;
@@ -29,7 +32,11 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.OffsetDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -228,5 +235,10 @@ public class ArticleService {
                 .totalItems(postedArticles.getTotalElements())
                 .build();
     }
-}
 
+    public List<ArticleGetDto> getFirstTenNewsByCreatedTime() {
+        List<Article> articleList = articleRepository.findFirst10ByTypeAndIsDeletedFalseOrderByCreatedTimeAsc(EArticleType.NEWS);
+
+        return articleList.stream().map(articleMapper::articleToArticleGetDto).toList();
+    }
+}
