@@ -53,7 +53,6 @@ public class TagService {
         return tagRepository.findTagByIdAndIsDeletedFalse(tagId).orElseThrow(() -> new ResourceNotFoundException("Tag"));
     }
 
-    @Modifying
     public void deleteTag(Long tagId) {
         int deleteResponse = tagRepository.deleteTagById(tagId);
         if (deleteResponse != 1L) {

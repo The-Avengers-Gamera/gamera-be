@@ -7,7 +7,6 @@ import com.avengers.gamera.dto.user.UserGetDto;
 import com.avengers.gamera.dto.user.UserPostDto;
 import com.avengers.gamera.dto.user.UserPutDto;
 import com.avengers.gamera.service.ArticleService;
-import com.avengers.gamera.service.LikeService;
 import com.avengers.gamera.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    private final LikeService likeService;
     private final ArticleService articleService;
 
     @PostMapping("/signup")

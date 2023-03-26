@@ -59,7 +59,6 @@ public class CommentService {
     }
 
     @Transactional
-    @Modifying
     public void deleteComment(Long commentId) {
         Article article = find(commentId).getArticle();
 
