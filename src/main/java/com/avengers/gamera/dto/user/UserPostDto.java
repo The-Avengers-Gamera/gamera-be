@@ -1,9 +1,6 @@
 package com.avengers.gamera.dto.user;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -15,6 +12,7 @@ import javax.validation.constraints.Size;
 @Setter
 @AllArgsConstructor
 @Builder
+@NoArgsConstructor
 public class UserPostDto {
     @NotBlank
     @Size(max = 255, message = "Username can not be more than 255 characters.")
