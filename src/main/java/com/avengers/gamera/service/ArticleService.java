@@ -13,7 +13,6 @@ import com.avengers.gamera.dto.tag.TagSlimDto;
 import com.avengers.gamera.entity.Article;
 import com.avengers.gamera.entity.Comment;
 import com.avengers.gamera.entity.Tag;
-import com.avengers.gamera.entity.User;
 import com.avengers.gamera.exception.ResourceNotFoundException;
 import com.avengers.gamera.mapper.ArticleMapper;
 import com.avengers.gamera.mapper.CommentMapper;
@@ -23,7 +22,6 @@ import com.avengers.gamera.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -216,12 +214,7 @@ public class ArticleService {
     public PagingDto<List<MiniArticleGetDto>> getArticlesByAuthorId(int page, int size, Long authorId) {
         Pageable pageable = PageRequest.of(page - 1, size);
 
-        Article article = Article
-                .builder()
-                .author(User.builder().id(authorId).isDeleted(false).build())
-                .build();
-
-        Page<Article> postedArticles = articleRepository.findAll(Example.of(article), pageable);
+        Page<Article> postedArticles = articleRepository.findArticlesByAuthor(authorId, pageable);
 
         List<MiniArticleGetDto> miniArticleByAuthor = postedArticles.getContent()
                 .stream()
@@ -233,6 +226,42 @@ public class ArticleService {
                 .currentPage(postedArticles.getNumber() + 1)
                 .totalPages(postedArticles.getTotalPages())
                 .totalItems(postedArticles.getTotalElements())
+                .build();
+    }
+
+    public PagingDto<List<MiniArticleGetDto>> getArticlesByCommentUserId(int page, int size, Long commentUserId) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        Page<Article> commentedArticles = articleRepository.findArticlesByCommentedUser(commentUserId, pageable);
+
+        List<MiniArticleGetDto> miniArticleByCommentedUser = commentedArticles.getContent()
+                .stream()
+                .map(articleMapper::articleToMiniArticleGetDto)
+                .toList();
+
+        return PagingDto.<List<MiniArticleGetDto>>builder()
+                .data(miniArticleByCommentedUser)
+                .currentPage(commentedArticles.getNumber() + 1)
+                .totalPages(commentedArticles.getTotalPages())
+                .totalItems(commentedArticles.getTotalElements())
+                .build();
+    }
+
+    public PagingDto<List<MiniArticleGetDto>> getArticlesByLikeUserId(int page, int size, Long likeUserId) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        Page<Article> likedArticles = articleRepository.findArticlesByLikedUser(likeUserId, pageable);
+
+        List<MiniArticleGetDto> miniArticleByLikedUser = likedArticles.getContent()
+                .stream()
+                .map(articleMapper::articleToMiniArticleGetDto)
+                .toList();
+
+        return PagingDto.<List<MiniArticleGetDto>>builder()
+                .data(miniArticleByLikedUser)
+                .currentPage(likedArticles.getNumber() + 1)
+                .totalPages(likedArticles.getTotalPages())
+                .totalItems(likedArticles.getTotalElements())
                 .build();
     }
 
