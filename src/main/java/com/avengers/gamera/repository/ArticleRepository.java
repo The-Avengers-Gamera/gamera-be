@@ -2,6 +2,7 @@ package com.avengers.gamera.repository;
 
 import com.avengers.gamera.constant.EArticleType;
 import com.avengers.gamera.entity.Article;
+import com.avengers.gamera.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,13 +21,12 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
     Optional<Article> findArticleByIdAndIsDeletedFalse(Long id);
 
-    @Query("select a from Article a inner join a.author u where u.id=:id and u.isDeleted = false and a.isDeleted = false")
-    Page<Article> findArticlesByAuthor(@Param("id") Long authorId, Pageable pageable);
+    Page<Article> findArticlesByAuthor(User user, Pageable pageable);
 
-    @Query("select distinct a from Comment c inner join c.article a inner join c.user u where u.id=:id and u.isDeleted = false and c.isDeleted = false")
+    @Query("select distinct a from Comment c inner join c.article a where c.user.id=:id and c.isDeleted = false")
     Page<Article> findArticlesByCommentedUser(@Param("id") Long userId, Pageable pageable);
 
-    @Query("select distinct a from Article a inner join a.likeUsers l where l.id=:id and l.isDeleted = false and a.isDeleted = false")
+    @Query("select distinct a from Article a inner join a.likeUsers l where l.id=:id and a.isDeleted = false")
     Page<Article> findArticlesByLikedUser(@Param("id") Long userId, Pageable pageable);
 
     @Query("select distinct a from Article a " +

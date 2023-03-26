@@ -13,6 +13,7 @@ import com.avengers.gamera.dto.tag.TagSlimDto;
 import com.avengers.gamera.entity.Article;
 import com.avengers.gamera.entity.Comment;
 import com.avengers.gamera.entity.Tag;
+import com.avengers.gamera.entity.User;
 import com.avengers.gamera.exception.ResourceNotFoundException;
 import com.avengers.gamera.mapper.ArticleMapper;
 import com.avengers.gamera.mapper.CommentMapper;
@@ -214,7 +215,9 @@ public class ArticleService {
     public PagingDto<List<MiniArticleGetDto>> getArticlesByAuthorId(int page, int size, Long authorId) {
         Pageable pageable = PageRequest.of(page - 1, size);
 
-        Page<Article> postedArticles = articleRepository.findArticlesByAuthor(authorId, pageable);
+        User author = userService.findUser(authorId);
+
+        Page<Article> postedArticles = articleRepository.findArticlesByAuthor(author, pageable);
 
         List<MiniArticleGetDto> miniArticleByAuthor = postedArticles.getContent()
                 .stream()
@@ -231,6 +234,8 @@ public class ArticleService {
 
     public PagingDto<List<MiniArticleGetDto>> getArticlesByCommentUserId(int page, int size, Long commentUserId) {
         Pageable pageable = PageRequest.of(page - 1, size);
+
+        userService.findUser(commentUserId);
 
         Page<Article> commentedArticles = articleRepository.findArticlesByCommentedUser(commentUserId, pageable);
 
@@ -249,6 +254,8 @@ public class ArticleService {
 
     public PagingDto<List<MiniArticleGetDto>> getArticlesByLikeUserId(int page, int size, Long likeUserId) {
         Pageable pageable = PageRequest.of(page - 1, size);
+
+        userService.findUser(likeUserId);
 
         Page<Article> likedArticles = articleRepository.findArticlesByLikedUser(likeUserId, pageable);
 
