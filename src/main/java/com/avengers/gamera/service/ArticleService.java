@@ -304,15 +304,24 @@ public class ArticleService {
                 return user.getLikedArticles().stream()
                         .map(articleMapper::articleToMiniArticleGetDto).sorted(Comparator.comparing(MiniArticleGetDto::getCreatedTime).reversed()).limit(articleNums).toList();
             case COMMENTS:
-                return articleRepository.findAllByIdIn(commentRepository.findArticleIdByUserIdAndIsDeletedFalse(user.getId())).stream()
-                        .map(articleMapper::articleToMiniArticleGetDto).sorted(Comparator.comparing(MiniArticleGetDto::getCreatedTime).reversed()).limit(articleNums).toList();
+                return articleRepository.findAllByIdIn(this.getNewestThreeCommentedArticleIdByUserId(user.getId())).stream()
+                        .map(articleMapper::articleToMiniArticleGetDto).toList();
             case POSTS:
-                return articleRepository.findAllByAuthor(user).stream()
-                        .map(articleMapper::articleToMiniArticleGetDto).sorted(Comparator.comparing(MiniArticleGetDto::getCreatedTime).reversed()).limit(articleNums).toList();
+                return this.getNewestThreeArticlesByUserId(user.getId()).stream()
+                        .map(articleMapper::articleToMiniArticleGetDto).toList();
             default:
-                return null;
+                return new ArrayList<>();
         }
+    }
 
+    private List<Article> getNewestThreeArticlesByUserId(Long userId) {
+        Pageable pageable = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "createdTime"));
+        return articleRepository.findTopNewestArticlesByAuthorId(userId, pageable);
+    }
+
+    private List<Long> getNewestThreeCommentedArticleIdByUserId(Long userId) {
+        Pageable pageable = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "createdTime"));
+        return commentRepository.findNewestArticleIdsByUserId(userId, pageable);
     }
     public List<ArticleGetDto> getFirstTenNewsByCreatedTime() {
         List<Article> articleList = articleRepository.findFirst10ByTypeAndIsDeletedFalseOrderByCreatedTimeAsc(EArticleType.NEWS);

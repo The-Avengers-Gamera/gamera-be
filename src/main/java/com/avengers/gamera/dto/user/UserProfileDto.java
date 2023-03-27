@@ -16,10 +16,9 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserProfileDto {
-    private long id;
+    private Long id;
     private Set<AuthoritySlimDto> authorities;
     private String name;
-    private String email;
     private Integer likesCount;
     private Integer commentsCount;
     private Integer postsCount;
@@ -32,7 +31,6 @@ public class UserProfileDto {
         this.id = userGetDto.getId();
         this.authorities = userGetDto.getAuthorities();
         this.name = userGetDto.getName();
-        this.email = userGetDto.getEmail();
         this.updatedTime = userGetDto.getUpdatedTime();
     }
 }
