@@ -147,6 +147,6 @@ public class UserService {
     }
 
     public void verifyAccount(Long id) {
-        findUser(id).setVerified(true);
+        userRepository.findByIdAAndIsDeletedIsFalseAndVerifiedIsFalse(id);
     }
 }
