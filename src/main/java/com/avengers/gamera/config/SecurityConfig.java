@@ -56,6 +56,7 @@ public class SecurityConfig {
             // -- Swagger UI v3 (OpenAPI)
             "/v3/api-docs/**",
             "/swagger-ui/**",
+            "/users//verify-account/**"
     };
 
     @Bean

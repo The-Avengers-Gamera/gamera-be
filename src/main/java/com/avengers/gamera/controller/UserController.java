@@ -30,7 +30,7 @@ public class UserController {
         return userService.createUser(userPostDto);
     }
 
-    @PutMapping("/{id}/verify-account")
+    @PutMapping("/verify-account/{id}")
     public void verifyAccount(@PathVariable Long id){
         userService.verifyAccount(id);
 
