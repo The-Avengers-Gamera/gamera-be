@@ -50,7 +50,7 @@ public class Article {
     @OneToMany(mappedBy = "article")
     private List<Comment> commentList;
 
-    @ManyToMany(cascade = {CascadeType.MERGE})
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinTable(
             name = "article_tag",
             joinColumns = {@JoinColumn(name = "article_id")},

@@ -5,7 +5,7 @@ import com.avengers.gamera.dto.article.ArticleGetDto;
 import com.avengers.gamera.entity.Article;
 import com.avengers.gamera.mapper.ArticleMapper;
 import com.avengers.gamera.repository.ArticleRepository;
-import com.avengers.gamera.utils.MockArticleData;
+import com.avengers.gamera.util.MockArticleData;
 
 import com.avengers.gamera.dto.article.ArticlePostDto;
 import com.avengers.gamera.entity.Game;
@@ -95,14 +95,14 @@ class ArticleServiceTest {
         when(gameService.findActiveGame(articlePostDto.getGameId())).thenReturn(mockGame);
         when(articleMapper.articleToArticleGetDto(any())).thenReturn(mockArticleGetDto);
 
-        ArticleGetDto articleGetDto =  articleService.createArticle(articlePostDto);
+        ArticleGetDto articleGetDto =  articleService.createArticle(articlePostDto, EArticleType.NEWS, mockUser.getId());
 
         assertEquals(articleGetDto, mockArticleGetDto);
         verify(articleRepository).save(mockArticle);
     }
     ArticleGetDto ExpectUpdatedArticleGetDto = ArticleGetDto.builder().id(MockArticleData.articleId)
             .game(null)
-            .user(null)
+            .author(null)
             .commentList(new ArrayList<>())
             .coverImgUrl("url")
             .title("update title")
@@ -114,7 +114,7 @@ class ArticleServiceTest {
     private ArticleGetDto generateArticleGetDto(Article article){
         return  ArticleGetDto.builder().id(MockArticleData.articleId)
                 .game(null)
-                .user(null)
+                .author(null)
                 .commentList(new ArrayList<>())
                 .coverImgUrl(article.getCoverImgUrl())
                 .title(article.getTitle())

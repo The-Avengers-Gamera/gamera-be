@@ -1,4 +1,4 @@
-package com.avengers.gamera.utils;
+package com.avengers.gamera.util;
 
 import com.avengers.gamera.dto.game.GamePostDto;
 import com.avengers.gamera.entity.Game;
