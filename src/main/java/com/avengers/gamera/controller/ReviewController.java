@@ -1,9 +1,11 @@
 package com.avengers.gamera.controller;
 
+import com.avengers.gamera.constant.EArticleType;
 import com.avengers.gamera.dto.article.ArticleGetDto;
 import com.avengers.gamera.dto.article.ArticlePostDto;
 import com.avengers.gamera.dto.article.ArticlePutDto;
 import com.avengers.gamera.service.ArticleService;
+import com.avengers.gamera.util.CurrentUser;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,7 +29,7 @@ public class ReviewController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ArticleGetDto createReview(@RequestBody ArticlePostDto articlePostDto) {
-        return articleService.createArticle(articlePostDto);
+        return articleService.createArticle(articlePostDto, EArticleType.REVIEW, CurrentUser.getUserId());
     }
 
     @PutMapping("/{reviewId}")
