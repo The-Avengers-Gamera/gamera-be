@@ -11,6 +11,7 @@ import com.avengers.gamera.repository.ArticleRepository;
 import com.avengers.gamera.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;

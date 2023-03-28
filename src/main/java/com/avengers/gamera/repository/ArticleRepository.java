@@ -21,7 +21,13 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
     Optional<Article> findArticleByIdAndIsDeletedFalse(Long id);
 
-    Page<Article> findByAuthor(User user, Pageable pageable);
+    Page<Article> findArticlesByAuthor(User user, Pageable pageable);
+
+    @Query("select distinct a from Comment c inner join c.article a where c.user.id=:id and c.isDeleted = false")
+    Page<Article> findArticlesByCommentedUser(@Param("id") Long userId, Pageable pageable);
+
+    @Query("select distinct a from Article a inner join a.likeUsers l where l.id=:id and a.isDeleted = false")
+    Page<Article> findArticlesByLikedUser(@Param("id") Long userId, Pageable pageable);
 
     @Query("select distinct a from Article a " +
             "left join a.game g " +

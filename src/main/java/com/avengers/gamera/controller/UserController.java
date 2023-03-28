@@ -1,15 +1,12 @@
 package com.avengers.gamera.controller;
 
 import com.avengers.gamera.dto.PagingDto;
-import com.avengers.gamera.dto.article.ArticleGetDto;
 import com.avengers.gamera.dto.article.MiniArticleGetDto;
-import com.avengers.gamera.dto.comment.CommentGetDto;
 import com.avengers.gamera.dto.user.UserAddAuthorityDto;
 import com.avengers.gamera.dto.user.UserGetDto;
 import com.avengers.gamera.dto.user.UserPostDto;
 import com.avengers.gamera.dto.user.UserPutDto;
 import com.avengers.gamera.service.ArticleService;
-import com.avengers.gamera.service.LikeService;
 import com.avengers.gamera.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +22,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    private final LikeService likeService;
     private final ArticleService articleService;
 
     @PostMapping("/signup")
@@ -72,20 +68,24 @@ public class UserController {
         userService.emailExists(email);
     }
 
-    @GetMapping("/likes")
-    public List<ArticleGetDto> getLikeListForUser() {
-        return likeService.getLikeByUserId();
+    @GetMapping("/{userId}/likes")
+    public PagingDto<List<MiniArticleGetDto>> getLikedListByUser(@RequestParam(defaultValue = "1") int page,
+                                                                 @RequestParam(defaultValue = "10") int size,
+                                                                 @PathVariable Long userId) {
+        return articleService.getArticlesByLikeUserId(page, size, userId);
     }
 
-    @GetMapping("/comments")
-    public List<CommentGetDto> getCommentedForUser() {
-        return likeService.getCommented();
+    @GetMapping("/{userId}/comments")
+    public PagingDto<List<MiniArticleGetDto>> getCommentedListByUser(@RequestParam(defaultValue = "1") int page,
+                                                                     @RequestParam(defaultValue = "10") int size,
+                                                                     @PathVariable Long userId) {
+        return articleService.getArticlesByCommentUserId(page, size, userId);
     }
 
     @GetMapping("/{userId}/articles")
     public PagingDto<List<MiniArticleGetDto>> getArticlesListByAuthor(@RequestParam(defaultValue = "1") int page,
-                                                                     @RequestParam(defaultValue = "10") int size,
-                                                                     @PathVariable Long userId) {
+                                                                      @RequestParam(defaultValue = "10") int size,
+                                                                      @PathVariable Long userId) {
         return articleService.getArticlesByAuthorId(page, size, userId);
     }
 }
