@@ -39,11 +39,7 @@ jobs:
 
       - name: Build Code
         run: |
-          ./gradlew clean build
+          ./gradlew build
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
-        with:
-          language: java
-          # Adjust queries as needed
-          queries: ~/
