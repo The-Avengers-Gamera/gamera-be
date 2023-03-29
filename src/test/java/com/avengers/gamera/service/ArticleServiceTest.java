@@ -1,5 +1,6 @@
 package com.avengers.gamera.service;
 
+import com.avengers.gamera.constant.EArticleSort;
 import com.avengers.gamera.constant.EArticleType;
 import com.avengers.gamera.dto.PagingDto;
 import com.avengers.gamera.dto.article.ArticleGetDto;
@@ -7,6 +8,7 @@ import com.avengers.gamera.dto.article.MiniArticleGetDto;
 import com.avengers.gamera.dto.comment.CommentGetDto;
 import com.avengers.gamera.dto.tag.TagSlimDto;
 import com.avengers.gamera.dto.user.UserGetDto;
+import com.avengers.gamera.dto.user.UserSlimGetDto;
 import com.avengers.gamera.entity.*;
 import com.avengers.gamera.mapper.ArticleMapper;
 import com.avengers.gamera.mapper.CommentMapper;
@@ -16,8 +18,7 @@ import com.avengers.gamera.repository.ArticleRepository;
 import com.avengers.gamera.util.MockArticleData;
 
 import com.avengers.gamera.dto.article.ArticlePostDto;
-import com.avengers.gamera.utils.MockCommentData;
-import com.avengers.gamera.utils.MockUserData;
+import com.avengers.gamera.util.MockCommentData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,16 +26,15 @@ import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
+
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 
 import java.util.List;
 import java.util.Optional;
 
+import static com.avengers.gamera.util.SortHelper.getSortOrder;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -167,11 +167,9 @@ class ArticleServiceTest {
         return (Page) new PageImpl(articleList);
     }
 
-    private UserGetDto generateUserGetDto(User user){
-        return UserGetDto.builder().id(user.getId())
-                .name(user.getName())
-                .email(user.getEmail())
-                .updatedTime(user.getUpdatedTime()).build();
+    private UserSlimGetDto generateUserGetDto(User user){
+        return UserSlimGetDto.builder().id(user.getId())
+                .name(user.getName()).build();
     }
 
     private MiniArticleGetDto generateMiniArticleGetDto(Article article){
@@ -198,7 +196,7 @@ class ArticleServiceTest {
 
     @Test
     void getArticlePageTest() {
-        Pageable pageable = PageRequest.of(0, 10);
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "createdTime"));
         when(articleRepository.findArticlesByTypeAndIsDeletedFalse(MockArticleData.mockArticle.getType(), pageable)).thenReturn(generateMockArticlePage(MockArticleData.mockArticle));
         when(articleMapper.articleToMiniArticleGetDto(MockArticleData.mockArticle)).thenAnswer(new Answer<MiniArticleGetDto>() {
             @Override
@@ -207,7 +205,8 @@ class ArticleServiceTest {
                 return generateMiniArticleGetDto(article);
             }
         });
-        PagingDto<List<MiniArticleGetDto>> getArticlePageDto = articleService.getArticlePage(EArticleType.REVIEW, 1, 10, "all", "all");
+        String order = "desc";
+        PagingDto<List<MiniArticleGetDto>> getArticlePageDto = articleService.getArticlePage(EArticleType.REVIEW, 1, 10, "all", "all", EArticleSort.CREATED_TIME, getSortOrder(order));
         assertEquals(ExpectMiniArticleGetDto.getCommentNum(), getArticlePageDto.getData().get(0).getCommentNum());
         assertEquals(ExpectMiniArticleGetDto.getTitle(), getArticlePageDto.getData().get(0).getTitle());
     }
