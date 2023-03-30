@@ -49,6 +49,7 @@ public class UserService {
 
     private final String defaultAuthority = "ROLE_USER";
 
+
     public UserGetDto createUser(UserPostDto userPostDto) {
         String encodedPwd = passwordEncoder.encode(userPostDto.getPassword());
         User user = userMapper.userPostDtoToUser(userPostDto);
@@ -145,5 +146,4 @@ public class UserService {
         user.setIsDeleted(true);
         log.info(" User id {} was deleted", userId);
     }
-
 }

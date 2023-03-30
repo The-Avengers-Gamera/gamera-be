@@ -75,4 +75,12 @@ public class CommentService {
     public Comment find(Long commentId) {
         return commentRepository.findCommentByIdAndIsDeletedFalse(commentId).orElseThrow(() -> new ResourceNotFoundException("Comment", commentId));
     }
+
+    public int getUserCommentCount(Long userId) {
+        return commentRepository.countByUserIdAndIsDeletedFalse(userId);
+    }
+
+    public List<Long> getUserCommentedArticleIds(Long userId) {
+        return commentRepository.findArticleIdByUserIdAndIsDeletedFalse(userId);
+    }
 }
