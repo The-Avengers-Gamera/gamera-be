@@ -1,0 +1,105 @@
+pipeline {
+    agent {
+        //Use high performance node in GCP to build, test and deploy project
+        label "gcp_node"
+    }
+
+    stages {
+        stage("Git checkout") {
+            steps {
+                //Get the source code to workspace
+                echo "Getting the source code..."
+
+                git branch: "develop",
+                url: "https://github.com/The-Avengers-Gamera/gamera-be.git"
+            }
+        }
+
+        stage("Get credentials") {
+            steps {
+                //Get credentials from AWS secrets manager and store as environment variables
+                echo "Getting backend's credentials"
+
+                script {
+                    def secretJson = sh(
+                        script: """
+                            aws secretsmanager get-secret-value \
+                                --secret-id dev-gamera-backend-credentials \
+                                --query SecretString \
+                                --output text
+                            """,
+                        returnStdout: true
+                    ).trim()
+
+                    def secretMap = readJSON text: secretJson
+
+                    env.endpoint = secretMap["endpoint"]
+                    env.username = secretMap["username"]
+                    env.password = secretMap["password"]
+                    env.ecr_registry_id = secretMap["ecr-registry-id"]
+                }
+            }
+        }
+
+        stage("Test") {
+            steps {
+                //Apply unit test
+                echo "Testing..."
+                sh "./gradlew clean test"
+            }
+        }
+
+        stage("Build") {
+            steps {
+                //Build the project
+                echo "Building project..."
+                sh "./gradlew build"
+            }
+        }
+
+        stage("Deploy") {
+            steps {
+                echo "Deploying..."
+                
+                //Generate docker image from Dockerfile
+                sh "sudo docker build --build-arg DB_ENDPOINT=${env.endpoint} \
+                    --build-arg DB_USERNAME=${env.username} \
+                    --build-arg DB_PASSWORD='${env.password}' -t gamera-service ."
+
+                //Authenticate Docker client to ECR repository
+                sh "aws ecr get-login-password --region ap-southeast-2 | docker login \
+                    --username AWS --password-stdin ${env.ecr_registry_id}.dkr.ecr.ap-southeast-2.amazonaws.com"
+
+                //Tag the docker built, one for version tag, one for latest tag
+                sh "docker tag gamera-service ${env.ecr_registry_id}.dkr.ecr.ap-southeast-2.amazonaws.com/dev-gamera-repo:${BUILD_NUMBER}"
+                sh "docker tag gamera-service ${env.ecr_registry_id}.dkr.ecr.ap-southeast-2.amazonaws.com/dev-gamera-repo:latest"
+
+                //push the Dockerfile to ECR
+                sh "docker push ${env.ecr_registry_id}.dkr.ecr.ap-southeast-2.amazonaws.com/dev-gamera-repo:${BUILD_NUMBER}"
+                sh "docker push ${env.ecr_registry_id}.dkr.ecr.ap-southeast-2.amazonaws.com/dev-gamera-repo:latest"
+
+                //Redeploy the service to ECS cluster with new task defination
+                sh "aws ecs update-service --cluster dev-gamera-ecs-cluster --service dev-gamera-service --force-new-deployment"
+            }
+        }
+    }
+
+    post {
+        always {
+            //Clean the workspace after every pipeline build process
+            echo "Cleaning workspace"
+
+            sh "docker images gamera-service -q | xargs docker image rm -f"
+            cleanWs()
+        }
+
+        failure {
+            echo "Build fail, sending error message for debugging"
+
+            // Send error messages to DevOps engineer for debugging
+            mail to: "yyaug99@gmail.com",
+            subject: "Pipeline build fails in: ${currentBuild.fullDisplayName}",
+            body: "Build failed in ${env.BUILD_URL}"
+        }
+    }
+}
