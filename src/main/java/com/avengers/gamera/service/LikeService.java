@@ -54,6 +54,7 @@ public class LikeService {
         userRepository.save(user);
         article.getLikeUsers().add(user);
         article.setLikeUsers(article.getLikeUsers());
+        article.setLikeNum(article.getLikeNum()+1);
         articleRepository.save(article);
         log.info("Successfully create new like: userId {} articleId {}",user.getId(),articleId);
     }
