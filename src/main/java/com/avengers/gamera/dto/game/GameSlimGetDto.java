@@ -12,5 +12,6 @@ import lombok.Setter;
 public class GameSlimGetDto {
     private Long id;
     private String name;
+    private String imgUrl;
     private double scores;
 }

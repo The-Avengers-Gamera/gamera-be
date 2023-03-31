@@ -7,6 +7,7 @@ import com.avengers.gamera.dto.article.ArticleGetDto;
 import com.avengers.gamera.dto.article.MiniArticleGetDto;
 import com.avengers.gamera.service.ArticleService;
 import com.avengers.gamera.service.LikeService;
+import com.avengers.gamera.util.CurrentUser;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,7 +29,8 @@ public class ArticleController {
     @GetMapping("/{articleId}")
     @ResponseStatus(HttpStatus.OK)
     public ArticleGetDto getArticleById(@PathVariable Long articleId) {
-        return articleService.getArticleById(articleId);
+        Long currentUserId = CurrentUser.getUserId();
+        return articleService.getArticleById(articleId, currentUserId);
     }
 
     @GetMapping("/news")
@@ -78,7 +80,7 @@ public class ArticleController {
     }
 
     @DeleteMapping("/{articleId}/like")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteLike(@PathVariable Long articleId) {
         likeService.deleteLike(articleId);
     }
