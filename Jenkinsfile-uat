@@ -4,25 +4,48 @@ pipeline {
         label 'gcp_node'
     }
 
-    environment {
-        //Pass in environmental variables
-        //The credentials are stored in Jenkins credentials
-        DB_URL = credentials('RICHARD_UAT_DB_URL')
-        DB_USERNAME = credentials('RICHARD_UAT_DB_USERNAME')
-        DB_PASSWORD = credentials('RICHARD_UAT_DB_PASSWORD')
-        ECR_TOKEN = credentials('RICHARD_UAT_ECR_TOKEN')
-        ECR_REPO_NAME = credentials('RICHARD_UAT_ECR_NAME')
-        ECS_CLUSTER_NAME = credentials('RICHARD_UAT_ECS_CLUSTER')
-        ECS_SERVICE_NAME = credentials('RICHARD_UAT_ECS_SERVICE')
-    }
-
     stages {
         stage('Git checkout') {
             steps {
                 //Get the source code to workspace
                 echo 'Getting the source code...'
-                git branch: 'devops-richard',
+
+                git branch: 'develop',
                 url: 'https://github.com/The-Avengers-Gamera/gamera-be.git'
+            }
+        }
+
+        stage('Get credentials') {
+            steps {
+                //Get credentials from AWS secrets manager and store as environment variables
+                echo 'Getting backend\'s credentials'
+
+                script {
+                    def secretJson = sh(
+                        script: """
+                            aws secretsmanager get-secret-value \
+                                --secret-id dev-gamera-backend-credentials \
+                                --query SecretString \
+                                --output text
+                            """,
+                        returnStdout: true
+                    ).trim()
+
+                    def secretMap = readJSON text: secretJson
+
+                    env.endpoint = secretMap['endpoint']
+                    env.username = secretMap['username']
+                    env.password = secretMap['password']
+                    env.ecr-registry-id = secretMap['ecr-registry-id']
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                //Apply unit test
+                echo 'Testing...'
+                sh './gradlew clean test'
             }
         }
 
@@ -34,38 +57,31 @@ pipeline {
             }
         }
 
-        stage('Test') {
-            steps {
-                //Unit test to check if testcases can be passed
-                echo 'Testing...'
-                sh './gradlew clean test'
-            }
-        }
+        
 
         stage('Deploy') {
             steps {
                 echo 'Deploying...'
                 
                 //Generate docker image from Dockerfile
-                sh 'sudo docker build --build-arg DB_URL=${DB_URL} \
-                    --build-arg DB_USERNAME=${DB_USERNAME} \
-                    --build-arg DB_PASSWORD=${DB_PASSWORD} -t gamera-service .'
+                sh 'sudo docker build --build-arg DB_ENDPOINT=${env.endpoint} \
+                    --build-arg DB_USERNAME=${env.username} \
+                    --build-arg DB_PASSWORD=${env.password} -t gamera-service .'
 
                 //Authenticate Docker client to ECR repository
                 sh 'aws ecr get-login-password --region ap-southeast-2 | docker login \
-                    --username AWS --password-stdin ${ECR_TOKEN}'
+                    --username AWS --password-stdin ${env.ecr-registry-id}.dkr.ecr.ap-southeast-2.amazonaws.com'
 
                 //Tag the docker built, one for version tag, one for latest tag
-                sh 'docker tag gamera-service ${ECR_TOKEN}/${ECR_REPO_NAME}:${BUILD_NUMBER}'
-                sh 'docker tag gamera-service ${ECR_TOKEN}/${ECR_REPO_NAME}:latest'
+                sh 'docker tag gamera-service ${env.ecr-registry-id}.dkr.ecr.ap-southeast-2.amazonaws.com/dev-gamera-repo:${BUILD_NUMBER}'
+                sh 'docker tag gamera-service ${env.ecr-registry-id}.dkr.ecr.ap-southeast-2.amazonaws.com/dev-gamera-repo:latest'
 
                 //push the Dockerfile to ECR
-                sh 'docker push ${ECR_TOKEN}/${ECR_REPO_NAME}:${BUILD_NUMBER}'
-                sh 'docker push ${ECR_TOKEN}/${ECR_REPO_NAME}:latest'
+                sh 'docker push ${env.ecr-registry-id}.dkr.ecr.ap-southeast-2.amazonaws.com/dev-gamera-repo:${BUILD_NUMBER}'
+                sh 'docker push ${env.ecr-registry-id}.dkr.ecr.ap-southeast-2.amazonaws.com/dev-gamera-repo:latest'
 
                 //Redeploy the service to ECS cluster with new task defination
-                sh 'aws ecs update-service --cluster ${ECS_CLUSTER_NAME} \
-                    --service ${ECS_SERVICE_NAME} --force-new-deployment'
+                sh 'aws ecs update-service --cluster dev-gamera-ecs-cluster --service dev-gamera-service --force-new-deployment'
             }
         }
     }
@@ -74,6 +90,7 @@ pipeline {
         always {
             //Clean the workspace after every pipeline build process
             echo 'Cleaning workspace'
+
             sh 'docker images gamera-service -q | xargs docker image rm -f'
             cleanWs()
         }

@@ -6,7 +6,7 @@ server:
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${DB_URL}:5432/postgres?currentSchema=gamera
+    url: jdbc:postgresql://${DB_ENDPOINT}/postgres?currentSchema=gamera
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
   flyway:
