@@ -9,6 +9,7 @@ import com.avengers.gamera.dto.user.UserPutDto;
 import com.avengers.gamera.service.ArticleService;
 import com.avengers.gamera.dto.user.*;
 import com.avengers.gamera.service.UserService;
+import com.avengers.gamera.util.CurrentUser;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -54,9 +55,10 @@ public class UserController {
         return userService.getUserInfoByToken();
     }
 
-    @PutMapping("{userId}")
-    public UserGetDto updateUser(@Valid @RequestBody UserPutDto userPutDto, @PathVariable Long userId) {
-        return userService.updateUser(userPutDto, userId);
+    @PutMapping
+    public UserGetDto updateUser(@Valid @RequestBody UserPutDto userPutDto) {
+        Long currentUserId = CurrentUser.getUserId();
+        return userService.updateUser(userPutDto, currentUserId);
     }
 
     @DeleteMapping("{userId}")
