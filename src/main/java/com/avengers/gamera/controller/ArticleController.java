@@ -78,7 +78,7 @@ public class ArticleController {
     }
 
     @DeleteMapping("/{articleId}/like")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteLike(@PathVariable Long articleId) {
         likeService.deleteLike(articleId);
     }

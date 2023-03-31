@@ -24,6 +24,7 @@ import com.avengers.gamera.mapper.TagMapper;
 import com.avengers.gamera.mapper.UserMapper;
 import com.avengers.gamera.repository.ArticleRepository;
 import com.avengers.gamera.repository.CommentRepository;
+import com.avengers.gamera.util.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -160,6 +161,11 @@ public class ArticleService {
         ArticleGetDto articleGetDto = articleMapper.articleToArticleGetDto(article);
         articleGetDto.setCommentList(allParentComments);
         articleGetDto.setTagList(tagSlimDtoList);
+        Long currentId = CurrentUser.getUserId();
+        if (currentId != null) {
+            List<Long> likeUsersId = article.getLikeUsers().stream().map(User::getId).toList();
+            articleGetDto.setCurrentUserLiked(likeUsersId.contains(currentId));
+        }
         //For LikeNum
         articleGetDto.setLikeNum(likeService.getLikeNumByArticleId(articleId));
         return articleGetDto;
