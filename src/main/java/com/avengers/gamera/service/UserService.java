@@ -65,7 +65,7 @@ public class UserService {
         User savedUser=userRepository.save(user);
         List<String> authoritiesList= savedUser.getAuthorities().stream().map(Authority::getName).toList();
         System.out.println(jwtService.createJWT(savedUser.getEmail(), authoritiesList,savedUser.getId(), secretKey));
-//        sendEmail(savedUser.getEmail(),savedUser.getId(), secretKey);
+        sendEmail(savedUser.getEmail(),savedUser.getId(), secretKey);
         return userMapper.userToUserGetDto(savedUser);
     }
 
