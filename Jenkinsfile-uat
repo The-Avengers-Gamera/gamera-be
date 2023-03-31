@@ -10,7 +10,7 @@ pipeline {
                 //Get the source code to workspace
                 echo 'Getting the source code...'
 
-                git branch: 'develop',
+                git branch: 'devops-richard',
                 url: 'https://github.com/The-Avengers-Gamera/gamera-be.git'
             }
         }
@@ -36,7 +36,7 @@ pipeline {
                     env.endpoint = secretMap['endpoint']
                     env.username = secretMap['username']
                     env.password = secretMap['password']
-                    env.ecr-registry-id = secretMap['ecr-registry-id']
+                    env.ecr_registry_id = secretMap['ecr-registry-id']
                 }
             }
         }
@@ -70,15 +70,15 @@ pipeline {
 
                 //Authenticate Docker client to ECR repository
                 sh 'aws ecr get-login-password --region ap-southeast-2 | docker login \
-                    --username AWS --password-stdin ${env.ecr-registry-id}.dkr.ecr.ap-southeast-2.amazonaws.com'
+                    --username AWS --password-stdin ${env.ecr_registry_id}.dkr.ecr.ap-southeast-2.amazonaws.com'
 
                 //Tag the docker built, one for version tag, one for latest tag
-                sh 'docker tag gamera-service ${env.ecr-registry-id}.dkr.ecr.ap-southeast-2.amazonaws.com/dev-gamera-repo:${BUILD_NUMBER}'
-                sh 'docker tag gamera-service ${env.ecr-registry-id}.dkr.ecr.ap-southeast-2.amazonaws.com/dev-gamera-repo:latest'
+                sh 'docker tag gamera-service ${env.ecr_registry_id}.dkr.ecr.ap-southeast-2.amazonaws.com/dev-gamera-repo:${BUILD_NUMBER}'
+                sh 'docker tag gamera-service ${env.ecr_registry_id}.dkr.ecr.ap-southeast-2.amazonaws.com/dev-gamera-repo:latest'
 
                 //push the Dockerfile to ECR
-                sh 'docker push ${env.ecr-registry-id}.dkr.ecr.ap-southeast-2.amazonaws.com/dev-gamera-repo:${BUILD_NUMBER}'
-                sh 'docker push ${env.ecr-registry-id}.dkr.ecr.ap-southeast-2.amazonaws.com/dev-gamera-repo:latest'
+                sh 'docker push ${env.ecr_registry_id}.dkr.ecr.ap-southeast-2.amazonaws.com/dev-gamera-repo:${BUILD_NUMBER}'
+                sh 'docker push ${env.ecr_registry_id}.dkr.ecr.ap-southeast-2.amazonaws.com/dev-gamera-repo:latest'
 
                 //Redeploy the service to ECS cluster with new task defination
                 sh 'aws ecs update-service --cluster dev-gamera-ecs-cluster --service dev-gamera-service --force-new-deployment'
