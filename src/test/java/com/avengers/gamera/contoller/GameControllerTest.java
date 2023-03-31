@@ -1,8 +1,8 @@
 package com.avengers.gamera.contoller;
 
+import com.avengers.gamera.dto.game.GameGenrePostDto;
 import com.avengers.gamera.dto.game.GamePostDto;
 import com.avengers.gamera.dto.game.GameUpdateDto;
-import com.avengers.gamera.entity.Genre;
 import com.avengers.gamera.repository.GameRepository;
 import com.avengers.gamera.service.GameService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,7 +16,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.Instant;
-import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -24,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 public class GameControllerTest {
 
     @Autowired
@@ -50,21 +49,23 @@ public class GameControllerTest {
         gameRepository.deleteAll();
         gameRepository.flush();
 
-        Genre mockGenre1 = Genre.builder().id(1L).name("HH").createdTime(OffsetDateTime.now()).updatedTime(OffsetDateTime.now()).build();
-        Genre mockGenre2 = Genre.builder().id(1L).name("ZZ").createdTime(OffsetDateTime.now()).updatedTime(OffsetDateTime.now()).build();
-        Genre mockGenre3 = Genre.builder().id(1L).name("MM").createdTime(OffsetDateTime.now()).updatedTime(OffsetDateTime.now()).build();
-        List<Genre> genreList = List.of(mockGenre1, mockGenre2);
-        List<Genre> updateGenreList = List.of(mockGenre1, mockGenre2, mockGenre3);
+        GameGenrePostDto mockGenre1 = GameGenrePostDto.builder().id(1L).name("HH").build();
+        GameGenrePostDto mockGenre2 = GameGenrePostDto.builder().id(1L).name("ZZ").build();
+        GameGenrePostDto mockGenre3 = GameGenrePostDto.builder().id(1L).name("MM").build();
+        List<GameGenrePostDto> genreList = List.of(mockGenre1, mockGenre2);
+        List<GameGenrePostDto> updateGenreList = List.of(mockGenre1, mockGenre2, mockGenre3);
+
+
         Date releaseDate = Date.from(Instant.ofEpochSecond(2022 - 3 - 29));
 
         mockGamePostDto = GamePostDto.builder().name("Cn").country("d").description("ss").platform("DD")
-                .publishers("dd").scores(2.3).releaseDate(releaseDate).genreList(genreList).introduction("sdd").developers("hh").build();
+                .publishers("dd").scores(2.3).releaseDate(releaseDate).gameGenrePostDtoList(genreList).introduction("sdd").developers("hh").build();
 
         mockGameUpdateDto = GameUpdateDto.builder().name("Au").country("d").description("ss").platform("DD")
                 .publishers("dd").scores(2.3).releaseDate(releaseDate).introduction("sdd").developers("hh")
-                .genreList(updateGenreList).build();
+                .gameGenrePostDtoList(updateGenreList).build();
 
-        mockGameId = gameService.createGame(GamePostDto.builder().name("any").country("Au").genreList(genreList).build()).getId();
+        mockGameId = gameService.createGame(GamePostDto.builder().name("any").country("Au").gameGenrePostDtoList(genreList).build()).getId();
     }
 
     @Test
@@ -92,7 +93,6 @@ public class GameControllerTest {
                         .content(objectMapper.writeValueAsString(mockGameUpdateDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Au"));
-
     }
 
     @Test

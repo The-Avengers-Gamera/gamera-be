@@ -1,5 +1,6 @@
 package com.avengers.gamera.dto.game;
 
+
 import com.avengers.gamera.entity.Genre;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +24,7 @@ public class GameGetDto {
     private Double scores;
     private String developers;
     private String publishers;
+    private String imgUrl;
     private String introduction;
     private String description;
     private OffsetDateTime createdTime;

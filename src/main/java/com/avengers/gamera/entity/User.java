@@ -53,6 +53,19 @@ public class User {
     @JoinColumn(name = "author_id")
     private List<Article> articles;
 
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id")
+    private List<Comment> comments;
+
+
     @Builder.Default
     private Boolean isDeleted = false;
+
+    @ManyToMany(cascade = {CascadeType.MERGE})
+    @JoinTable(
+            name = "user_likes_article",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "article_id")
+    )
+    List<Article> likedArticles;
 }

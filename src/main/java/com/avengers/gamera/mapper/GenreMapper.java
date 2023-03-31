@@ -1,5 +1,6 @@
 package com.avengers.gamera.mapper;
 
+import com.avengers.gamera.dto.genre.GenreGetDto;
 import com.avengers.gamera.dto.genre.GenrePostDto;
 import com.avengers.gamera.entity.Genre;
 import org.mapstruct.Mapper;
@@ -10,5 +11,7 @@ public interface GenreMapper {
     Genre GenrePostDtoToGenre(GenrePostDto genrePostDto);
 
     GenrePostDto GenreToGenrePostDto(Genre genre);
+
+    GenreGetDto GenreToGenreGetDto (Genre genre);
 
 }

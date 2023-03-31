@@ -1,0 +1,2 @@
+ALTER TABLE "article" ADD subtitle VARCHAR(255);
+ALTER TABLE "game" ADD img_url VARCHAR(255) NOT NULL;

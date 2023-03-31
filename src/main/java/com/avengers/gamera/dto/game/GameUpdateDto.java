@@ -1,10 +1,7 @@
 package com.avengers.gamera.dto.game;
 
-import com.avengers.gamera.entity.Genre;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+
+import lombok.*;
 
 import javax.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
@@ -15,6 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class GameUpdateDto {
 
     private Long id;
@@ -28,7 +26,10 @@ public class GameUpdateDto {
 
     @NotNull
     private String country;
+
     private Boolean isDeleted;
+
+    private String imgUrl;
 
     @NotNull
     private Double scores;
@@ -45,7 +46,7 @@ public class GameUpdateDto {
     @NotNull
     private String description;
 
-    private List<Genre> genreList;
+    private List<GameGenrePostDto> gameGenrePostDtoList;
 
     private OffsetDateTime createdTime;
 

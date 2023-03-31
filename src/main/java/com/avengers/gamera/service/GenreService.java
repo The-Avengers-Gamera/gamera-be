@@ -1,5 +1,7 @@
 package com.avengers.gamera.service;
 
+import com.avengers.gamera.dto.game.GameGenrePostDto;
+import com.avengers.gamera.dto.genre.GenreGetDto;
 import com.avengers.gamera.dto.genre.GenrePostDto;
 import com.avengers.gamera.dto.genre.GenreUpdateDto;
 import com.avengers.gamera.entity.Genre;
@@ -18,27 +20,30 @@ public class GenreService {
     private final GenreRepository genreRepository;
     private final GenreMapper genreMapper;
 
-    public Genre createGenre(GenrePostDto genrePostDto) {
+    public GenreGetDto createGenre(GenrePostDto genrePostDto) {
         Genre genre = genreMapper.GenrePostDtoToGenre(genrePostDto);
-        return genreRepository.save(genre);
+        return genreMapper.GenreToGenreGetDto(genreRepository.save(genre));
     }
 
-    public List<Genre> createMultipleGenre(List<GenrePostDto> genrePostDtoList) {
-        List<Genre> genreList = genrePostDtoList.stream().map(genreMapper::GenrePostDtoToGenre).toList();
+    public List<Genre> createMultipleGenre(List<String> nameList) {
+
+        List<GenrePostDto> genrePostDtoList = nameList.stream().map(item->GenrePostDto.builder().name(item).build()).toList();
+        List<Genre> genreList=genrePostDtoList.stream().map(genreMapper::GenrePostDtoToGenre).toList();
         return genreRepository.saveAll(genreList);
     }
+
 
     public Genre getGenre(Long id) {
         return findGenre(id);
     }
 
-    public List<Genre> saveAllGenre(List<Genre> genreNames) {
-        List<GenrePostDto> genrePostDtoList = genreNames.stream().map(genreMapper::GenreToGenrePostDto).toList();
+    public List<Genre> saveAllGenre(List<GameGenrePostDto> genreNames) {
+        List<String> genrePostDtoList = genreNames.stream().map(GameGenrePostDto::getName).toList();
         return createMultipleGenre(genrePostDtoList);
     }
 
-    public List<Genre> getAllGenre(List<Genre> genreNames) {
-        List<Long> genreIdList = genreNames.stream().map(Genre::getId).toList();
+    public List<Genre> getAllGenre(List<GameGenrePostDto> genreNames) {
+        List<Long> genreIdList = genreNames.stream().map(GameGenrePostDto::getId).toList();
         return genreRepository.findAllById(genreIdList);
     }
 
