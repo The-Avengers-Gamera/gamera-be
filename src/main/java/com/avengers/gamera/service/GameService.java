@@ -103,4 +103,9 @@ public class GameService {
         Game game = findActiveGame(id);
         return gameMapper.GameToGameGetDto(game);
     }
+
+    public List<GameGetDto> getAllGames(){
+        List<Game> games = gameRepository.findAll();
+        return games.stream().map(gameMapper::GameToGameGetDto).collect(Collectors.toList());
+    }
 }
