@@ -1,4 +1,4 @@
-package com.avengers.gamera.utils;
+package com.avengers.gamera.util;
 
 import com.avengers.gamera.dto.user.UserPostDto;
 import com.avengers.gamera.entity.User;

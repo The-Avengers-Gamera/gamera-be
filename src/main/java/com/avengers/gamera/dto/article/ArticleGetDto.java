@@ -22,7 +22,7 @@ import java.util.List;
 public class ArticleGetDto {
     private Long id;
     private GameSlimGetDto game;
-    private UserSlimGetDto user;
+    private UserSlimGetDto author;
     private List<CommentGetDto> commentList;
     private String coverImgUrl;
     private String title;
@@ -31,4 +31,6 @@ public class ArticleGetDto {
     private EArticleType type;
     private OffsetDateTime createdTime;
     private OffsetDateTime updatedTime;
+    private int likeNum;
+    private int commentNum;
 }

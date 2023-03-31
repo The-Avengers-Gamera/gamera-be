@@ -1,12 +1,14 @@
 package com.avengers.gamera.entity;
 
 import com.avengers.gamera.constant.EArticleType;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -21,7 +23,7 @@ public class Article {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id")
     private Game game;
 
@@ -38,6 +40,9 @@ public class Article {
     @Column
     private String text;
 
+    @Column
+    private int likeNum;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private EArticleType type;
@@ -45,15 +50,15 @@ public class Article {
     @OneToMany(mappedBy = "article")
     private List<Comment> commentList;
 
-    @ManyToMany(cascade = {CascadeType.MERGE})
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinTable(
             name = "article_tag",
             joinColumns = {@JoinColumn(name = "article_id")},
             inverseJoinColumns = {@JoinColumn(name = "tag_id")})
     private List<Tag> tagList;
 
-    @Transient
-    private int commentsNum;
+    @Column(name = "comment_num")
+    private int commentNum;
 
     @Column(name = "is_deleted")
     @Builder.Default
@@ -67,7 +72,8 @@ public class Article {
     @UpdateTimestamp
     private OffsetDateTime updatedTime;
 
-    public int getCommentsNum() {
-        return this.commentList.size();
-    }
+    @ManyToMany(mappedBy = "likedArticles")
+    @Builder.Default
+    @JsonBackReference
+    List<User> likeUsers= new ArrayList<>();
 }

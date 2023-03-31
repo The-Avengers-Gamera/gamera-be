@@ -1,15 +1,25 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:testdb
+    url: jdbc:h2:mem:testdb;NON_KEYWORDS=user
     driver-class-name: org.h2.Driver
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     properties:
       hibernate:
         default_schema: PUBLIC
-    show-sql: false
+        format_sql: true
+    show-sql: true
   flyway:
     enabled: false
+
+system-param:
+  aws-active: true
+  base-url: http://localhost:8080/api/v1
+  sender-email:
+  aws-secret-key:
+  aws-access-key:
+  sign-in-jwt-expired-minute: 3600
+
 cors:
   allowed-origins: "*"
   allowed-methods: "*"

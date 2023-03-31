@@ -17,7 +17,6 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class ArticlePostDto{
-
     private String coverImgUrl;
 
     private Long gameId;

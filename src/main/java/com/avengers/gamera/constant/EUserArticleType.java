@@ -1,12 +1,13 @@
 package com.avengers.gamera.constant;
 
-public enum EArticleType {
-    NEWS("news"),
-    REVIEW("reviews");
+public enum EUserArticleType {
+    LIKES("likes"),
+    COMMENTS("comments"),
+    POSTS("posts");
 
     private final String name;
 
-    EArticleType(String name) {
+    EUserArticleType(String name) {
         this.name = name;
     }
 
@@ -15,7 +16,7 @@ public enum EArticleType {
     }
 
     public static String getEnumByString(String type) {
-        for (EArticleType e : EArticleType.values()) {
+        for (EUserArticleType e : EUserArticleType.values()) {
             if (e.name.equals(type)) return e.name();
         }
         return null;

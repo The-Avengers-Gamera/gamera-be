@@ -1,10 +1,7 @@
 package com.avengers.gamera.dto.game;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -15,6 +12,7 @@ import java.util.List;
 @Setter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class GamePostDto {
 
     @NotBlank
@@ -36,6 +34,8 @@ public class GamePostDto {
     private String introduction;
 
     private String description;
+
+    private String imgUrl;
 
     private List<GameGenrePostDto> gameGenrePostDtoList;
 

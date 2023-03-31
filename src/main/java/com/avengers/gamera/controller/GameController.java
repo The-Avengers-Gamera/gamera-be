@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -35,5 +36,10 @@ public class GameController {
     @DeleteMapping("/{id}")
     public String deleteGame(@PathVariable Long id) {
         return gameService.deleteGame(id);
+    }
+
+    @GetMapping
+    public List<GameGetDto> getGames(){
+        return gameService.getAllGames();
     }
 }

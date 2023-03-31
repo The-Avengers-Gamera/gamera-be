@@ -24,6 +24,15 @@ spring:
         format_sql: true
     show-sql: true
 
+system-param:
+  aws-active: true
+  base-url: http://localhost:8080/api/v1
+  sender-email:
+  aws-secret-key:
+  aws-access-key:
+  sign-in-jwt-expired-minute: 3600
+
+
 cors:
   allowed-origins: "*"
   allowed-methods: "*"
