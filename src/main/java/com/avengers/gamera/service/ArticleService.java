@@ -6,8 +6,8 @@ import com.avengers.gamera.constant.EUserArticleType;
 import com.avengers.gamera.dto.PagingDto;
 import com.avengers.gamera.dto.article.ArticleGetDto;
 import com.avengers.gamera.dto.article.ArticlePostDto;
-import com.avengers.gamera.dto.article.MiniArticleGetDto;
 import com.avengers.gamera.dto.article.ArticlePutDto;
+import com.avengers.gamera.dto.article.MiniArticleGetDto;
 import com.avengers.gamera.dto.comment.CommentGetDto;
 import com.avengers.gamera.dto.comment.CommentSlimDto;
 import com.avengers.gamera.dto.tag.TagSlimDto;
@@ -24,7 +24,6 @@ import com.avengers.gamera.mapper.TagMapper;
 import com.avengers.gamera.mapper.UserMapper;
 import com.avengers.gamera.repository.ArticleRepository;
 import com.avengers.gamera.repository.CommentRepository;
-import com.avengers.gamera.util.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -135,7 +134,7 @@ public class ArticleService {
         );
     }
 
-    public ArticleGetDto getArticleById(Long articleId) {
+    public ArticleGetDto getArticleById(Long articleId, Long currentId) {
         Article article = findById(articleId);
         List<Comment> allResults = article.getCommentList().stream().filter(item -> !item.getIsDeleted()).toList();
         List<CommentGetDto> allParentComments = allResults.stream()
@@ -161,7 +160,6 @@ public class ArticleService {
         ArticleGetDto articleGetDto = articleMapper.articleToArticleGetDto(article);
         articleGetDto.setCommentList(allParentComments);
         articleGetDto.setTagList(tagSlimDtoList);
-        Long currentId = CurrentUser.getUserId();
         if (currentId != null) {
             List<Long> likeUsersId = article.getLikeUsers().stream().map(User::getId).toList();
             articleGetDto.setCurrentUserLiked(likeUsersId.contains(currentId));

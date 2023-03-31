@@ -19,6 +19,7 @@ import com.avengers.gamera.util.MockArticleData;
 
 import com.avengers.gamera.dto.article.ArticlePostDto;
 import com.avengers.gamera.util.MockCommentData;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -222,6 +223,7 @@ class ArticleServiceTest {
     }
 
     @Test
+    @DisplayName("Not logged in user get article by article id")
     void getArticleByIdTest() {
         when(articleRepository.findArticleByIdAndIsDeletedFalse(any())).thenReturn(Optional.ofNullable(MockArticleData.mockArticle));
         when(commentMapper.commentToCommentGetDto(any())).thenReturn(generateCommentGetDto(MockCommentData.mockComment));
@@ -233,7 +235,7 @@ class ArticleServiceTest {
                 return generateArticleGetDto (article);
             }
         });
-        ArticleGetDto articleGetDto = articleService.getArticleById(MockArticleData.articleId);
+        ArticleGetDto articleGetDto = articleService.getArticleById(MockArticleData.articleId, null);
         assertEquals("update title", articleGetDto.getTitle());
         assertEquals("update text", articleGetDto.getText());
     }
