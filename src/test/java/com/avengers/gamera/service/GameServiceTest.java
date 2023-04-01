@@ -8,6 +8,7 @@ import com.avengers.gamera.entity.Game;
 import com.avengers.gamera.entity.Genre;
 import com.avengers.gamera.mapper.GameMapper;
 import com.avengers.gamera.repository.GameRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -79,6 +80,12 @@ public class GameServiceTest {
             .build();
 
 
+    @BeforeEach
+    void clean() {
+        gameRepository.deleteAll();
+        gameRepository.flush();
+    }
+
     @Test
     void shouldSaveNewGameInGameRpoWhenCreateGame() {
         when(genreService.getAllGenre(gamePostDto.getGameGenrePostDtoList())).thenReturn(List.of(mockGenre));
@@ -116,5 +123,10 @@ public class GameServiceTest {
 
         String delete = gameService.deleteGame(id);
         assertEquals(delete, "Delete successfully");
+    }
+
+    @Test
+    void shouldGetRandomGame() {
+
     }
 }

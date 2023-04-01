@@ -40,4 +40,13 @@ cors:
   exposed-headers: "*"
 
 jwt:
-  secretKey: "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDZ5QIeI0ioHDYGU0RMwGti6Z9/2SReCeFnYZJY5xsbFWRiU"
+  secret-key: "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDZ5QIeI0ioHDYGU0RMwGti6Z9/2SReCeFnYZJY5xsbFWRiU"
+
+open-ai:
+  api-key: "fake-token"
+  model: "text-davinci-003"
+  max-token: 2000
+  temperature: 0.5
+  top-p: 1
+  frequency-penalty: 0
+  presence-penalty: 0

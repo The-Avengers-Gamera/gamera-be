@@ -3,6 +3,7 @@ package com.avengers.gamera.service;
 import com.avengers.gamera.dto.game.GameGenrePostDto;
 import com.avengers.gamera.dto.game.GameGetDto;
 import com.avengers.gamera.dto.game.GamePostDto;
+import com.avengers.gamera.dto.game.GameSlimGetDto;
 import com.avengers.gamera.dto.game.GameUpdateDto;
 import com.avengers.gamera.entity.Game;
 import com.avengers.gamera.entity.Genre;
@@ -107,5 +108,9 @@ public class GameService {
     public List<GameGetDto> getAllGames(){
         List<Game> games = gameRepository.findAll();
         return games.stream().map(gameMapper::GameToGameGetDto).collect(Collectors.toList());
+    }
+
+    public GameSlimGetDto getRandomGame(){
+        return gameMapper.GameToGameSlimGetDto(gameRepository.getRandomGame());
     }
 }

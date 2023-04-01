@@ -2,6 +2,7 @@ package com.avengers.gamera.controller;
 
 import com.avengers.gamera.dto.game.GameGetDto;
 import com.avengers.gamera.dto.game.GamePostDto;
+import com.avengers.gamera.dto.game.GameSlimGetDto;
 import com.avengers.gamera.dto.game.GameUpdateDto;
 import com.avengers.gamera.service.GameService;
 import lombok.AllArgsConstructor;
@@ -41,5 +42,10 @@ public class GameController {
     @GetMapping
     public List<GameGetDto> getGames(){
         return gameService.getAllGames();
+    }
+
+    @GetMapping("/random")
+    public GameSlimGetDto getRandGame(){
+        return gameService.getRandomGame();
     }
 }

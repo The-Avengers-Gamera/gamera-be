@@ -18,4 +18,8 @@ public interface GameRepository extends JpaRepository<Game, Long> {
 
     Optional<Game> findGameByIdAndIsDeletedFalse(Long id);
 
+    @Query(value = "SELECT * FROM game WHERE is_deleted=false " +
+            "OFFSET floor(random() * (SELECT COUNT(*) FROM game)) LIMIT 1;",
+            nativeQuery = true)
+    Game getRandomGame();
 }

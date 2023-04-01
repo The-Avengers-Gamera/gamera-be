@@ -6,6 +6,7 @@ import com.avengers.gamera.dto.PagingDto;
 import com.avengers.gamera.dto.article.ArticleGetDto;
 import com.avengers.gamera.dto.article.MiniArticleGetDto;
 import com.avengers.gamera.service.ArticleService;
+import com.avengers.gamera.service.ChatGptService;
 import com.avengers.gamera.service.LikeService;
 import com.avengers.gamera.util.CurrentUser;
 import io.swagger.v3.oas.annotations.Operation;
@@ -96,12 +97,9 @@ public class ArticleController {
         return articleService.getPopularReviewArticlesByCommentNum(page,size,EArticleType.REVIEW);
     }
 
-
-
     @GetMapping
     public PagingDto<List<MiniArticleGetDto>> getArticlesOrderByLike(@RequestParam(defaultValue = "0") int page,
                                                           @RequestParam(defaultValue = "10") int size){
         return articleService.getArticlesOrderByLike(page, size);
     }
-
 }
