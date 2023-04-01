@@ -135,8 +135,8 @@ public class UserService {
     public UserGetDto updateUser(UserPutDto userPutDto, Long userId) {
         User user = findUser(userId);
         user.setName(userPutDto.getName());
-        user.setEmail(userPutDto.getEmail());
-        user.setPassword(userPutDto.getPassword());
+        String encodedPwd = passwordEncoder.encode(userPutDto.getPassword());
+        user.setPassword(encodedPwd);
         log.info(" User id {} was updated", userId);
         return userMapper.userToUserGetDto(userRepository.save(user));
     }
