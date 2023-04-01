@@ -92,6 +92,7 @@ public class UserController {
                                                                       @PathVariable Long userId) {
         return articleService.getArticlesByAuthorId(page, size, userId);
     }
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     @GetMapping("/{userId}/profile")
     public UserProfileDto getUserProfile(@PathVariable Long userId) {
         UserProfileDto userProfileDto = articleService.getUserArticleNumAndRecent3MiniArticlesForProfile(userId);
