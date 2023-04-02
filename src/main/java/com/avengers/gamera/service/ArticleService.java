@@ -10,10 +10,12 @@ import com.avengers.gamera.dto.article.ArticlePutDto;
 import com.avengers.gamera.dto.article.MiniArticleGetDto;
 import com.avengers.gamera.dto.comment.CommentGetDto;
 import com.avengers.gamera.dto.comment.CommentSlimDto;
+import com.avengers.gamera.dto.game.GameSlimGetDto;
 import com.avengers.gamera.dto.tag.TagSlimDto;
 import com.avengers.gamera.dto.user.UserProfileDto;
 import com.avengers.gamera.entity.Article;
 import com.avengers.gamera.entity.Comment;
+import com.avengers.gamera.entity.Game;
 import com.avengers.gamera.entity.Tag;
 import com.avengers.gamera.entity.User;
 import com.avengers.gamera.exception.ArgumentNotValidException;
@@ -26,6 +28,7 @@ import com.avengers.gamera.repository.ArticleRepository;
 import com.avengers.gamera.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -55,6 +58,7 @@ public class ArticleService {
     private final UserService userService;
     private final GameService gameService;
     private final TagService tagService;
+    private final ChatGptService chatGptService;
     private final CommentRepository commentRepository;
 
     public PagingDto<List<MiniArticleGetDto>> getArticlePage(EArticleType articleType,
@@ -113,22 +117,22 @@ public class ArticleService {
 
 
     public List<Tag> handleFrontendTagList(List<Tag> tagList) {
-    Map<Boolean, List<Tag>> checkTags = tagList.stream()
-            .collect(Collectors.partitioningBy(item -> item.getId() == null));
-    List<Tag> newTagFromUser = checkTags.get(true);
-    List<Tag> existTagFromUser = checkTags.get(false);
-    List<Tag> existTag = tagService.getAllTag(existTagFromUser);
-    List<Tag> updatedTagList = new ArrayList<>(existTag);
+        Map<Boolean, List<Tag>> checkTags = tagList.stream()
+                .collect(Collectors.partitioningBy(item -> item.getId() == null));
+        List<Tag> newTagFromUser = checkTags.get(true);
+        List<Tag> existTagFromUser = checkTags.get(false);
+        List<Tag> existTag = tagService.getAllTag(existTagFromUser);
+        List<Tag> updatedTagList = new ArrayList<>(existTag);
 
-    if (newTagFromUser.size() > 0) {
-        List<Tag> createdTag = tagService.createMultipleTag(newTagFromUser);
-        updatedTagList.addAll(createdTag);
+        if (newTagFromUser.size() > 0) {
+            List<Tag> createdTag = tagService.createMultipleTag(newTagFromUser);
+            updatedTagList.addAll(createdTag);
+        }
+
+        return updatedTagList;
     }
 
-    return updatedTagList;
-    }
-
-    public Article findById(Long articleId){
+    public Article findById(Long articleId) {
         return articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(() ->
                 new ResourceNotFoundException("Related Article with the ID(" + articleId + ")")
         );
@@ -190,8 +194,8 @@ public class ArticleService {
         return articleMapper.articleToArticleGetDto(articleRepository.save(article));
     }
 
-    public PagingDto<List<MiniArticleGetDto>> getPopularReviewArticlesByCommentNum(int page, int size, EArticleType articleType){
-        Pageable pageable = PageRequest.of(page-1, size);
+    public PagingDto<List<MiniArticleGetDto>> getPopularReviewArticlesByCommentNum(int page, int size, EArticleType articleType) {
+        Pageable pageable = PageRequest.of(page - 1, size);
         Page<Article> getAllReviewsByCommentNumDesc = articleRepository.findArticlesByTypeAndIsDeletedFalseOrderByCommentNumDesc(articleType, pageable);
 
         List<MiniArticleGetDto> miniArticleGetDtoList = getAllReviewsByCommentNumDesc.getContent()
@@ -290,7 +294,7 @@ public class ArticleService {
         User user = userService.findUser(userId);
         userProfileDto.setLikesArticlesDto(getRecentMiniArticlesByUser(user, EUserArticleType.LIKES, articleNums));
         userProfileDto.setCommentsArticlesDto(getRecentMiniArticlesByUser(user, EUserArticleType.COMMENTS, articleNums));
-        if(user.getAuthorities().stream().anyMatch(authority -> authority.getName().contains("ROLE_EDITOR"))){
+        if (user.getAuthorities().stream().anyMatch(authority -> authority.getName().contains("ROLE_EDITOR"))) {
             userProfileDto.setPostsArticlesDto(getRecentMiniArticlesByUser(user, EUserArticleType.POSTS, 3));
             userProfileDto.setPostsCount(articleRepository.countByAuthorIdAndIsDeletedFalse(userId));
         }
@@ -324,9 +328,37 @@ public class ArticleService {
         Pageable pageable = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "createdTime"));
         return commentRepository.findNewestArticleIdsByUserId(userId, pageable);
     }
+
     public List<ArticleGetDto> getFirstTenNewsByCreatedTime() {
         List<Article> articleList = articleRepository.findFirst10ByTypeAndIsDeletedFalseOrderByCreatedTimeAsc(EArticleType.NEWS);
 
         return articleList.stream().map(articleMapper::articleToArticleGetDto).toList();
+    }
+
+    public ArticleGetDto createByChatGpt() {
+        GameSlimGetDto gameSlimGetDto = gameService.getRandomGame();
+
+        String gameName = gameSlimGetDto.getName();
+        String promptTemplate = "I want you to be a game review editor. You can write a game review within 1000 words " +
+                "about the game \"" + gameName + "\". You must start the review with \"The review title is: \" which must be wrapped in a <h1> tag. " +
+                "You can have multiple subtitles and paragraph, but you must wrap subtitle into html <h2> tag and must wrap each paragraph into <p> tag.";
+
+        String response = chatGptService.getChat(promptTemplate);
+
+        String title = StringUtils.substringBetween(response, "The review title is: ", "<");
+        String text = StringUtils.substringAfter(response, "</h1>");
+
+        Article article = Article.builder()
+                .title(title)
+                .text(text)
+                .game(Game.builder().id(gameSlimGetDto.getId()).build())
+                .type(EArticleType.REVIEW)
+                .author(userService.getByEmail("chatgpt@gamera.com.au"))
+                .coverImgUrl(gameSlimGetDto.getImgUrl())
+                .build();
+
+        log.info("Saving article created by chat gpt. {}", article.getTitle());
+
+        return articleMapper.articleToArticleGetDto(articleRepository.save(article));
     }
 }

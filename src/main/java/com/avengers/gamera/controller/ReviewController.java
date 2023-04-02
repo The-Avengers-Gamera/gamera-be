@@ -45,8 +45,8 @@ public class ReviewController {
         return articleService.deleteArticleById(reviewId);
     }
 
-
-
-
-
+    @PostMapping("/chat-gpt")
+    public ArticleGetDto getChatGptResponse() {
+        return articleService.createByChatGpt();
+    }
 }

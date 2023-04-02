@@ -1,6 +1,5 @@
 package com.avengers.gamera.util;
 
-
 import org.springframework.security.core.context.SecurityContextHolder;
 import com.avengers.gamera.auth.GameraUserDetails;
 

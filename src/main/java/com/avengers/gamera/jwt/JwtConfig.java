@@ -10,7 +10,6 @@ import javax.crypto.SecretKey;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.http.HttpHeaders;
 
-
 @Configuration
 @ConfigurationProperties(prefix = "jwt")
 @Setter

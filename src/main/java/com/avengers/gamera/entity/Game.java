@@ -1,6 +1,7 @@
 package com.avengers.gamera.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -58,7 +59,7 @@ public class Game {
     @Builder.Default
     private Boolean isDeleted = false;
 
-    @Column(name = "img_url")
+    @Column
     private String imgUrl;
 
     @Column(name = "created_time")
@@ -69,16 +70,15 @@ public class Game {
     @UpdateTimestamp
     private OffsetDateTime updatedTime;
 
-
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id")
+    @JsonBackReference
     private List<Article> articles;
 
-    @ManyToMany(cascade = {CascadeType.MERGE})
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
     @JoinTable(
             name = "game_genre",
             joinColumns = {@JoinColumn(name = "game_id")},
             inverseJoinColumns = {@JoinColumn(name = "genre_id")})
     private List<Genre> genreList;
-
 }

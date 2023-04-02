@@ -31,11 +31,14 @@ public class Article {
     @JoinColumn(name = "author_id", nullable = false)
     private User author;
 
-    @Column(name = "cover_img_url")
+    @Column
     private String coverImgUrl;
 
     @Column
     private String title;
+
+    @Column
+    private String subtitle;
 
     @Column
     private String text;
@@ -57,7 +60,7 @@ public class Article {
             inverseJoinColumns = {@JoinColumn(name = "tag_id")})
     private List<Tag> tagList;
 
-    @Column(name = "comment_num")
+    @Column
     private int commentNum;
 
     @Column(name = "is_deleted")

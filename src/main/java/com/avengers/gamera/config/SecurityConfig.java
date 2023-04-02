@@ -44,7 +44,6 @@ public class SecurityConfig {
     private final SecretKey secretKey;
     private final JwtConfig jwtConfig;
     private final JwtTokenVerifyFilter jwtTokenVerifyFilter;
-
     private final JWTService jwtService;
 
     private static final String[] AUTH_URL_WHITELIST = {
