@@ -37,6 +37,7 @@ pipeline {
                     env.username = secretMap["username"]
                     env.password = secretMap["password"]
                     env.ecr_registry_id = secretMap["ecr-registry-id"]
+                    env.openai_key = secretMap["openai-key"]
                 }
             }
         }
@@ -64,7 +65,8 @@ pipeline {
                 //Generate docker image from Dockerfile
                 sh "sudo docker build --build-arg DB_ENDPOINT=${env.endpoint} \
                     --build-arg DB_USERNAME=${env.username} \
-                    --build-arg DB_PASSWORD='${env.password}' -t gamera-service ."
+                    --build-arg DB_PASSWORD='${env.password}' \
+                    --build-arg OPENAI_KEY=${env.openai_key} -t gamera-service ."
 
                 //Authenticate Docker client to ECR repository
                 sh "aws ecr get-login-password --region ap-southeast-2 | docker login \
