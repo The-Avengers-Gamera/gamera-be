@@ -8,9 +8,8 @@ import com.avengers.gamera.dto.user.UserPostDto;
 import com.avengers.gamera.dto.user.UserPutDto;
 import com.avengers.gamera.service.ArticleService;
 import com.avengers.gamera.dto.user.*;
-import com.avengers.gamera.service.ArticleService;
-import com.avengers.gamera.service.LikeService;
 import com.avengers.gamera.service.UserService;
+import com.avengers.gamera.util.CurrentUser;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -39,6 +38,7 @@ public class UserController {
         return userService.addAuthorityToUser(userAddAuthority.getEmail(), userAddAuthority.getName());
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping
     public List<UserGetDto> getAllUsers() {
         return userService.getAllUsers();
@@ -49,15 +49,16 @@ public class UserController {
         return userService.getUser(userId);
     }
 
-    @PreAuthorize("hasAuthority('ROLE_USER')")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/info")
     public UserGetDto getUserInfo() {
         return userService.getUserInfoByToken();
     }
 
-    @PutMapping("{userId}")
-    public UserGetDto updateUser(@Valid @RequestBody UserPutDto userPutDto, @PathVariable Long userId) {
-        return userService.updateUser(userPutDto, userId);
+    @PutMapping
+    public UserGetDto updateUser(@Valid @RequestBody UserPutDto userPutDto) {
+        Long currentUserId = CurrentUser.getUserId();
+        return userService.updateUser(userPutDto, currentUserId);
     }
 
     @DeleteMapping("{userId}")

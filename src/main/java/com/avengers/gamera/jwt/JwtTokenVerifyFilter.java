@@ -3,10 +3,8 @@ package com.avengers.gamera.jwt;
 import com.avengers.gamera.auth.GameraAuthenticationToken;
 import com.avengers.gamera.auth.GameraUserDetailService;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -80,13 +78,12 @@ public class JwtTokenVerifyFilter extends OncePerRequestFilter {
             );
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
-        } catch (SignatureException e) {
-            log.error("Invalid JWT signature: {}", e.getMessage());
-        } catch (ExpiredJwtException e) {
-            log.error("JWT token is expired: {}", e.getMessage());
+            filterChain.doFilter(request, response);
         } catch (Exception e) {
             log.error("Cannot set user authentication: {}", e.getMessage());
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Invalid token");
+            response.getWriter().flush();
         }
-        filterChain.doFilter(request, response);
     }
 }
