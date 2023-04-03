@@ -41,7 +41,7 @@ public class GameraUserDetailService implements UserDetailsService {
                 .isAccountNonExpired(true)
                 .isAccountNonLocked(true)
                 .isCredentialsNonExpired(true)
-                .isEnabled(true)
+                .isEnabled(user.isVerified())
                 .build();
     }
 }

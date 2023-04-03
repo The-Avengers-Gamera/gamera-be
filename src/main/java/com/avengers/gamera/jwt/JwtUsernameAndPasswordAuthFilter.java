@@ -91,7 +91,7 @@ public class JwtUsernameAndPasswordAuthFilter extends UsernamePasswordAuthentica
         }
 
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.getWriter().print("Login failed. Please try again.");
+        response.getWriter().print("Login failed, wrong password or username or not activate account");
         response.getWriter().flush();
         response.getWriter().close();
     }

@@ -47,6 +47,8 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final JWTService jwtService;
+
     private final String defaultAuthority = "ROLE_USER";
 
 
@@ -145,5 +147,12 @@ public class UserService {
         User user = findUser(userId);
         user.setIsDeleted(true);
         log.info(" User id {} was deleted", userId);
+    }
+
+    public String verifyAccount(String token) {
+        Long id = jwtService.decodeJWT(token);
+        userRepository.findByIdAAndIsDeletedIsFalseAndVerifiedIsFalse(id);
+
+        return "Congratulation, you already activate your account and can explore Gamera now";
     }
 }

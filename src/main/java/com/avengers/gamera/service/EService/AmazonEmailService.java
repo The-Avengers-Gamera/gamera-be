@@ -5,6 +5,7 @@ import com.amazonaws.services.simpleemail.model.*;
 import com.avengers.gamera.util.SystemParam;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
@@ -12,15 +13,15 @@ import java.util.List;
 public record AmazonEmailService (AmazonSimpleEmailService amazonSimpleEmailService, SystemParam systemParam) implements EmailService {
 
     @Override
-    public void sendEmail(String receiverEmail, String link, String info) {
+    public void sendEmail(String receiverEmail, String jwtLink, String info) {
         String senderEmail = systemParam.getSenderEmail();
         Destination destination = new Destination();
         List<String> toAddresses = List.of(receiverEmail);
         destination.withToAddresses(toAddresses);
         Message message=new Message();
-        message.withSubject(new Content("Welcome Gamera"));
-        message.withBody(new Body(new Content(info+" by below link: "+
-                link)));
+        message.withSubject(new Content("Welcome to Gamera"));
+        message.withBody(new Body(new Content(info+" by following link: "+
+                jwtLink)));
 
         SendEmailRequest sendEmailRequest= new SendEmailRequest();
         sendEmailRequest.withDestination(destination)

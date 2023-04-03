@@ -49,6 +49,11 @@ public class User {
     )
     private Set<Authority> authorities;
 
+
+    @Column(name = "is_verified")
+    @Builder.Default
+    private boolean isVerified = false;
+
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
     private List<Article> articles;
