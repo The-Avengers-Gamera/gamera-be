@@ -19,6 +19,7 @@ import com.avengers.gamera.entity.Game;
 import com.avengers.gamera.entity.Tag;
 import com.avengers.gamera.entity.User;
 import com.avengers.gamera.exception.ArgumentNotValidException;
+import com.avengers.gamera.exception.GameraAccessDeniedException;
 import com.avengers.gamera.exception.ResourceNotFoundException;
 import com.avengers.gamera.mapper.ArticleMapper;
 import com.avengers.gamera.mapper.CommentMapper;
@@ -97,14 +98,14 @@ public class ArticleService {
     }
 
     public ArticleGetDto handleCreateArticle(ArticlePostDto articlePostDto, EArticleType articleType, Long userId) {
+        if (articlePostDto.getTagList() != null) {
+            List<Tag> updateTagList = handleFrontendTagList(articlePostDto.getTagList());
+            articlePostDto.setTagList(updateTagList);
+        }
 
         Article article = articleMapper.articlePostDtoToArticle(articlePostDto);
         if (articlePostDto.getGameId() != null) {
             article.setGame(gameService.findActiveGame(articlePostDto.getGameId()));
-        }
-        if (articlePostDto.getTagList() != null) {
-            List<Tag> updateTagList = handleFrontendTagList(articlePostDto.getTagList());
-            articlePostDto.setTagList(updateTagList);
         }
 
         article.setType(articleType);
@@ -121,7 +122,7 @@ public class ArticleService {
                 .collect(Collectors.partitioningBy(item -> item.getId() == null));
         List<Tag> newTagFromUser = checkTags.get(true);
         List<Tag> existTagFromUser = checkTags.get(false);
-        List<Tag> existTag = tagService.getAllTag(existTagFromUser);
+        List<Tag> existTag = tagService.getExistTag(existTagFromUser);
         List<Tag> updatedTagList = new ArrayList<>(existTag);
 
         if (newTagFromUser.size() > 0) {
@@ -138,7 +139,7 @@ public class ArticleService {
         );
     }
 
-    public ArticleGetDto getArticleById(Long articleId, Long currentId) {
+    public ArticleGetDto getArticleById(Long articleId, Long currentLoggedInUserId) {
         Article article = findById(articleId);
         List<Comment> allResults = article.getCommentList().stream().filter(item -> !item.getIsDeleted()).toList();
         List<CommentGetDto> allParentComments = allResults.stream()
@@ -164,28 +165,33 @@ public class ArticleService {
         ArticleGetDto articleGetDto = articleMapper.articleToArticleGetDto(article);
         articleGetDto.setCommentList(allParentComments);
         articleGetDto.setTagList(tagSlimDtoList);
-        if (currentId != null) {
+        if (currentLoggedInUserId != null) {
             List<Long> likeUsersId = article.getLikeUsers().stream().map(User::getId).toList();
-            articleGetDto.setCurrentUserLiked(likeUsersId.contains(currentId));
+            articleGetDto.setCurrentUserLiked(likeUsersId.contains(currentLoggedInUserId));
         }
         //For LikeNum
         articleGetDto.setLikeNum(likeService.getLikeNumByArticleId(articleId));
         return articleGetDto;
     }
 
-    public String deleteArticleById(Long articleId) {
+    public String deleteArticleById(Long articleId, Long currentLoggedInUserId) {
         Article article = articleRepository.findArticleByIdAndIsDeletedFalse(articleId).orElseThrow(() ->
                 new ResourceNotFoundException("Related Article with the ID(" + articleId + ")")
         );
+        if (!Objects.equals(currentLoggedInUserId, article.getAuthor().getId())){
+            throw new GameraAccessDeniedException();
+        }
         log.info("Article with ID(" + articleId + ") title(" + article.getTitle() + ") is being deleted");
         article.setDeleted(true);
         articleRepository.save(article);
         return "The article with ID(" + articleId + ") has been deleted";
     }
 
-    public ArticleGetDto updateArticle(ArticlePutDto articlePutDto, Long articleId) {
+    public ArticleGetDto updateArticle(ArticlePutDto articlePutDto, Long articleId, Long currentLoggedInUserId) {
         Article article = articleRepository.findById(articleId).orElseThrow(() -> new ResourceNotFoundException("Article", articleId));
-
+        if (!Objects.equals(currentLoggedInUserId, article.getAuthor().getId())){
+            throw new GameraAccessDeniedException();
+        }
         article.setTitle(articlePutDto.getTitle());
         article.setText(articlePutDto.getText());
         article.setUpdatedTime(OffsetDateTime.now());

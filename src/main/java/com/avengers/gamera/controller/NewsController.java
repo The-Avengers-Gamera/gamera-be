@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 
 @RestController
 @RequestMapping("/news")
@@ -22,7 +24,7 @@ public class NewsController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ArticleGetDto createNews(@RequestBody ArticlePostDto articlePostDto) {
+    public ArticleGetDto createNews(@Valid @RequestBody ArticlePostDto articlePostDto) {
         return articleService.createArticle(articlePostDto, EArticleType.NEWS, CurrentUser.getUserId());
     }
 
@@ -30,13 +32,15 @@ public class NewsController {
     @Operation(summary = "Update news by article id")
     @ResponseStatus(HttpStatus.OK)
     public ArticleGetDto updateArticleById(@RequestBody ArticlePutDto articlePutDto, @PathVariable Long newsId) {
-        return articleService.updateArticle(articlePutDto, newsId);
+        Long currentUserId = CurrentUser.getUserId();
+        return articleService.updateArticle(articlePutDto, newsId, currentUserId);
     }
 
     @DeleteMapping("/{newsId}")
     @ResponseStatus(HttpStatus.OK)
     public String deleteArticleById(@PathVariable Long newsId) {
-        return articleService.deleteArticleById(newsId);
+        Long currentUserId = CurrentUser.getUserId();
+        return articleService.deleteArticleById(newsId, currentUserId);
     }
 
 }

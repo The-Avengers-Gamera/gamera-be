@@ -132,12 +132,12 @@ public class UserService {
         return userRepository.findUserByIdAndIsDeletedFalse(userId).orElseThrow(() -> new ResourceNotFoundException("User", userId));
     }
 
-    public UserGetDto updateUser(UserPutDto userPutDto, Long userId) {
-        User user = findUser(userId);
+    public UserGetDto updateUser(UserPutDto userPutDto, Long currentLoggedInUserId) {
+        User user = findUser(currentLoggedInUserId);
         user.setName(userPutDto.getName());
         String encodedPwd = passwordEncoder.encode(userPutDto.getPassword());
         user.setPassword(encodedPwd);
-        log.info(" User id {} was updated", userId);
+        log.info(" User id {} was updated", currentLoggedInUserId);
         return userMapper.userToUserGetDto(userRepository.save(user));
     }
 

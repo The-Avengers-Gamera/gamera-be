@@ -156,7 +156,7 @@ class ArticleServiceTest {
                 return generateArticleGetDto (article);
             }
         });
-        ArticleGetDto updatedArticleGetDto = articleService.updateArticle(MockArticleData.mockArticlePutDto, MockArticleData.articleId);
+        ArticleGetDto updatedArticleGetDto = articleService.updateArticle(MockArticleData.mockArticlePutDto, MockArticleData.articleId, MockArticleData.authorId);
 
         assertEquals(ExpectUpdatedArticleGetDto.getText(), updatedArticleGetDto.getText());
         assertEquals(ExpectUpdatedArticleGetDto.getTitle(), updatedArticleGetDto.getTitle());
@@ -243,7 +243,7 @@ class ArticleServiceTest {
     @Test
     void deleteArticleByIdTest() {
         when(articleRepository.findArticleByIdAndIsDeletedFalse(MockArticleData.articleId)).thenReturn(Optional.ofNullable(MockArticleData.mockArticle));
-        articleService.deleteArticleById(MockArticleData.articleId);
+        articleService.deleteArticleById(MockArticleData.articleId, MockArticleData.authorId);
         verify(articleRepository).save(MockArticleData.mockArticle);
     }
 }
