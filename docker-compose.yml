@@ -91,6 +91,16 @@ services:
     volumes:
       - kibana_data:/usr/share/kibana/data
 
+  rabbitmq:
+    container_name: gamera-rabbitmq
+    image: rabbitmq:3.11.13-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: gamera
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
 volumes:
   postgresql_data: {}
   pgadmin_data: {}

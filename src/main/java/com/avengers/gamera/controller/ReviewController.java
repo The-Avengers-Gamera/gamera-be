@@ -5,6 +5,7 @@ import com.avengers.gamera.dto.article.ArticleGetDto;
 import com.avengers.gamera.dto.article.ArticlePostDto;
 import com.avengers.gamera.dto.article.ArticlePutDto;
 import com.avengers.gamera.service.ArticleService;
+import com.avengers.gamera.service.RabbitMQService;
 import com.avengers.gamera.util.CurrentUser;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ import javax.validation.Valid;
 @Validated
 public class ReviewController {
     private final ArticleService articleService;
+    private final RabbitMQService rabbitMQService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -52,5 +54,10 @@ public class ReviewController {
     @PostMapping("/chat-gpt")
     public ArticleGetDto getChatGptResponse() {
         return articleService.createByChatGpt();
+    }
+
+    @PostMapping("/chat-gpt/{gameId}")
+    public void createArticleByChatGpt(@PathVariable String gameId) {
+        rabbitMQService.sendArticleChatGpt(gameId);
     }
 }
