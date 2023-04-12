@@ -10,6 +10,12 @@ spring:
     show-sql: false
   flyway:
     enabled: false
+
+management:
+  health:
+    elasticsearch:
+      enabled: false
+
 cors:
   allowed-origins: "*"
   allowed-methods: "*"
@@ -17,3 +23,10 @@ cors:
 
 jwt:
   secret-key: "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDZ5QIeI0ioHDYGU0RMwGti6Z9/2SReCeFnYZJY5xsbFWRiU"
+
+elasticsearch:
+  enabled: false
+  host: "localhost"
+  port: 9200
+  username: "elastic"
+  password: "changeme"
