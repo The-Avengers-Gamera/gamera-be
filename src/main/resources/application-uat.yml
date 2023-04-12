@@ -24,6 +24,12 @@ spring:
         format_sql: true
     show-sql: false
 
+  rabbitmq:
+    host: "weited.australiaeast.cloudapp.azure.com"
+    port: 5672
+    username: "admin"
+    password: "gamera"
+
 management:
   health:
     elasticsearch:

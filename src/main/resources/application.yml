@@ -24,6 +24,12 @@ spring:
         format_sql: true
     show-sql: true
 
+  rabbitmq:
+    host: "localhost"
+    port: 5672
+    username: "admin"
+    password: "gamera"
+
 management:
   endpoint:
     health:
