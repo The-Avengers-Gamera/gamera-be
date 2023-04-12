@@ -77,26 +77,28 @@ public class UserController {
         userService.emailExists(email);
     }
 
-    @GetMapping("/{userId}/likes")
+    @GetMapping("/likes")
     public PagingDto<List<MiniArticleGetDto>> getLikedListByUser(@RequestParam(defaultValue = "1") int page,
-                                                                 @RequestParam(defaultValue = "10") int size,
-                                                                 @PathVariable Long userId) {
-        return articleService.getArticlesByLikeUserId(page, size, userId);
+                                                                 @RequestParam(defaultValue = "10") int size) {
+        Long currentUserId = CurrentUser.getUserId();
+        return articleService.getArticlesByLikeUserId(page, size, currentUserId);
     }
 
-    @GetMapping("/{userId}/comments")
+    @GetMapping("/comments")
     public PagingDto<List<MiniArticleGetDto>> getCommentedListByUser(@RequestParam(defaultValue = "1") int page,
-                                                                     @RequestParam(defaultValue = "10") int size,
-                                                                     @PathVariable Long userId) {
-        return articleService.getArticlesByCommentUserId(page, size, userId);
+                                                                     @RequestParam(defaultValue = "10") int size) {
+        Long currentUserId = CurrentUser.getUserId();
+        return articleService.getArticlesByCommentUserId(page, size, currentUserId);
     }
 
-    @GetMapping("/{userId}/articles")
+    @PreAuthorize("hasAnyAuthority('ROLE_EDITOR_NEWS', 'ROLE_EDITOR_REVIEW')")
+    @GetMapping("/articles")
     public PagingDto<List<MiniArticleGetDto>> getArticlesListByAuthor(@RequestParam(defaultValue = "1") int page,
-                                                                      @RequestParam(defaultValue = "10") int size,
-                                                                      @PathVariable Long userId) {
-        return articleService.getArticlesByAuthorId(page, size, userId);
+                                                                      @RequestParam(defaultValue = "10") int size) {
+        Long currentUserId = CurrentUser.getUserId();
+        return articleService.getArticlesByAuthorId(page, size, currentUserId);
     }
+
     @GetMapping("/{userId}/profile")
     public UserProfileDto getUserProfile(@PathVariable Long userId) {
         UserProfileDto userProfileDto = articleService.getUserArticleNumAndRecent3MiniArticlesForProfile(userId);

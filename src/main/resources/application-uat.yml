@@ -24,6 +24,17 @@ spring:
         format_sql: true
     show-sql: false
 
+  rabbitmq:
+    host: "weited.australiaeast.cloudapp.azure.com"
+    port: 5672
+    username: "admin"
+    password: "gamera"
+
+management:
+  health:
+    elasticsearch:
+      enabled: false
+
 cors:
   allowed-origins: "*"
   allowed-methods: "*"
@@ -35,3 +46,10 @@ jwt:
 
 open-ai:
   api-key: ${OPENAI_KEY}
+
+elasticsearch:
+  enabled: true
+  host: "weited.australiaeast.cloudapp.azure.com"
+  port: 9200
+  username: "elastic"
+  password: "changeme"

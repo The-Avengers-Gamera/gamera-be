@@ -3,17 +3,18 @@ package com.avengers.gamera.service;
 import com.avengers.gamera.dto.tag.TagGetDto;
 import com.avengers.gamera.dto.tag.TagPostDto;
 import com.avengers.gamera.dto.tag.TagPutDto;
+import com.avengers.gamera.dto.tag.TagSlimDto;
 import com.avengers.gamera.entity.Tag;
 import com.avengers.gamera.exception.ResourceNotFoundException;
 import com.avengers.gamera.mapper.TagMapper;
 import com.avengers.gamera.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,9 +39,14 @@ public class TagService {
         return findTag(tagId);
     }
 
-    public List<Tag> getAllTag(List<Tag> tagNames) {
+    public List<Tag> getExistTag(List<Tag> tagNames) {
         List<Long> tagIdList = tagNames.stream().map(Tag::getId).toList();
         return tagRepository.findAllById(tagIdList);
+    }
+
+    public List<TagSlimDto> getTagList() {
+        List<Tag> tags = tagRepository.findAll();
+        return tags.stream().map(tagMapper::tagToTagSlimDto).collect(Collectors.toList());
     }
 
     public TagGetDto updateTag(Long tagId, TagPutDto tagPutDto) {

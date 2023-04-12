@@ -5,6 +5,7 @@ import com.avengers.gamera.dto.article.ArticleGetDto;
 import com.avengers.gamera.dto.article.ArticlePostDto;
 import com.avengers.gamera.dto.article.ArticlePutDto;
 import com.avengers.gamera.service.ArticleService;
+import com.avengers.gamera.service.RabbitMQService;
 import com.avengers.gamera.util.CurrentUser;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -19,16 +20,19 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/reviews")
 @RequiredArgsConstructor
 @Validated
 public class ReviewController {
     private final ArticleService articleService;
+    private final RabbitMQService rabbitMQService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ArticleGetDto createReview(@RequestBody ArticlePostDto articlePostDto) {
+    public ArticleGetDto createReview(@Valid @RequestBody ArticlePostDto articlePostDto) {
         return articleService.createArticle(articlePostDto, EArticleType.REVIEW, CurrentUser.getUserId());
     }
 
@@ -36,17 +40,24 @@ public class ReviewController {
     @Operation(summary = "Update review by id")
     @ResponseStatus(HttpStatus.OK)
     public ArticleGetDto updateArticleById(@RequestBody ArticlePutDto articlePutDto, @PathVariable Long reviewId) {
-        return articleService.updateArticle(articlePutDto, reviewId);
+        Long currentUserId = CurrentUser.getUserId();
+        return articleService.updateArticle(articlePutDto, reviewId, currentUserId);
     }
 
     @DeleteMapping("/{reviewId}")
     @ResponseStatus(HttpStatus.OK)
     public String deleteArticleById(@PathVariable Long reviewId) {
-        return articleService.deleteArticleById(reviewId);
+        Long currentUserId = CurrentUser.getUserId();
+        return articleService.deleteArticleById(reviewId, currentUserId);
     }
 
     @PostMapping("/chat-gpt")
     public ArticleGetDto getChatGptResponse() {
         return articleService.createByChatGpt();
+    }
+
+    @PostMapping("/chat-gpt/{gameId}")
+    public void createArticleByChatGpt(@PathVariable String gameId) {
+        rabbitMQService.sendArticleChatGpt(gameId);
     }
 }

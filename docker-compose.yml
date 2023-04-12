@@ -1,8 +1,10 @@
 version: "3.9"
 
+x-var: &APP_NAME gamera
+
 services:
-  database:
-    container_name: gamera-db
+  postgresql:
+    container_name: gamera-postgresql
     image: postgres:14.2-alpine
     volumes:
       - postgresql_data:/var/lib/postgresql/data/
@@ -12,24 +14,95 @@ services:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=admin
-    networks:
-      - persist
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10k"
+        max-file: "10"
 
   pgadmin:
+    container_name: gamera-pgadmin
     image: dpage/pgadmin4
     volumes:
-      - pgadmin-data:/var/lib/pgadmin
-    restart: always
+      - pgadmin_data:/var/lib/pgadmin
+    restart: on-failure
     ports:
-      - 8002:80
+      - "8002:80"
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@gamera.com
       PGADMIN_DEFAULT_PASSWORD: admin
-    networks:
-      - persist
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION:-8.7.0}
+    container_name: gamera-elasticsearch
+    restart: on-failure
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10k"
+        max-file: "10"
+
+  logstash:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile-logstash
+      args:
+        STACK_VERSION: ${STACK_VERSION:-8.7.0}
+    container_name: gamera-logstash
+    restart: on-failure
+    depends_on:
+      - postgresql
+      - elasticsearch
+    volumes:
+      - ./docker/volumes/logstash/pipeline/:/usr/share/logstash/pipeline/
+      - ./docker/volumes/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - ./docker/volumes/logstash/config/pipelines.yml:/usr/share/logstash/config/pipelines.yml
+      - ./docker/volumes/logstash/config/queries/:/usr/share/logstash/config/queries/
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10k"
+        max-file: "10"
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:${STACK_VERSION:-8.7.0}
+    container_name: gamera-kibana
+    environment:
+      - "ELASTICSEARCH_URL=http://elasticsearch:9200"
+      - "SERVER_NAME=127.0.0.1"
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    volumes:
+      - kibana_data:/usr/share/kibana/data
+
+  rabbitmq:
+    container_name: gamera-rabbitmq
+    image: rabbitmq:3.11.13-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: gamera
+    ports:
+      - "5672:5672"
+      - "15672:15672"
 
 volumes:
   postgresql_data: {}
-  pgadmin-data: {}
-networks:
-  persist: {}
+  pgadmin_data: {}
+  elasticsearch_data: {}
+  kibana_data: {}

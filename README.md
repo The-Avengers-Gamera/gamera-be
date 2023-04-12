@@ -1,16 +1,20 @@
 
 # Environment Config
 * Java 17
-* SpringBoot 2.7.8   
+* SpringBoot 2.7.8
 * Gradle
 * Docker compose
 * PostgreSQL
 * Lombok
 * Mapstruct
 * Spring Data JPA
+* Spring Security
 * H2 in-memory DB
 * Flyway
 * Makefile
+* Swagger
+* ElasticSearch + Kibana + Logstash
+* RabbitMQ
 
 ## Database
 ### PostgreSQL is being applied here, and we are also using Docker Compose to make local development convenient

@@ -1,5 +1,6 @@
 package com.avengers.gamera;
 
+import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -11,6 +12,7 @@ import java.util.TimeZone;
 @EnableScheduling
 @SpringBootApplication
 @EnableAsync
+@EnableRabbit
 public class GameraApplication {
     private static final String TIME_ZONE = "UTC";
 

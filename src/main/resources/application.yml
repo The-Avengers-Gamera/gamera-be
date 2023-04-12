@@ -24,6 +24,17 @@ spring:
         format_sql: true
     show-sql: true
 
+  rabbitmq:
+    host: "localhost"
+    port: 5672
+    username: "admin"
+    password: "gamera"
+
+management:
+  endpoint:
+    health:
+      show-details: always
+
 system-param:
   aws-active: true
   base-url: ${base_url}
@@ -31,7 +42,6 @@ system-param:
   aws-secret-key: ${aws_secret_key}
   aws-access-key: ${aws_access_key}
   sign-in-jwt-expired-minute: 3600
-
 
 cors:
   allowed-origins: "*"
@@ -50,3 +60,10 @@ open-ai:
   top-p: 1
   frequency-penalty: 0
   presence-penalty: 0
+
+elasticsearch:
+  enabled: true
+  host: "localhost"
+  port: 9200
+  username: "elastic"
+  password: "changeme"

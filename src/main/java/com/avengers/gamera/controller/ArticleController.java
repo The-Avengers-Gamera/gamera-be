@@ -6,7 +6,6 @@ import com.avengers.gamera.dto.PagingDto;
 import com.avengers.gamera.dto.article.ArticleGetDto;
 import com.avengers.gamera.dto.article.MiniArticleGetDto;
 import com.avengers.gamera.service.ArticleService;
-import com.avengers.gamera.service.ChatGptService;
 import com.avengers.gamera.service.LikeService;
 import com.avengers.gamera.util.CurrentUser;
 import io.swagger.v3.oas.annotations.Operation;
