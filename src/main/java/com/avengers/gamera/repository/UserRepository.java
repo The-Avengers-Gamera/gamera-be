@@ -21,5 +21,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Modifying
     @Query("update User u set u.isVerified=true where u.id = :id and u.isVerified=false and u.isDeleted=false")
-    void findByIdAAndIsDeletedIsFalseAndVerifiedIsFalse(@Param("id") Long id);
+    void updateUserVerify(@Param("id") Long id);
 }

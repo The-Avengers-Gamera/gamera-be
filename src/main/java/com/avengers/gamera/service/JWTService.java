@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.security.Key;
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Date;
 
@@ -20,14 +19,14 @@ public class JWTService {
 
     private final SecretKey secretKey;
 
-    public String createJWT (String email, Collection<? extends GrantedAuthority>  authorities, Long userId, Key secretKey){
+    public String createJWT (String email, Collection<? extends GrantedAuthority>  authorities, Long userId, Key secretKey, Date expireDate){
 
         return Jwts.builder()
             .setSubject(email)
             .claim("authorities", authorities)
             .claim("userId", userId)
             .setIssuedAt(new Date())
-            .setExpiration(java.sql.Date.valueOf(LocalDate.now().plusDays(1)))
+            .setExpiration(expireDate)
             .signWith(secretKey)
             .compact();
     }

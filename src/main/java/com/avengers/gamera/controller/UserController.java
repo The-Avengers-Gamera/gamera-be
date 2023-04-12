@@ -33,8 +33,8 @@ public class UserController {
     }
 
     @PutMapping("/verify-account/{token}")
-    public String verifyAccount(@PathVariable String token){
-       return userService.verifyAccount(token);
+    public void verifyAccount(@PathVariable String token){
+        userService.verifyAccount(token);
     }
 
     @PostMapping("/roles")

@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.security.Key;
-import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -80,12 +79,12 @@ public class UserService {
     }
 
     public String createSignUpLink(String baseUrl, String email, Long userId, Key secretKey ) {
-
+        Date expireDate= new Date(System.currentTimeMillis() + 3600000);
         String jwtToken = Jwts.builder()
                 .setSubject(email)
                 .claim("userId", userId)
                 .setIssuedAt(new Date())
-                .setExpiration(java.sql.Date.valueOf(LocalDate.now().plusDays(1)))
+                .setExpiration(expireDate)
                 .signWith(secretKey)
                 .compact();
         return baseUrl + "/verification?code="+ jwtToken;
@@ -149,10 +148,8 @@ public class UserService {
         log.info(" User id {} was deleted", userId);
     }
 
-    public String verifyAccount(String token) {
+    public void verifyAccount(String token) {
         Long id = jwtService.decodeJWT(token);
-        userRepository.findByIdAAndIsDeletedIsFalseAndVerifiedIsFalse(id);
-
-        return "Congratulation, you already activate your account and can explore Gamera now";
+        userRepository.updateUserVerify(id);
     }
 }
