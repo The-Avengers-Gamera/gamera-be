@@ -20,6 +20,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -67,7 +68,7 @@ public class JwtUsernameAndPasswordAuthFilter extends UsernamePasswordAuthentica
         Collection<? extends GrantedAuthority> authorities = authResult.getAuthorities();
         long userId = ((GameraUserDetails) authResult.getPrincipal()).getId();
 
-        String jwtToken = jwtService.createJWT(email,authorities,userId,secretKey);
+        String jwtToken = jwtService.createJWT(email,authorities,userId,secretKey, java.sql.Date.valueOf(LocalDate.now().plusDays(1)));
 
         Map<String, Object> userInfo = new HashMap<>();
         userInfo.put("email", email);
@@ -91,7 +92,7 @@ public class JwtUsernameAndPasswordAuthFilter extends UsernamePasswordAuthentica
         }
 
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.getWriter().print("Login failed. Please try again.");
+        response.getWriter().print("Login failed, wrong password or username or not activate account");
         response.getWriter().flush();
         response.getWriter().close();
     }

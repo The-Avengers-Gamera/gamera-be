@@ -37,10 +37,10 @@ management:
 
 system-param:
   aws-active: true
-  base-url: http://localhost:8080/api/v1
-  sender-email:
-  aws-secret-key:
-  aws-access-key:
+  base-url: ${base_url}
+  sender-email: ${sender_email}
+  aws-secret-key: ${aws_secret_key}
+  aws-access-key: ${aws_access_key}
   sign-in-jwt-expired-minute: 3600
 
 cors:

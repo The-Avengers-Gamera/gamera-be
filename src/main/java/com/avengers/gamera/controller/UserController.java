@@ -32,6 +32,11 @@ public class UserController {
         return userService.createUser(userPostDto);
     }
 
+    @PutMapping("/verify-account/{token}")
+    public void verifyAccount(@PathVariable String token){
+        userService.verifyAccount(token);
+    }
+
     @PostMapping("/roles")
     @ResponseStatus(HttpStatus.CREATED)
     public String addAuthorityToUser(@RequestBody UserAddAuthorityDto userAddAuthority) {
