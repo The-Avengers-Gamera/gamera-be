@@ -21,7 +21,6 @@ public class ArticlePostDto{
 
     private Long gameId;
 
-    @NotNull(message = "Author must be provided.")
     private Long authorId;
 
     @NotBlank(message = "Article title must be provided.")
