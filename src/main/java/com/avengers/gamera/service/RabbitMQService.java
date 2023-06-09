@@ -19,7 +19,7 @@ public class RabbitMQService {
         rabbitTemplate.convertAndSend(RabbitMQConfig.ARTICLE_CHATGPT_QUEUE_NAME, gameId);
     }
 
-    @RabbitListener(queues = RabbitMQConfig.ARTICLE_CHATGPT_QUEUE_NAME)
+//    @RabbitListener(queues = RabbitMQConfig.ARTICLE_CHATGPT_QUEUE_NAME)
     public void receiveArticleChatGpt() {
         log.info("Received message to create article by chatgpt from queue");
         try {
