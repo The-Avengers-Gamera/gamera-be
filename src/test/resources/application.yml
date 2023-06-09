@@ -22,6 +22,8 @@ management:
   health:
     elasticsearch:
       enabled: false
+    rabbit:
+      enabled: false
 
 system-param:
   aws-active: true

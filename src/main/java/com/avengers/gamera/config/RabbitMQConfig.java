@@ -4,17 +4,17 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
+//@Configuration
 public class RabbitMQConfig {
     public static final String ARTICLE_CHATGPT_QUEUE_NAME = "article_chatgpt_queue";
     public static final String EMAIL_VERIFY_QUEUE_NAME = "email_verify_queue";
 
-    @Bean
+//    @Bean
     public Queue articleChatGptQueue() {
         return new Queue(ARTICLE_CHATGPT_QUEUE_NAME);
     }
 
-    @Bean
+//    @Bean
     public Queue emailVerifyQueue() {
         return new Queue(EMAIL_VERIFY_QUEUE_NAME);
     }

@@ -56,8 +56,8 @@ public class ReviewController {
         return articleService.createByChatGpt();
     }
 
-    @PostMapping("/chat-gpt/{gameId}")
-    public void createArticleByChatGpt(@PathVariable String gameId) {
-        rabbitMQService.sendArticleChatGpt(gameId);
-    }
+//    @PostMapping("/chat-gpt/{gameId}")
+//    public void createArticleByChatGpt(@PathVariable String gameId) {
+//        rabbitMQService.sendArticleChatGpt(gameId);
+//    }
 }

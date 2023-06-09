@@ -34,6 +34,8 @@ management:
   health:
     elasticsearch:
       enabled: false
+    rabbit:
+      enabled: false
 
 cors:
   allowed-origins: "*"
@@ -48,7 +50,7 @@ open-ai:
   api-key: ${OPENAI_KEY}
 
 elasticsearch:
-  enabled: true
+  enabled: false
   host: "weited.australiaeast.cloudapp.azure.com"
   port: 9200
   username: "elastic"
